@@ -1,15 +1,16 @@
 import logo from "./images/ap_visualizer-logo.png";
-import Landing_page from "./components/layouts/Landing_page";
+import PathImage from "./images/path.png";
+import LandingPage from "./components/layouts/Landing_Page";
 import "./App.css";
-
+import { useState } from "react";
+import * as React from "react";
+import CelebrateLogo from "./images/celebration.png";
 function App() {
   return (
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
-      {/* <Landing_page /> */}
-      {/* <header className="App-header">
-       
-      </header> */}
+
+      <LandingPage image={logo} image1={PathImage} image2={CelebrateLogo} />
     </div>
   );
 }
