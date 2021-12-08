@@ -33,26 +33,6 @@ class Map{
             console.log(`Read map err: ${err}`)
         }
     }
-
-    get getHeight(){  // get height of the grid
-        return this.height;
-    }
-
-    get getWidth(){ // get width of the grid
-        return this.width;
-    }
-
-    get getNoAgents(){ // get total number of agents;
-        return this.no_agents;
-    }
-
-    get getAgents(){ // get all agents locations;
-        return this.agents;
-    }
-
-    get getGrid(){ // get the grid map
-        return this.grid;
-    }
 }
 
 module.exports = Map;

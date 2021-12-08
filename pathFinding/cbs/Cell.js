@@ -6,11 +6,18 @@
 
 class Cell{
     constructor(x, y){
-        this.x = x
-        this.y = y
+        this.x = x; // x-value
+        this.y = y; // y-value
+        this.h = 0; // HEURISTIC distance to the destination
+        this.g = 0; // the REAL distance from the start
+        this.f = 0; // f = g + h
+        this.parent = null;
         this.isObstacle = false
     }
+
     is_equal(other){
         return this.x == other.x && this.y == other.y
     }
 }
+
+module.exports = Cell;
