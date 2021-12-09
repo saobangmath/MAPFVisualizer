@@ -1,5 +1,6 @@
 const Cell = require('./Cell')
 const Utils = require('./utils')
+const assert = require('assert')
 
 /**
  * return the plan of individual agents such that it is consistent to its own constraint.
@@ -29,6 +30,7 @@ class LowLevelSolver{
     findBestIndex(L, successor){
         let minCost = 1e9, index = -1
         for (let i = 0; i < L.length; i++){
+            assert(L[i]!=null)
             if (L[i].is_equal(successor) && L[i].f < minCost) {
                 index = i
                 minCost = L[i].f
@@ -40,6 +42,7 @@ class LowLevelSolver{
     isConstraint(time, agentID, cell, constraints){
         for (let i = 0; i < constraints.length; i++){
             let constraint = constraints[i];
+            assert(constraint.cell != null)
             if (constraint.agentID == agentID && constraint.cell.is_equal(cell) && constraint.time == time){
                 return true;
             }
@@ -48,7 +51,7 @@ class LowLevelSolver{
     }
 
     findOptimalPathForIndividualAgent(constraints, map, agentID){
-        console.log("Constraints: " + constraints)
+        // console.log("Constraints: " + constraints)
         this.optimalPath = []
         let parentMaps = {}
         let startCell = map.agents[agentID]["START"]
@@ -57,7 +60,7 @@ class LowLevelSolver{
         /// A* algorithm search use for the low-level search
         let pos = 0
         let current_cell = startCell
-        console.log("LowLevelSolver: START")
+        // console.log("LowLevelSolver: START")
         while (this.OPEN.length > 0) {
             pos = this.findMinCostCellPosition(this.OPEN)
             current_cell = this.OPEN.splice(pos, 1)[0]
@@ -107,8 +110,8 @@ class LowLevelSolver{
         // console.log("LowLevelSolver: " + "Done with process OPEN List")
         let cur_x = destCell.x;
         let cur_y = destCell.y;
-        console.log("Startcell: " + startCell.x + ", " + startCell.y);
-        console.log("Destcell: " + destCell.x + ", " + destCell.y);
+        // console.log("Startcell: " + startCell.x + ", " + startCell.y);
+        // console.log("Destcell: " + destCell.x + ", " + destCell.y);
         while (!(cur_x == startCell.x && cur_y == startCell.y)){
             this.optimalPath.push(new Cell(cur_x, cur_y));
             let XY = Utils.idToCoordinates(parentMaps[Utils.coordinatesToId(cur_x, cur_y, map.width)], map.width);
@@ -119,6 +122,7 @@ class LowLevelSolver{
         this.optimalPath.reverse()
         this.OPEN = []
         this.CLOSE = []
+        // console.log("Done!")
         return this.optimalPath
     }
 

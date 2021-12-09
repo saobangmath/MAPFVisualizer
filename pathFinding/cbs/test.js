@@ -16,6 +16,6 @@ function test(filename) {
     }
 }
 
-//test('./maps/hard_kiva.map')
-//test('./maps/easy_kiva.map')
+test('./maps/easy_kiva.map')
+test('./maps/hard_kiva.map')
 test('./maps/paper.map')

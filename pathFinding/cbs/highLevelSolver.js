@@ -14,8 +14,8 @@ class highLevelSolver {
 
     _getEdgeConflict(agent1, agent2, route1, route2) { // return any common edges (edge conflicts) between 2 given routes
         for (let time = 0; time < Math.min(route1.length, route2.length)-1; time++) {
-            if (route1[time] == route2[time+1] &&
-                route1[time+1] == route2[time])
+            if (route1[time].is_equal(route2[time+1]) &&
+                route1[time+1].is_equal(route2[time]))
                 return new Conflict(agent1, agent2, route1[time], route1[time+1], time);
         }
         return null;
@@ -36,8 +36,9 @@ class highLevelSolver {
 
     _getNormalConflict(agent1, agent2, route1, route2) { // return any conflicts between 2 given routes
         for (let time = 0; time < Math.min(route1.length, route2.length); time++) {
-            if (route1[time] == route2[time]){
-                return new Conflict(agent1, agent2, route1[time], route2[time], time);
+            if (route1[time].is_equal(route2[time])){
+                let conflict = new Conflict(agent1, agent2, route1[time], route2[time], time);
+                return conflict
             }
         }
         return null;
@@ -56,20 +57,20 @@ class highLevelSolver {
         return null;
     }
 
-    findBestNode(tree){
+    findBestNodePosition(tree){
         if (tree.length == 0){
             return null;
         }
-        let target_node = null;
-        let minCost = 1e18
+        let pos = -1;
+        let minCost = 1e9
         for (let i = 0; i < tree.length; i++){
             let node = tree[i];
             if (node.cost < minCost){
-                target_node = node;
+                pos = i;
                 minCost = node.cost;
             }
         }
-        return target_node
+        return pos
     }
 
     solve(map) { // return a list of cells
@@ -79,15 +80,16 @@ class highLevelSolver {
         let tree = []
         tree.push(root)
         while (tree.length > 0){
-            let P = this.findBestNode(tree) // get the node with minimum cost;
+            let pos = this.findBestNodePosition(tree) // get the node with minimum cost;
+            let P = tree[pos]
             let normalConflict = this.getNormalConflict(P)
             let edgeConflict = this.getEdgeConflict(P)
+            tree.splice(pos, 1)
             if (normalConflict == null && edgeConflict == null){ // no conflict occur;
                 return P.getSolution()
             }
             if (normalConflict != null){
-                 tree.pop()
-                {
+                 {
                     let A1 = new CTNode(P.getConstraints())
                     let newConstraint = new Constraint(normalConflict.cell1, normalConflict.agent1, normalConflict.time)
                     A1.addConstraint(newConstraint)
