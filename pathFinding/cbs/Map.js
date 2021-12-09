@@ -2,7 +2,7 @@
  * map data structure
  */
 
-
+const Cell = require('./Cell')
 const fs = require('fs')
 
 class Map{
@@ -26,8 +26,8 @@ class Map{
             this.no_agents = parseInt(infos[2 + this.height])
             for (let id = 1; id <= this.no_agents; id++){
                 let [x_start, y_start, x_dest, y_dest] = infos[2 + this.height + id].split(",")
-                this.agents[id] = {"START" : [parseInt(x_start), parseInt(y_start)],
-                                   "DEST" : [parseInt(x_dest), parseInt(y_dest)]}
+                this.agents[id] = {"START" : new Cell(parseInt(x_start), parseInt(y_start)),
+                                   "DEST" : new Cell(parseInt(x_dest), parseInt(y_dest))}
             }
         }catch (err){
             console.log(`Read map err: ${err}`)

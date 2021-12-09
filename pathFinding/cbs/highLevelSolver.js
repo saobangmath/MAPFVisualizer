@@ -62,7 +62,8 @@ class highLevelSolver {
         }
         let target_node = null;
         let minCost = 1e18
-        for (let node in tree){
+        for (let i = 0; i < tree.length; i++){
+            let node = tree[i];
             if (node.cost < minCost){
                 target_node = node;
                 minCost = node.cost;
@@ -75,12 +76,10 @@ class highLevelSolver {
         let root = new CTNode([])
         root.updateSolution(map)
         root.updateCost()
-
         let tree = []
         tree.push(root)
-
         while (tree.length > 0){
-            let P = this.findBestNode(tree)
+            let P = this.findBestNode(tree) // get the node with minimum cost;
             let normalConflict = this.getNormalConflict(P)
             let edgeConflict = this.getEdgeConflict(P)
             if (normalConflict == null && edgeConflict == null){ // no conflict occur;
@@ -94,7 +93,7 @@ class highLevelSolver {
                     A1.addConstraint(newConstraint)
                     A1.updateSolution(map)
                     A1.updateCost()
-                    if (A1.getCost() < 1e18){
+                    if (A1.getSolution().length > 0){ // the solution is not empty;
                         tree.push(A1)
                     }
                 }
@@ -104,7 +103,7 @@ class highLevelSolver {
                     A2.addConstraint(newConstraint)
                     A2.updateSolution(map)
                     A2.updateCost()
-                    if (A2.getCost() < 1e18){
+                    if (A2.getSolution().length > 0){ // the solution is not empty
                         tree.push(A2)
                     }
                 }
@@ -118,7 +117,7 @@ class highLevelSolver {
                     A1.addConstraint(newConstraint2)
                     A1.updateSolution(map)
                     A1.updateCost()
-                    if (A1.getCost() < 1e18){
+                    if (A1.getSolution().length > 0){
                         tree.push(A1)
                     }
                 }
@@ -130,7 +129,7 @@ class highLevelSolver {
                     A2.addConstraint(newConstraint2)
                     A2.updateSolution(map)
                     A2.updateCost()
-                    if (A2.getCost() < 1e18){
+                    if (A2.getSolution().length > 0){
                         tree.push(A2)
                     }
                 }

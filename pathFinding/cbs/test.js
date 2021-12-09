@@ -1,17 +1,21 @@
 const highLevelSolver = require('./highLevelSolver')
+const Map = require('./Map')
 
-try{
-    const Map = require('../cbs/Map')
-    let solver = new highLevelSolver()
-    let map = new Map(1,1)
-    map.readMap('./maps/kiva.map')
-    console.log(map.height)
-    console.log(map.width)
-    console.log(map.grid)
-    console.log(map.agents)
-    console.log(solver.solve(map))
-}
-catch (err){
-    console.log(`Error: ${err}`)
+function test(filename) {
+    try{
+        let solver = new highLevelSolver()
+        let map = new Map(0,0)
+        map.readMap(filename)
+        console.log(map.height)
+        console.log(map.width)
+        console.log(map.grid)
+        console.log(map.agents)
+        console.log(solver.solve(map))
+    } catch (err) {
+        console.log(`Error: ${err}`)
+    }
 }
 
+//test('./maps/hard_kiva.map')
+//test('./maps/easy_kiva.map')
+test('./maps/paper.map')

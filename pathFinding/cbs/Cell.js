@@ -11,8 +11,7 @@ class Cell{
         this.h = 0; // HEURISTIC distance to the destination
         this.g = 0; // the REAL distance from the start
         this.f = 0; // f = g + h
-        this.parent = null;
-        this.isObstacle = false
+        this.time = 0; // time that the cell is visited;
     }
 
     is_equal(other){
