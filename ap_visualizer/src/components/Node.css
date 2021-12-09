@@ -1,0 +1,18 @@
+.node{
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    display: flex;
+}
+
+.node-start{
+    background-color: green;
+}
+
+.node-end{
+    background-color: red;
+}
+
+.node-transtion{
+    background-color: blue;
+}

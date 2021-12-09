@@ -1,17 +1,11 @@
-import logo from "./images/ap_visualizer-logo.png";
-import Landing_page from "./components/layouts/Landing_page";
-import "./App.css";
-
-function App() {
-  return (
-    <div className="App">
-      <img src={logo} className="App-logo" alt="logo" />
-      {/* <Landing_page /> */}
-      {/* <header className="App-header">
-       
-      </header> */}
-    </div>
-  );
-}
+import React from "react";
+import Pathfind from "./components/Pathfind";
+const App = () => {
+    return (
+        <div>
+            <Pathfind />
+        </div>
+    );
+};
 
 export default App;
