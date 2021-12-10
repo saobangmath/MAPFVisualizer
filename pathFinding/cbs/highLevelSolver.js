@@ -1,6 +1,6 @@
 const CTNode = require('./CTNode')
-const Constraint = require('./Constraint')
-const Conflict = require('./Conflict')
+const Constraint = require('../Constraint')
+const Conflict = require('../Conflict')
 
 /**
  Search the constraints tree

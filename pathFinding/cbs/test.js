@@ -1,5 +1,5 @@
 const highLevelSolver = require('./highLevelSolver')
-const Map = require('./Map')
+const Map = require('../Map')
 
 function test(filename) {
     try{
@@ -10,12 +10,17 @@ function test(filename) {
         console.log(map.width)
         console.log(map.grid)
         console.log(map.agents)
-        console.log(solver.solve(map))
+        let solution = solver.solve(map)
+        console.log(solution)
     } catch (err) {
         console.log(`Error: ${err}`)
     }
 }
+console.log("========= Test for easy kiva =========")
+test('../maps/easy_kiva.map')
 
-test('./maps/easy_kiva.map')
-test('./maps/hard_kiva.map')
-test('./maps/paper.map')
+console.log("========= Test for hard kiva =========")
+test('../maps/hard_kiva.map')
+
+console.log("========= Test for paper map =========")
+test('../maps/paper.map')

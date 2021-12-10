@@ -1,5 +1,5 @@
-const Cell = require('./Cell')
-const Utils = require('./utils')
+const Cell = require('../Cell')
+const Utils = require('../utils')
 const assert = require('assert')
 
 /**
