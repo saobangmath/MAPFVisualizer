@@ -66,6 +66,12 @@ body.active_modal {
 .model_desc {
   margin-top: -2rem;
 }
+.modal_title {
+  margin-top: -2rem;
+  font-weight: bold;
+  font-size: 18px;
+}
+
 .btn {
   background-color: #4adede;
   color: black;
@@ -77,6 +83,7 @@ body.active_modal {
   margin: 12px;
   padding: 4px 12px 4px 12px;
 }
+
 /* .modal {
   position: relative;
   width: 100%;

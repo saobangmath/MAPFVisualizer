@@ -1,11 +1,4 @@
 import React from "react";
-import Modal from "react-bootstrap/Modal";
-import ModalDialog from "react-bootstrap/ModalDialog";
-import ModalHeader from "react-bootstrap/ModalHeader";
-import ModalTitle from "react-bootstrap/ModalTitle";
-import ModalFooter from "react-bootstrap/ModalFooter";
-import { Button, ToggleButton } from "react-bootstrap";
-// import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./Landing_Page.module.css";
 import { useState } from "react";
 
@@ -40,7 +33,7 @@ function Landing_page(props) {
         <div className={classes.modal}>
           <div className={classes.overlay} onClick={togglePage}></div>
           <div className={classes.modal_content}>
-            <h2 className={classes.modal_title}> Welcome To </h2>
+            <h2> Welcome To </h2>
             <img
               src={props.image}
               className={classes.landing_image}
@@ -48,7 +41,7 @@ function Landing_page(props) {
             />
             <p className={classes.model_desc}>
               This short tutorial will walk you through all of the features of
-              this application.
+              this application and give you more information about us.
             </p>
             <img src={props.image1} className={classes.image} alt="logo" />
             <button className={classes.btn} onClick={togglePage}>
@@ -66,9 +59,12 @@ function Landing_page(props) {
               className={classes.landing_image}
               alt="logo"
             />
-            <p className={classes.model_desc}>
-              This short tutorial will walk you through all of the features of
-              this application.
+            <p className={classes.modal_title}>Who are we?</p>
+            <p className={classes.modal_desc}>
+              AP Visualizer is a robot fleet management application that
+              simulate robots moving in a grid map. It will use the most
+              optimised algorithm to find the fastest path to the specific
+              destination
             </p>
             <img src={props.image1} className={classes.image} alt="logo" />
             <button className={classes.btn} onClick={backPage}>
@@ -98,28 +94,6 @@ function Landing_page(props) {
           </div>
         </div>
       )}
-
-      {/* <div className={showHideLandingPage}>
-        <div className={classes.modal_main}>
-          <div> */}
-      {/* <p className={classes.number}>1/2</p> */}
-      {/* <img
-              src={props.image}
-              className={classes.landing_image}
-              alt="logo"
-            />
-          </div> */}
-
-      {/* <p className={classes.content_main}>
-            This short tutorial will walk you through all of the features of
-            this application.
-          </p>
-          <img src={props.image1} className={classes.image} alt="logo" />
-          <button className={classes.btn} onClick={nextPageHandler}>
-            Next
-          </button>
-        </div> */}
-      {/* </div> */}
     </>
   );
 }
