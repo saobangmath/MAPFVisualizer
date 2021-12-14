@@ -1,6 +1,6 @@
 import logo from "./images/ap_visualizer-logo.png";
 import PathImage from "./images/path.png";
-import LandingPage from "./components/layouts/Landing_Page";
+import LandingPage from "./components/layouts/Landing_page";
 import "./App.css";
 import { useState } from "react";
 import * as React from "react";
