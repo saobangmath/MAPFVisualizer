@@ -1,9 +1,19 @@
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
-  margin: 20px;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-ol, ul {
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+ol,
+ul {
   padding-left: 30px;
 }
 
@@ -51,8 +61,8 @@ ol, ul {
 
 button.square[data-pro="X"] {
   color: red;
-  }
-  
-  button.square[data-pro="O"] {
-    color: green;
-  }
+}
+
+button.square[data-pro="O"] {
+  color: green;
+}
