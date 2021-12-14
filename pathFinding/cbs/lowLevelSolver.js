@@ -53,19 +53,23 @@ class LowLevelSolver{
     findOptimalPathForIndividualAgent(constraints, map, agentID){
         // console.log("Constraints: " + constraints)
         this.optimalPath = []
-        let parentMaps = {}
+        let parentMaps = {} // {[id,time]: [id,time]}
         let startCell = map.agents[agentID]["START"]
         let destCell = map.agents[agentID]["DEST"]
         this.OPEN.push(startCell)
         /// A* algorithm search use for the low-level search
         let pos = 0
         let current_cell = startCell
+        let cur_x = destCell.x;
+        let cur_y = destCell.y;
+        let cur_time = -1
         // console.log("LowLevelSolver: START")
         while (this.OPEN.length > 0) {
             pos = this.findMinCostCellPosition(this.OPEN)
             current_cell = this.OPEN.splice(pos, 1)[0]
             this.CLOSE.push(current_cell)
             if (current_cell.is_equal(destCell)) { // find solution
+                cur_time = current_cell.time
                 break;
             }
             for (let i = 0; i  < Utils.directions.length; i++) { // expanded to the neighbors;
@@ -79,6 +83,14 @@ class LowLevelSolver{
                     expanded_cell.f = expanded_cell.g + expanded_cell.h;
                     expanded_cell.time = current_cell.time + 1;
                     if (this.isConstraint(expanded_cell.time, agentID, expanded_cell, constraints)) {
+                        // allow the agent to stay back to the current_cell;
+                        expanded_cell.x = current_cell.x
+                        expanded_cell.y = current_cell.y
+                        expanded_cell.g = current_cell.g
+                        expanded_cell.h = current_cell.h
+                        this.OPEN.push(expanded_cell)
+                        parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
+                                        [Utils.coordinatesToId(current_cell.x,current_cell.y,map.width), current_cell.time]
                         continue;
                     }
                     let openIndex = this.findBestIndex(this.OPEN, expanded_cell)
@@ -101,22 +113,22 @@ class LowLevelSolver{
                         this.CLOSE.splice(closeIndex, 1);
                         //console.log(this.CLOSE)
                     }
-                    parentMaps[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width)] =
-                               Utils.coordinatesToId(current_cell.x, current_cell.y, map.width)
+                    parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
+                        [Utils.coordinatesToId(current_cell.x,current_cell.y,map.width), current_cell.time]
                     this.OPEN.push(expanded_cell);
                 }
             };
         }
         // console.log("LowLevelSolver: " + "Done with process OPEN List")
-        let cur_x = destCell.x;
-        let cur_y = destCell.y;
         // console.log("Startcell: " + startCell.x + ", " + startCell.y);
         // console.log("Destcell: " + destCell.x + ", " + destCell.y);
         while (!(cur_x == startCell.x && cur_y == startCell.y)){
             this.optimalPath.push(new Cell(cur_x, cur_y));
-            let XY = Utils.idToCoordinates(parentMaps[Utils.coordinatesToId(cur_x, cur_y, map.width)], map.width);
-            cur_x = XY[0];
-            cur_y = XY[1];
+            let [XY, time] = parentMaps[[Utils.coordinatesToId(cur_x, cur_y, map.width), cur_time]];
+            XY = Utils.idToCoordinates(XY, map.width)
+            cur_x = XY[0]
+            cur_y = XY[1]
+            cur_time = time;
         }
         this.optimalPath.push(startCell)
         this.optimalPath.reverse()
