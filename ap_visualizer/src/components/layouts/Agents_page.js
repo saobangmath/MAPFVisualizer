@@ -4,6 +4,7 @@ import { useState } from "react";
 
 function Agents_page(props) {
   var [addModal, setModalIsOpen] = useState(false);
+  var [value, setValue] = useState("");
   var [startPoint, setStartPoint] = useState(null);
   var [endPoint, setEndPoint] = useState(null);
   const addAgents = () => {
@@ -12,12 +13,11 @@ function Agents_page(props) {
   var agentArray = [];
 
   const handleStartPoint = (point) => {
-    console.log("the point is ", point);
-    setStartPoint(point);
-    console.log("the start point is ", startPoint);
+    // setStartPoint(startPoint);
+    console.log("the start point is ", startPoint.setStartPoint);
   };
-  const handleEndPoint = (point) => {
-    setEndPoint(point);
+  const handleEndPoint = () => {
+    setEndPoint(value);
     console.log("the end point is ", endPoint);
   };
 
@@ -37,28 +37,20 @@ function Agents_page(props) {
             <img src={props.robotImage} alt="logo" />
             <h1>Agent {props.agentNo}</h1>
             <p>Start Point:</p>
-            <Game
+            <Map
               destination="start"
               gridMap=""
               startPoint={() => handleStartPoint}
-            ></Game>
+            ></Map>
             <p>End Point:</p>
 
-            <Game
+            <Map
               destination="end"
               gridMap=""
               endPoint={() => handleEndPoint}
-            ></Game>
+            ></Map>
             <button
-              onClick={
-                (createAgent(
-                  agentArray,
-                  props.agentNo
-                  // startPoint,
-                  // endPoint,
-                ),
-                addAgents)
-              }
+              onClick={(createAgent(agentArray, props.agentNo), addAgents)}
             >
               Assign
             </button>
@@ -95,112 +87,68 @@ function Square(props) {
     </button>
   );
 }
-class Board extends React.Component {
-  renderSquare(i) {
-    return (
-      <Square
-        value={this.props.squares[i]}
-        onClick={() => this.props.onClick(i)}
-      />
-    );
+
+function Board(props) {
+  function renderSquare(i) {
+    return <Square value={props.squares[i]} onClick={() => props.onClick(i)} />;
   }
-  render() {
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(5)}
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-          {this.renderSquare(9)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(10)}
-          {this.renderSquare(11)}
-          {this.renderSquare(12)}
-          {this.renderSquare(13)}
-          {this.renderSquare(14)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(15)}
-          {this.renderSquare(16)}
-          {this.renderSquare(17)}
-          {this.renderSquare(18)}
-          {this.renderSquare(19)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(20)}
-          {this.renderSquare(21)}
-          {this.renderSquare(22)}
-          {this.renderSquare(23)}
-          {this.renderSquare(24)}
-        </div>
+  return (
+    <div>
+      <div className="board-row">
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
+        {renderSquare(3)}
+        {renderSquare(4)}
       </div>
-    );
-  }
+      <div className="board-row">
+        {renderSquare(5)}
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+        {renderSquare(9)}
+      </div>
+      <div className="board-row">
+        {renderSquare(10)}
+        {renderSquare(11)}
+        {renderSquare(12)}
+        {renderSquare(13)}
+        {renderSquare(14)}
+      </div>
+      <div className="board-row">
+        {renderSquare(15)}
+        {renderSquare(16)}
+        {renderSquare(17)}
+        {renderSquare(18)}
+        {renderSquare(19)}
+      </div>
+      <div className="board-row">
+        {renderSquare(20)}
+        {renderSquare(21)}
+        {renderSquare(22)}
+        {renderSquare(23)}
+        {renderSquare(24)}
+      </div>
+    </div>
+  );
 }
-
-class Game extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      history: [
-        {
-          squares: Array(9).fill(null),
-        },
-      ],
-    };
-  }
-  handleClick(i) {
-    const history = this.state.history;
-    const current = history[history.length - 1];
-    const squares = current.squares.slice();
-    for (var j = 0; j < squares.length; j++) {
-      squares[j] = null;
+function Map(props) {
+  var [board, setBoard] = useState(Array(9).fill(null));
+  const handleClick = (i) => {
+    const boardCopy = [...board];
+    for (var j = 0; j < boardCopy.length; j++) {
+      boardCopy[j] = null;
     }
-    squares[i] = i;
-    this.setState({
-      history: history.concat([
-        {
-          squares: squares,
-        },
-      ]),
-    });
-    switch (this.props.destination) {
-      case "start":
-        console.log("the start", this.props.startPoint);
-        // this.props.startPoint.handleStartPoint(i);
-        break;
-      case "end":
-        console.log("the end", i);
-        // this.props.startPoint.handleEndPoint(i);
-
-        break;
-      default:
-        break;
-    }
-  }
-  render() {
-    const history = this.state.history;
-    const current = history[history.length - 1];
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board
-            squares={current.squares}
-            onClick={(i) => this.handleClick(i)}
-          />
-        </div>
+    boardCopy[i] = i;
+    setBoard(boardCopy);
+  };
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board squares={board} onClick={(i) => handleClick(i)} />
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default Agents_page;
