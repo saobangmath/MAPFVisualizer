@@ -1,0 +1,26 @@
+th,
+td {
+  border: 1px solid black;
+}
+.statusBtn {
+  background-color: #0bda51;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 4px;
+  border-color: #0bda51;
+  margin: 12px;
+  padding: 4px 12px 4px 12px;
+}
+.actionBtn {
+  background-color: #4adede;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 4px;
+  border-color: #4adede;
+  margin: 12px;
+  padding: 4px 12px 4px 12px;
+}
