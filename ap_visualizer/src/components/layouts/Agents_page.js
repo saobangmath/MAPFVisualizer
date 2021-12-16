@@ -4,34 +4,47 @@ import { useState } from "react";
 
 function Agents_page(props) {
   var [addModal, setModalIsOpen] = useState(false);
-  var [value, setValue] = useState("");
-  var [startPoint, setStartPoint] = useState(null);
-  var [endPoint, setEndPoint] = useState(null);
-  const addAgents = () => {
+  var [startBoard, setStartBoard] = useState(Array(9).fill(null));
+  var [endBoard, setEndBoard] = useState(Array(9).fill(null));
+  var [start, startPoint] = useState("");
+  var [end, endPoint] = useState("");
+  var [agents, setAgentList] = useState([]);
+
+  // var [agentNo, setAgentNo] = useState("");
+  //Add Agent
+  const AddAgent = () => {
+    var agentNum = props.agentNo;
+
+    var agent = {
+      height: 5,
+      width: 5,
+      agentNo: agentNum,
+      startPoint: start,
+      endPoint: end,
+    };
+    agents.push(agent);
+    showPopup();
+    console.log(agents);
+  };
+  const showPopup = () => {
     setModalIsOpen(!addModal);
   };
-  var agentArray = [];
 
-  const handleStartPoint = (point) => {
-    // setStartPoint(startPoint);
-    console.log("the start point is ", startPoint.setStartPoint);
+  const setStartPoint = (point) => {
+    startPoint(point);
   };
-  const handleEndPoint = () => {
-    setEndPoint(value);
-    console.log("the end point is ", endPoint);
+  const setEndPoint = (point) => {
+    endPoint(point);
   };
 
   return (
     <>
-      <button className={classes.btn} onClick={addAgents}>
+      <button className={classes.btn} onClick={showPopup}>
         Add
-      </button>
-      <button className={classes.btn} onClick={showAgent(agentArray)}>
-        joke
       </button>
       {addModal && (
         <div className={classes.modalAdd}>
-          <div className={classes.overlay} onClick={addAgents}></div>
+          <div className={classes.overlay} onClick={showPopup}></div>
           <div className={classes.spacing}></div>
           <div className={classes.modal_content}>
             <img src={props.robotImage} alt="logo" />
@@ -39,45 +52,23 @@ function Agents_page(props) {
             <p>Start Point:</p>
             <Map
               destination="start"
-              gridMap=""
-              startPoint={() => handleStartPoint}
+              board={startBoard}
+              gridMap={setStartBoard}
+              onStart={setStartPoint}
             ></Map>
             <p>End Point:</p>
-
             <Map
               destination="end"
-              gridMap=""
-              endPoint={() => handleEndPoint}
+              board={endBoard}
+              gridMap={setEndBoard}
+              onEnd={setEndPoint}
             ></Map>
-            <button
-              onClick={(createAgent(agentArray, props.agentNo), addAgents)}
-            >
-              Assign
-            </button>
+            <button onClick={AddAgent}>Assign</button>
           </div>
         </div>
       )}
     </>
   );
-}
-function showAgent(agentArray) {
-  for (var j = 0; j < agentArray.length; j++) {
-    // console.log(agentArray[j]);
-  }
-  // console.log("done");
-}
-function createAgent(agentArray, agentNo, startPoint, endPoint) {
-  // var map = [];
-
-  var agent = {
-    height: 5,
-    width: 5,
-    agentNo: agentNo,
-    startPoint: startPoint,
-    endPoint: endPoint,
-  };
-  agentArray.push(agent);
-  // console.log("push");
 }
 
 function Square(props) {
@@ -132,15 +123,19 @@ function Board(props) {
     </div>
   );
 }
-function Map(props) {
-  var [board, setBoard] = useState(Array(9).fill(null));
+function Map({ destination, board, gridMap, onStart, onEnd }) {
   const handleClick = (i) => {
     const boardCopy = [...board];
     for (var j = 0; j < boardCopy.length; j++) {
       boardCopy[j] = null;
     }
     boardCopy[i] = i;
-    setBoard(boardCopy);
+    gridMap(boardCopy);
+    if (destination === "start") {
+      onStart(i);
+    } else {
+      onEnd(i);
+    }
   };
   return (
     <div className="game">
