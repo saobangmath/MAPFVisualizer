@@ -1,16 +1,14 @@
 import React from "react";
 import classes from "./Agent_Page.module.css";
 import { useState } from "react";
-
+import AgentTable from "./Agent_Table";
 function Agents_Page(props) {
   var [addModal, setModalIsOpen] = useState(false);
-  var [startBoard, setStartBoard] = useState(Array(9).fill(null));
-  var [endBoard, setEndBoard] = useState(Array(9).fill(null));
+  var [startBoard, setStartBoard] = useState(Array(25).fill(null));
+  var [endBoard, setEndBoard] = useState(Array(25).fill(null));
   var [start, startPoint] = useState("");
   var [end, endPoint] = useState("");
-  var [agents, setAgentList] = useState([]);
 
-  // var [agentNo, setAgentNo] = useState("");
   //Add Agent
   const AddAgent = () => {
     var agentNum = props.agentNo;
@@ -26,9 +24,15 @@ function Agents_Page(props) {
       path: null,
       priority: null,
     };
-    agents.push(agent);
+    props.agents.push(agent);
+
+    const boardCopy = [...props.gridMap];
+    for (var index = 0; index < props.agents.length; index++) {
+      boardCopy[props.agents[index].startPoint] = "S";
+      boardCopy[props.agents[index].endPoint] = "E";
+    }
+    props.mapping(boardCopy);
     showPopup();
-    console.log(agents);
   };
   const showPopup = () => {
     setModalIsOpen(!addModal);
@@ -43,8 +47,12 @@ function Agents_Page(props) {
 
   return (
     <>
+      <AgentTable agents={props.agents}></AgentTable>
       <button className={classes.btn} onClick={showPopup}>
         Add
+      </button>
+      <button className={classes.btn} onClick={showPopup}>
+        Start
       </button>
       {addModal && (
         <div className={classes.modalAdd}>
@@ -127,7 +135,7 @@ function Board(props) {
     </div>
   );
 }
-function Map({ destination, board, gridMap, onStart, onEnd }) {
+function Map({ destination, board, gridMap, onStart, onEnd, mainMap }) {
   const handleClick = (i) => {
     const boardCopy = [...board];
     for (var j = 0; j < boardCopy.length; j++) {
