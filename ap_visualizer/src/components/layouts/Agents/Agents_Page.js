@@ -1,8 +1,8 @@
 import React from "react";
-import classes from "./Landing_Page.module.css";
+import classes from "./Agent_Page.module.css";
 import { useState } from "react";
 
-function Agents_page(props) {
+function Agents_Page(props) {
   var [addModal, setModalIsOpen] = useState(false);
   var [startBoard, setStartBoard] = useState(Array(9).fill(null));
   var [endBoard, setEndBoard] = useState(Array(9).fill(null));
@@ -21,6 +21,10 @@ function Agents_page(props) {
       agentNo: agentNum,
       startPoint: start,
       endPoint: end,
+      gridMap: null,
+      status: null,
+      path: null,
+      priority: null,
     };
     agents.push(agent);
     showPopup();
@@ -146,4 +150,4 @@ function Map({ destination, board, gridMap, onStart, onEnd }) {
   );
 }
 
-export default Agents_page;
+export default Agents_Page;

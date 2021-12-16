@@ -1,12 +1,12 @@
 import logo from "./images/ap_visualizer-logo.png";
 import PathImage from "./images/path.png";
-import LandingPage from "./components/layouts/Landing_page";
+import LandingPage from "./components/layouts/Landing_Page/Landing_page";
 import "./App.css";
 import * as React from "react";
 import CelebrateLogo from "./images/celebration.png";
-import Game from "./components/layouts/gridmap";
+import Game from "./components/layouts/Boards/gridmap";
 import robots from "./images/robot.png";
-import AgentsPage from "./components/layouts/Agents_page";
+import AgentsPage from "./components/layouts/Agents/Agents_Page";
 
 function App() {
   return (
