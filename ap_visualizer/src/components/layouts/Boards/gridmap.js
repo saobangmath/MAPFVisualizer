@@ -1,4 +1,5 @@
 import React from "react";
+var assert = require('assert')
 
 function Square(props) {
   return (
@@ -9,48 +10,29 @@ function Square(props) {
 }
 
 function Board(props) {
-  function renderSquare(i) {
-    return <Square value={props.squares[i]} onClick={() => props.onClick(i)} />;
-  }
-  return (
-    <div>
-      <div className="board-row">
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
-        {renderSquare(3)}
-        {renderSquare(4)}
-      </div>
-      <div className="board-row">
-        {renderSquare(5)}
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-        {renderSquare(9)}
-      </div>
-      <div className="board-row">
-        {renderSquare(10)}
-        {renderSquare(11)}
-        {renderSquare(12)}
-        {renderSquare(13)}
-        {renderSquare(14)}
-      </div>
-      <div className="board-row">
-        {renderSquare(15)}
-        {renderSquare(16)}
-        {renderSquare(17)}
-        {renderSquare(18)}
-        {renderSquare(19)}
-      </div>
-      <div className="board-row">
-        {renderSquare(20)}
-        {renderSquare(21)}
-        {renderSquare(22)}
-        {renderSquare(23)}
-        {renderSquare(24)}
-      </div>
-    </div>
-  );
+    console.log(props)
+    let boards = []
+    let rows = props.squares.length;
+    let cols = props.squares[0].length;
+
+    function renderSquare(id) {
+        let x = Math.floor(id/cols)
+        let y = id % cols
+        assert(x < rows && y < cols);
+        return <Square value={props.squares[x][y]} onClick={() => props.onClick(id)} />;
+    }
+    for (let row = 0; row < rows; row++){
+      boards.push(<div className="board-row"/>)
+      for (let col = 0; col < cols; col++){
+          boards.push(renderSquare(row * cols + col))
+      }
+      boards.push(<div/>)
+    }
+    return (
+     <div>
+        {boards}
+     </div>
+   );
 }
 
 function Map({ gridMap, agents, mapping }) {

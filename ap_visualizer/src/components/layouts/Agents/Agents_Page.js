@@ -4,8 +4,8 @@ import { useState } from "react";
 import AgentTable from "./Agent_Table";
 function Agents_Page(props) {
   var [addModal, setModalIsOpen] = useState(false);
-  var [startBoard, setStartBoard] = useState(Array(25).fill(null));
-  var [endBoard, setEndBoard] = useState(Array(25).fill(null));
+  var [startBoard, setStartBoard] = useState(props.gridMap);
+  var [endBoard, setEndBoard] = useState(props.gridMap);
   var [start, startPoint] = useState("");
   var [end, endPoint] = useState("");
 
@@ -14,8 +14,8 @@ function Agents_Page(props) {
     var agentNum = props.agentNo;
 
     var agent = {
-      height: 5,
-      width: 5,
+      height: props.gridMap.length,
+      width: props.gridMap[0].length,
       agentNo: agentNum,
       startPoint: start,
       endPoint: end,
@@ -28,8 +28,8 @@ function Agents_Page(props) {
 
     const boardCopy = [...props.gridMap];
     for (var index = 0; index < props.agents.length; index++) {
-      boardCopy[props.agents[index].startPoint] = "S";
-      boardCopy[props.agents[index].endPoint] = "E";
+      boardCopy[Math.floor(props.agents[index].startPoint / boardCopy[0].length)][props.agents[index].startPoint % boardCopy[0].length] = "S" + (index + 1);
+      boardCopy[Math.floor(props.agents[index].endPoint / boardCopy[0].length)][props.agents[index].endPoint % boardCopy[0].length] = "E" + (index + 1);
     }
     props.mapping(boardCopy);
     showPopup();
@@ -45,13 +45,23 @@ function Agents_Page(props) {
     endPoint(point);
   };
 
+  const runCBSAlgo = () => {
+    console.log(props.agents)
+    console.log(props.gridMap)
+    for (let row = 0; row < props.gridMap.length; row++){
+        for (let col = 0; col < props.gridMap[0].length; col++){
+            props.gridMap[row][col] = '.'
+        }
+    }
+    props.mapping(props.gridMap)
+  };
   return (
     <>
       <AgentTable agents={props.agents}></AgentTable>
       <button className={classes.btn} onClick={showPopup}>
         Add
       </button>
-      <button className={classes.btn} onClick={showPopup}>
+      <button className={classes.btn} onClick={runCBSAlgo}>
         Start
       </button>
       {addModal && (
@@ -92,56 +102,46 @@ function Square(props) {
 }
 
 function Board(props) {
-  function renderSquare(i) {
-    return <Square value={props.squares[i]} onClick={() => props.onClick(i)} />;
-  }
-  return (
-    <div>
-      <div className="board-row">
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
-        {renderSquare(3)}
-        {renderSquare(4)}
-      </div>
-      <div className="board-row">
-        {renderSquare(5)}
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-        {renderSquare(9)}
-      </div>
-      <div className="board-row">
-        {renderSquare(10)}
-        {renderSquare(11)}
-        {renderSquare(12)}
-        {renderSquare(13)}
-        {renderSquare(14)}
-      </div>
-      <div className="board-row">
-        {renderSquare(15)}
-        {renderSquare(16)}
-        {renderSquare(17)}
-        {renderSquare(18)}
-        {renderSquare(19)}
-      </div>
-      <div className="board-row">
-        {renderSquare(20)}
-        {renderSquare(21)}
-        {renderSquare(22)}
-        {renderSquare(23)}
-        {renderSquare(24)}
-      </div>
-    </div>
-  );
-}
-function Map({ destination, board, gridMap, onStart, onEnd, mainMap }) {
-  const handleClick = (i) => {
-    const boardCopy = [...board];
-    for (var j = 0; j < boardCopy.length; j++) {
-      boardCopy[j] = null;
+    let boards = []
+    let rows = props.squares.length;
+    let cols = props.squares[0].length;
+
+    function renderSquare(id) {
+        let x = Math.floor(id/cols)
+        let y = id % cols
+        return <Square value={props.squares[x][y]} onClick={() => props.onClick(id)} />;
     }
-    boardCopy[i] = i;
+    for (let row = 0; row < rows; row++){
+        boards.push(<div className="board-row"/>)
+        for (let col = 0; col < cols; col++){
+            boards.push(renderSquare(row * cols + col))
+        }
+        boards.push(<div/>)
+    }
+    return (
+        <div>
+            {boards}
+        </div>
+    );
+}
+function Map({ destination, board, gridMap, onStart, onEnd, mainMap}) {
+  const handleClick = (i) => {
+    const boardCopy = [];
+    for (let row = 0; row < board.length; row++){
+        boardCopy.push([])
+        for (let col = 0; col < board[0].length; col++){
+            boardCopy[row].push(board[row][col])
+        }
+    }
+    let x = Math.floor(i / board[0].length);
+    let y = i % board[0].length
+    console.log(x, y)
+    if (destination == "start") {
+        boardCopy[x][y] = "S";
+    }
+    else {
+        boardCopy[x][y] = "E"
+    }
     gridMap(boardCopy);
     if (destination === "start") {
       onStart(i);

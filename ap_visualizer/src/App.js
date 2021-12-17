@@ -9,9 +9,15 @@ import robots from "./images/robot.png";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
 
+// hard coded map for now;
+let grid = [['@', '.' , '.', '@'],
+            ['.', '.', '.', '.'],
+            ['.', '.', '.', '.'],
+            ['@', '.', '.', '@']]
+
 function App() {
   var [agents, setAgentList] = useState([]);
-  var [gridMap, setGridMap] = useState(Array(25).fill(null));
+  var [gridMap, setGridMap] = useState(grid);
 
   const getAgentList = (agent) => {
     setAgentList(agent);
