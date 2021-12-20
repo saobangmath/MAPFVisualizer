@@ -24,3 +24,6 @@ test('../maps/hard_kiva.map')
 
 console.log("========= Test for paper map =========")
 test('../maps/paper.map')
+
+//console.log("========= Test for paper1 map =========")
+//test('../maps/paper1.map')

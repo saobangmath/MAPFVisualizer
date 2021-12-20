@@ -17,8 +17,8 @@ class LowLevelSolver{
     findMinCostCellPosition(paths){
         let pos = -1;
         let curCost = 1e9
-        for (let i = 0; i < paths.length; paths++){
-            if (paths[i].f < curCost){
+        for (let i = 0; i < paths.length; i++) {
+            if (paths[i].f < curCost) {
                 pos = i
                 curCost = paths[i].f
             }
@@ -95,13 +95,16 @@ class LowLevelSolver{
                     }
                     let openIndex = this.findBestIndex(this.OPEN, expanded_cell)
                     let closeIndex = this.findBestIndex(this.CLOSE, expanded_cell)
+                    let ok = true;
                     if (openIndex != -1 && expanded_cell.f > this.OPEN[openIndex].f){ // same cell in open list with better f value;
                         //console.log("Continue as open has better node!")
-                        continue;
+                        ok = false;
+                        //continue;
                     }
                     if (closeIndex != -1 && expanded_cell.f > this.CLOSE[closeIndex].f){ // same cell in close list with better f value;
                         //console.log("Continue as close has better node!")
-                        continue;
+                        ok = false;
+                        //continue;
                     }
                     if (openIndex != -1){ // remove the worst state in OPEN list;
                         // console.log(this.OPEN)
@@ -113,9 +116,11 @@ class LowLevelSolver{
                         this.CLOSE.splice(closeIndex, 1);
                         //console.log(this.CLOSE)
                     }
-                    parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
-                        [Utils.coordinatesToId(current_cell.x,current_cell.y,map.width), current_cell.time]
-                    this.OPEN.push(expanded_cell);
+                    if (ok) {
+                        parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
+                            [Utils.coordinatesToId(current_cell.x, current_cell.y, map.width), current_cell.time]
+                        this.OPEN.push(expanded_cell);
+                    }
                 }
             };
         }
