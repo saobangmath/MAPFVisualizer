@@ -1,9 +1,28 @@
 import React from "react";
+import agent1 from "C:/Users/User/Documents/NTU  Year 4 sem1/NTU FYP/MAPFVisualizer/ap_visualizer/src/images/agent1.png";
+import agent2 from "C:/Users/User/Documents/NTU  Year 4 sem1/NTU FYP/MAPFVisualizer/ap_visualizer/src/images/agent2.png";
+import agent3 from "C:/Users/User/Documents/NTU  Year 4 sem1/NTU FYP/MAPFVisualizer/ap_visualizer/src/images/agent3.png";
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
-      {props.value}
+    <button
+      className="square"
+      onClick={props.onClick}
+      background-color="#ff5c5c"
+    >
+      {props.value != null ? (
+        <img
+          src={agent1}
+          style={{
+            paddingTop: "15%",
+            height: "80%",
+            width: "60%",
+          }}
+          alt="logo"
+        />
+      ) : (
+        props.value
+      )}
     </button>
   );
 }
