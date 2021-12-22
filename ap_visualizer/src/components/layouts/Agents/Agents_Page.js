@@ -2,12 +2,20 @@ import React from "react";
 import classes from "./Agent_Page.module.css";
 import { useState } from "react";
 import AgentTable from "./Agent_Table";
+
+const map = require('../../../pathFinding/Map');
+const Cell = require('../../../pathFinding/Cell');
+const HighLevelSolver = require('../../../pathFinding/cbs/highLevelSolver');
+
 function Agents_Page(props) {
   var [addModal, setModalIsOpen] = useState(false);
   var [startBoard, setStartBoard] = useState(props.gridMap);
   var [endBoard, setEndBoard] = useState(props.gridMap);
   var [start, startPoint] = useState("");
   var [end, endPoint] = useState("");
+  var [agentPaths, setAgentPaths]  = useState([]); // storing step-by-step plan of the agents;
+  var [step, setStep] = useState(0); // the state use to display the step of the agent movement;
+
 
   //Add Agent
   const AddAgent = () => {
@@ -25,7 +33,7 @@ function Agents_Page(props) {
       priority: null,
     };
     props.agents.push(agent);
-
+    props.setAgentPaths()
     const boardCopy = [...props.gridMap];
     for (var index = 0; index < props.agents.length; index++) {
       boardCopy[Math.floor(props.agents[index].startPoint / boardCopy[0].length)][props.agents[index].startPoint % boardCopy[0].length] = "S" + (index + 1);
@@ -46,14 +54,23 @@ function Agents_Page(props) {
   };
 
   const runCBSAlgo = () => {
-    console.log(props.agents)
-    console.log(props.gridMap)
-    for (let row = 0; row < props.gridMap.length; row++){
-        for (let col = 0; col < props.gridMap[0].length; col++){
-            props.gridMap[row][col] = '.'
-        }
-    }
-    props.mapping(props.gridMap)
+      let mp = new map();
+      mp.height = props.gridMap.length;
+      mp.width = props.gridMap[0].length;
+      mp.grid = [...props.gridMap];
+      mp.no_agents = props.agents.length;
+      if (mp.no_agents == 0) {
+          alert("There is no agents to run the CBS!");
+          return;
+      }
+      // add agents in props to map agents;
+      for (let i = 0; i < props.agents.length; i++){
+          let agent = {"START" : new Cell(Math.floor(props.agents[i].startPoint / mp.width), props.agents[i].startPoint % mp.width),
+                       "DEST" : new Cell(Math.floor(props.agents[i].endPoint / mp.width), props.agents[i].endPoint % mp.width)};
+          mp.agents[i + 1] = agent;
+      }
+      let paths = new HighLevelSolver().solve(mp);
+      props.setAgentPaths(paths);
   };
   return (
     <>
@@ -124,7 +141,7 @@ function Board(props) {
         </div>
     );
 }
-function Map({ destination, board, gridMap, onStart, onEnd, mainMap}) {
+function Map({ destination, board, gridMap, onStart, onEnd, mainMap}) { // TODO
   const handleClick = (i) => {
     const boardCopy = [];
     for (let row = 0; row < board.length; row++){

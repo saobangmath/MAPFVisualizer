@@ -10,14 +10,17 @@ import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
 
 // hard coded map for now;
-let grid = [['@', '.' , '.', '@'],
-            ['.', '.', '.', '.'],
-            ['.', '.', '.', '.'],
-            ['@', '.', '.', '@']]
+let grid =  [['@', '.', '.', '.', '.', '@'],
+             ['.', '.', '.', '.', '.', '.'],
+             ['.', '.', '.', '.', '.', '.'],
+             ['.', '.', '.', '.', '.', '.'],
+             ['@', '.', '.', '.', '.', '@']]
 
 function App() {
   var [agents, setAgentList] = useState([]);
   var [gridMap, setGridMap] = useState(grid);
+  var [agentPaths, setAgentPaths] = useState([]);
+  var [step, setStep] = useState(0); // display the step that the current gridmap is visualized;
 
   const getAgentList = (agent) => {
     setAgentList(agent);
@@ -32,7 +35,12 @@ function App() {
       <LandingPage image={logo} image1={PathImage} image2={CelebrateLogo} />
       <div>
         <div className="Container">
-          <Game gridMap={gridMap} agents={agents} mapping={setMap}></Game>
+          <Game gridMap={gridMap}
+                agents={agents}
+                mapping={setMap}
+                step = {step}
+                agentPaths = {agentPaths}>
+          </Game>
         </div>
         <div className="Container">
           <AgentsPage
@@ -41,8 +49,11 @@ function App() {
             agents={agents}
             gridMap={gridMap}
             mapping={setMap}
+            setAgentPaths={setAgentPaths}
           ></AgentsPage>
         </div>
+          <button onClick={() => {setStep(step + 1)}}>NEXT</button>
+          <button onClick={() => {setStep(Math.max(step-1, 0))}}>PREV</button>
       </div>
     </div>
   );
