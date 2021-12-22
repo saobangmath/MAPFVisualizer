@@ -1,4 +1,5 @@
 const LowLevelSolver = require('./lowLevelSolver')
+const assert = require('assert')
 // represent a node in the Constraint Tree
 
 class CTNode{
@@ -21,6 +22,11 @@ class CTNode{
     }
 
     addConstraint(constraint){
+        for (let i=0;i<this.constraints.length;i++){
+           if (constraint.is_equal(this.constraints[i])) { // make sure no new added constraint has been added before;
+                return;
+           }
+        }
         this.constraints.push(constraint)
     }
 

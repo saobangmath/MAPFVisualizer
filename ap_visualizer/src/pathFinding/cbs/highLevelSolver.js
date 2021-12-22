@@ -16,7 +16,7 @@ class highLevelSolver {
         for (let time = 0; time < Math.min(route1.length, route2.length)-1; time++) {
             if (route1[time].is_equal(route2[time+1]) &&
                 route1[time+1].is_equal(route2[time]))
-                return new Conflict(agent1, agent2, route1[time], route1[time+1], time);
+                return new Conflict(agent1, agent2, route1[time], route1[time+1], time, time);
         }
         return null;
     }
@@ -35,9 +35,11 @@ class highLevelSolver {
     }
 
     _getNormalConflict(agent1, agent2, route1, route2) { // return any conflicts between 2 given routes
-        for (let time = 0; time < Math.min(route1.length, route2.length); time++) {
-            if (route1[time].is_equal(route2[time])){
-                let conflict = new Conflict(agent1, agent2, route1[time], route2[time], time);
+        for (let time = 0; time < Math.max(route1.length, route2.length); time++) {
+            let t1 = Math.min(time, route1.length - 1);
+            let t2 = Math.min(time, route2.length - 1);
+            if (route1[t1].is_equal(route2[t2])){
+                let conflict = new Conflict(agent1, agent2, route1[t1], route2[t2], t1, t2);
                 return conflict
             }
         }
@@ -89,9 +91,9 @@ class highLevelSolver {
                 return P.getSolution()
             }
             if (normalConflict != null){
-                 {
+                {
                     let A1 = new CTNode(P.getConstraints())
-                    let newConstraint = new Constraint(normalConflict.cell1, normalConflict.agent1, normalConflict.time)
+                    let newConstraint = new Constraint(normalConflict.cell1, normalConflict.agent1, normalConflict.t1)
                     A1.addConstraint(newConstraint)
                     A1.updateSolution(map)
                     A1.updateCost()
@@ -101,7 +103,7 @@ class highLevelSolver {
                 }
                 {
                     let A2 = new CTNode(P.getConstraints())
-                    let newConstraint = new Constraint(normalConflict.cell2, normalConflict.agent2, normalConflict.time)
+                    let newConstraint = new Constraint(normalConflict.cell2, normalConflict.agent2, normalConflict.t2)
                     A2.addConstraint(newConstraint)
                     A2.updateSolution(map)
                     A2.updateCost()
@@ -113,8 +115,8 @@ class highLevelSolver {
             if (edgeConflict != null){
                 {
                     let A1 = new CTNode(P.getConstraints())
-                    let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.time - 1)
-                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.time)
+                    let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1 - 1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1)
                     A1.addConstraint(newConstraint1)
                     A1.addConstraint(newConstraint2)
                     A1.updateSolution(map)
@@ -125,8 +127,8 @@ class highLevelSolver {
                 }
                 {
                     let A2 = new CTNode(P.getConstraints())
-                    let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.time - 1)
-                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.time)
+                    let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2 - 1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2)
                     A2.addConstraint(newConstraint1)
                     A2.addConstraint(newConstraint2)
                     A2.updateSolution(map)

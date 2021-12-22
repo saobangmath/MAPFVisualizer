@@ -7,6 +7,9 @@ class Constraint{
         this.agentID = agentID
         this.time = time // the time that the agent should not be at that cell
     }
+    is_equal(constraint){
+        return this.cell.is_equal(constraint.cell) && this.agentID == constraint.agentID && this.time == constraint.time;
+    }
 }
 
 module.exports = Constraint

@@ -1,5 +1,3 @@
-const Cell = require('./Cell')
-
 let directions = [[0, 1], [0, -1], [1, 0], [-1, 0]]
 
 

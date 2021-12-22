@@ -51,7 +51,6 @@ class LowLevelSolver{
     }
 
     findOptimalPathForIndividualAgent(constraints, map, agentID){
-        // console.log("Constraints: " + constraints)
         this.optimalPath = []
         let parentMaps = {} // {[id,time]: [id,time]}
         let startCell = map.agents[agentID]["START"]
@@ -63,13 +62,14 @@ class LowLevelSolver{
         let cur_x = destCell.x;
         let cur_y = destCell.y;
         let cur_time = -1
-        // console.log("LowLevelSolver: START")
+        let found = false;
         while (this.OPEN.length > 0) {
             pos = this.findMinCostCellPosition(this.OPEN)
             current_cell = this.OPEN.splice(pos, 1)[0]
             this.CLOSE.push(current_cell)
             if (current_cell.is_equal(destCell)) { // find solution
                 cur_time = current_cell.time
+                found = true;
                 break;
             }
             for (let i = 0; i  < Utils.directions.length; i++) { // expanded to the neighbors;
@@ -86,8 +86,8 @@ class LowLevelSolver{
                         // allow the agent to stay back to the current_cell;
                         expanded_cell.x = current_cell.x
                         expanded_cell.y = current_cell.y
-                        expanded_cell.g = current_cell.g
                         expanded_cell.h = current_cell.h
+                        expanded_cell.f = expanded_cell.g + expanded_cell.h
                         this.OPEN.push(expanded_cell)
                         parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
                                         [Utils.coordinatesToId(current_cell.x,current_cell.y,map.width), current_cell.time]
@@ -95,38 +95,27 @@ class LowLevelSolver{
                     }
                     let openIndex = this.findBestIndex(this.OPEN, expanded_cell)
                     let closeIndex = this.findBestIndex(this.CLOSE, expanded_cell)
-                    let ok = true;
                     if (openIndex != -1 && expanded_cell.f > this.OPEN[openIndex].f){ // same cell in open list with better f value;
-                        //console.log("Continue as open has better node!")
-                        ok = false;
-                        //continue;
+                        continue;
                     }
                     if (closeIndex != -1 && expanded_cell.f > this.CLOSE[closeIndex].f){ // same cell in close list with better f value;
-                        //console.log("Continue as close has better node!")
-                        ok = false;
-                        //continue;
+                        continue;
                     }
                     if (openIndex != -1){ // remove the worst state in OPEN list;
-                        // console.log(this.OPEN)
                         this.OPEN.splice(openIndex, 1)
-                        //console.log(this.OPEN)
                     }
                     if (closeIndex != -1){ // remove the worst state in CLOSE list;
-                        //console.log(this.CLOSE)
                         this.CLOSE.splice(closeIndex, 1);
-                        //console.log(this.CLOSE)
                     }
-                    if (ok) {
-                        parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
-                            [Utils.coordinatesToId(current_cell.x, current_cell.y, map.width), current_cell.time]
-                        this.OPEN.push(expanded_cell);
-                    }
+                    parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
+                        [Utils.coordinatesToId(current_cell.x, current_cell.y, map.width), current_cell.time]
+                    this.OPEN.push(expanded_cell);
                 }
             };
         }
-        // console.log("LowLevelSolver: " + "Done with process OPEN List")
-        // console.log("Startcell: " + startCell.x + ", " + startCell.y);
-        // console.log("Destcell: " + destCell.x + ", " + destCell.y);
+        if (!found){
+            return [];
+        }
         while (!(cur_x == startCell.x && cur_y == startCell.y)){
             this.optimalPath.push(new Cell(cur_x, cur_y));
             let [XY, time] = parentMaps[[Utils.coordinatesToId(cur_x, cur_y, map.width), cur_time]];
@@ -139,7 +128,6 @@ class LowLevelSolver{
         this.optimalPath.reverse()
         this.OPEN = []
         this.CLOSE = []
-        // console.log("Done!")
         return this.optimalPath
     }
 
@@ -147,7 +135,13 @@ class LowLevelSolver{
         let optimalPaths = []
         // solve for each agent individually;
         for (let id = 1; id <= map.no_agents; id++){
-            optimalPaths.push(this.findOptimalPathForIndividualAgent(constraints, map, id))
+            let individualPath = this.findOptimalPathForIndividualAgent(constraints, map, id);
+            if (individualPath.length > 0) {
+                optimalPaths.push(individualPath)
+            }
+            else{
+                return []
+            }
         }
         return optimalPaths
     }
