@@ -4,45 +4,89 @@ import { useState } from "react";
 import AgentTable from "./Agent_Table";
 function Agents_Page(props) {
   var [addModal, setModalIsOpen] = useState(false);
-  var [startBoard, setStartBoard] = useState(Array(25).fill(null));
-  var [endBoard, setEndBoard] = useState(Array(25).fill(null));
-  var [start, startPoint] = useState("");
-  var [end, endPoint] = useState("");
+  var [startBoard, setStartBoard] = useState(
+    Array(5)
+      .fill("")
+      .map((row) => new Array(5).fill(""))
+  );
+  var [endBoard, setEndBoard] = useState(
+    Array(5)
+      .fill("")
+      .map((row) => new Array(5).fill(""))
+  );
+  var [start, startPoint] = useState([]);
+  var [end, endPoint] = useState([]);
 
   //Add Agent
   const AddAgent = () => {
     var agentNum = props.agentNo;
-
-    var agent = {
+    var endColor = props.endColor;
+    var robot = props.robotImage;
+    var tempAgent = {
       height: 5,
       width: 5,
+      img: robot,
+      endColor: endColor,
       agentNo: agentNum,
       startPoint: start,
       endPoint: end,
       gridMap: null,
-      status: null,
+      status: "Assigned",
       path: null,
       priority: null,
     };
-    props.agents.push(agent);
+
+    props.agents.push(tempAgent);
+    var lastAgent = props.agents.slice(-1);
 
     const boardCopy = [...props.gridMap];
-    for (var index = 0; index < props.agents.length; index++) {
-      boardCopy[props.agents[index].startPoint] = "S";
-      boardCopy[props.agents[index].endPoint] = "E";
+    if (
+      boardCopy[lastAgent[0].startPoint[0].row[0]][
+        lastAgent[0].startPoint[0].col[0]
+      ] != null
+    ) {
+      boardCopy[lastAgent[0].startPoint[0].row[0]][
+        lastAgent[0].startPoint[0].col[0]
+      ].push(lastAgent);
+    } else {
+      boardCopy[lastAgent[0].startPoint[0].row[0]][
+        lastAgent[0].startPoint[0].col[0]
+      ] = lastAgent;
     }
+    if (
+      boardCopy[lastAgent[0].endPoint[0].row[0]][
+        lastAgent[0].endPoint[0].col[0]
+      ] != null
+    ) {
+      boardCopy[lastAgent[0].endPoint[0].row[0]][
+        lastAgent[0].endPoint[0].col[0]
+      ].push(lastAgent);
+    } else {
+      boardCopy[lastAgent[0].endPoint[0].row[0]][
+        lastAgent[0].endPoint[0].col[0]
+      ] = lastAgent;
+    }
+    console.log(
+      "the end is",
+      boardCopy[lastAgent[0].endPoint[0].row[0]][
+        lastAgent[0].endPoint[0].col[0]
+      ]
+    );
     props.mapping(boardCopy);
+
     showPopup();
   };
   const showPopup = () => {
     setModalIsOpen(!addModal);
   };
 
-  const setStartPoint = (point) => {
-    startPoint(point);
+  const setStartPoint = (row, col) => {
+    var sPosition = { row: row, col: col };
+    start.push(sPosition);
   };
-  const setEndPoint = (point) => {
-    endPoint(point);
+  const setEndPoint = (row, col) => {
+    var ePosition = { row: row, col: col };
+    end.push(ePosition);
   };
 
   return (
@@ -91,68 +135,40 @@ function Square(props) {
   );
 }
 
-function Board(props) {
-  function renderSquare(i) {
-    return <Square value={props.squares[i]} onClick={() => props.onClick(i)} />;
+function Board({ board, onClick }) {
+  function renderSquare(item, rowIndex, colIndex) {
+    return <Square onClick={() => onClick(rowIndex, colIndex)} value={item} />;
   }
   return (
     <div>
-      <div className="board-row">
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
-        {renderSquare(3)}
-        {renderSquare(4)}
-      </div>
-      <div className="board-row">
-        {renderSquare(5)}
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-        {renderSquare(9)}
-      </div>
-      <div className="board-row">
-        {renderSquare(10)}
-        {renderSquare(11)}
-        {renderSquare(12)}
-        {renderSquare(13)}
-        {renderSquare(14)}
-      </div>
-      <div className="board-row">
-        {renderSquare(15)}
-        {renderSquare(16)}
-        {renderSquare(17)}
-        {renderSquare(18)}
-        {renderSquare(19)}
-      </div>
-      <div className="board-row">
-        {renderSquare(20)}
-        {renderSquare(21)}
-        {renderSquare(22)}
-        {renderSquare(23)}
-        {renderSquare(24)}
-      </div>
+      {board.map((row, rowIndex) => {
+        return (
+          <div>
+            {row.map((col, colIndex) => renderSquare(col, rowIndex, colIndex))}
+          </div>
+        );
+      })}
     </div>
   );
 }
 function Map({ destination, board, gridMap, onStart, onEnd, mainMap }) {
-  const handleClick = (i) => {
+  const handleClick = (rowIndex, colIndex) => {
     const boardCopy = [...board];
-    for (var j = 0; j < boardCopy.length; j++) {
-      boardCopy[j] = null;
-    }
-    boardCopy[i] = i;
+    boardCopy[rowIndex][colIndex] = "X";
     gridMap(boardCopy);
     if (destination === "start") {
-      onStart(i);
+      onStart([rowIndex], [colIndex]);
     } else {
-      onEnd(i);
+      onEnd([rowIndex], [colIndex]);
     }
   };
   return (
     <div className="game">
       <div className="game-board">
-        <Board squares={board} onClick={(i) => handleClick(i)} />
+        <Board
+          board={board}
+          onClick={(rowIndex, colIndex) => handleClick(rowIndex, colIndex)}
+        />
       </div>
     </div>
   );

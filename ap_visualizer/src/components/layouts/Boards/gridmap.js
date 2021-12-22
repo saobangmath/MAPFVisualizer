@@ -1,83 +1,84 @@
 import React from "react";
-import agent1 from "C:/Users/User/Documents/NTU  Year 4 sem1/NTU FYP/MAPFVisualizer/ap_visualizer/src/images/agent1.png";
-import agent2 from "C:/Users/User/Documents/NTU  Year 4 sem1/NTU FYP/MAPFVisualizer/ap_visualizer/src/images/agent2.png";
-import agent3 from "C:/Users/User/Documents/NTU  Year 4 sem1/NTU FYP/MAPFVisualizer/ap_visualizer/src/images/agent3.png";
 
 function Square(props) {
+  // if (props.value != null) {
+  //   console.log(props.value);
+  // }
   return (
     <button
       className="square"
       onClick={props.onClick}
-      background-color="#ff5c5c"
+      style={{
+        backgroundColor:
+          props.value != null
+            ? props.value[props.value.length - 1].endPoint[
+                props.value[props.value.length - 1].endPoint.length - 1
+              ].col[0] === props.col &&
+              props.value[props.value.length - 1].endPoint[
+                props.value[props.value.length - 1].endPoint.length - 1
+              ].row[0] === props.row
+              ? props.value[props.value.length - 1].endColor
+              : null
+            : null,
+      }}
     >
       {props.value != null ? (
-        <img
-          src={agent1}
-          style={{
-            paddingTop: "15%",
-            height: "80%",
-            width: "60%",
-          }}
-          alt="logo"
-        />
-      ) : (
-        props.value
-      )}
+        props.value[props.value.length - 1].startPoint[
+          props.value[props.value.length - 1].startPoint.length - 1
+        ].col[0] === props.col &&
+        props.value[props.value.length - 1].startPoint[
+          props.value[props.value.length - 1].startPoint.length - 1
+        ].row[0] === props.row ? (
+          <img
+            src={props.robotImage}
+            style={{
+              paddingTop: "15%",
+              height: "80%",
+              width: "60%",
+            }}
+            alt="logo"
+          />
+        ) : null
+      ) : null}
     </button>
   );
 }
 
-function Board(props) {
-  function renderSquare(i) {
-    return <Square value={props.squares[i]} onClick={() => props.onClick(i)} />;
+function Board({ board, onClick, robotImage }) {
+  function renderSquare(item, rowIndex, colIndex) {
+    return (
+      <Square
+        robotImage={robotImage}
+        onClick={() => onClick(rowIndex, colIndex)}
+        row={rowIndex}
+        col={colIndex}
+        value={item}
+      />
+    );
   }
   return (
     <div>
-      <div className="board-row">
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
-        {renderSquare(3)}
-        {renderSquare(4)}
-      </div>
-      <div className="board-row">
-        {renderSquare(5)}
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-        {renderSquare(9)}
-      </div>
-      <div className="board-row">
-        {renderSquare(10)}
-        {renderSquare(11)}
-        {renderSquare(12)}
-        {renderSquare(13)}
-        {renderSquare(14)}
-      </div>
-      <div className="board-row">
-        {renderSquare(15)}
-        {renderSquare(16)}
-        {renderSquare(17)}
-        {renderSquare(18)}
-        {renderSquare(19)}
-      </div>
-      <div className="board-row">
-        {renderSquare(20)}
-        {renderSquare(21)}
-        {renderSquare(22)}
-        {renderSquare(23)}
-        {renderSquare(24)}
-      </div>
+      {board.map((row, rowIndex) => {
+        return (
+          <div>
+            {row.map((col, colIndex) => renderSquare(col, rowIndex, colIndex))}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function Map({ gridMap, agents, mapping }) {
-  const handleClick = (i) => {};
+function Map({ gridMap, agents, mapping, robotImage }) {
+  const handleClick = (rowIndex, colIndex) => {};
   return (
     <div className="game">
       <div className="game-board">
-        <Board squares={gridMap} onClick={(i) => handleClick(i)} />
+        <Board
+          board={gridMap}
+          robotImage={robotImage}
+          onClick={(rowIndex, colIndex) => handleClick(rowIndex, colIndex)}
+        />
       </div>
     </div>
   );
