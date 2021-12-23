@@ -2,6 +2,7 @@
   text-align: center;
   background-color: #ebf7f8;
   min-height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,9 +23,19 @@
   height: 35vmin;
   pointer-events: none;
 }
-
-.Container {
-  float: left;
+.Main-Container {
+  width: 100%;
+  /* position: relative; */
+}
+.Agent-Container {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 10%;
+}
+.Map-Container {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 10%;
 }
 
 /* @media (prefers-reduced-motion: no-preference) {

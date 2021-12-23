@@ -33,8 +33,8 @@ function App() {
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
       <LandingPage image={logo} image1={PathImage} image2={CelebrateLogo} />
-      <div>
-        <div className="Container">
+      <div className="Main-Container">
+        <div className="Map-Container">
           <Game
             robotImage={robots[0]}
             gridMap={gridMap}
@@ -42,7 +42,7 @@ function App() {
             mapping={setMap}
           ></Game>
         </div>
-        <div className="Container">
+        <div className="Agent-Container">
           <AgentsPage
             robotImage={robots[agents.length ? agents.length : 0]}
             agentNo={agents.length + 1}

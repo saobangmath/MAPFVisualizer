@@ -109,23 +109,33 @@ function Agents_Page(props) {
           <div className={classes.overlay} onClick={showPopup}></div>
           <div className={classes.spacing}></div>
           <div className={classes.modal_content}>
-            <img src={props.robotImage} alt="logo" />
-            <h1>Agent {props.agentNo}</h1>
-            <p>Start Point:</p>
-            <Map
-              destination="start"
-              board={startBoard}
-              gridMap={setStartBoard}
-              onStart={setStartPoint}
-            ></Map>
-            <p>End Point:</p>
-            <Map
-              destination="end"
-              board={endBoard}
-              gridMap={setEndBoard}
-              onEnd={setEndPoint}
-            ></Map>
-            <button onClick={AddAgent}>Assign</button>
+            <img className={classes.image} src={props.robotImage} alt="logo" />
+            <p className={classes.heading}>Agent {props.agentNo}</p>
+            <p className={classes.title}>Task Priority:</p>
+            <p className={classes.title}>Algorithm:</p>
+            <p className={classes.title}>Start Position:</p>
+            <div className={classes.map}>
+              <Map
+                destination="start"
+                board={startBoard}
+                gridMap={setStartBoard}
+                onStart={setStartPoint}
+              ></Map>
+            </div>
+
+            <p className={classes.title}>Destination:</p>
+            <div className={classes.map}>
+              <Map
+                destination="end"
+                board={endBoard}
+                gridMap={setEndBoard}
+                onEnd={setEndPoint}
+              ></Map>
+            </div>
+
+            <button className={classes.btn} onClick={AddAgent}>
+              Assign
+            </button>
           </div>
         </div>
       )}
