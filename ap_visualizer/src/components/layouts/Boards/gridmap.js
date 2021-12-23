@@ -1,14 +1,6 @@
 import React from "react";
 
 function Square(props) {
-  if (props.value != null) {
-    console.log(
-      "the endCol is",
-      props.value[props.value.length - 1].endPoint.col[0],
-      props.value[props.value.length - 1].endPoint.row[0]
-    );
-    console.log("the col is ", props.col, props.row);
-  }
   return (
     <button
       className="square"
@@ -68,7 +60,6 @@ function Board({ map, onClick, robotImage }) {
 }
 
 function Map({ gridMap, agents, mapping, robotImage }) {
-  console.log("the map value is", gridMap);
   const handleClick = (rowIndex, colIndex) => {};
   return (
     <div className="game">

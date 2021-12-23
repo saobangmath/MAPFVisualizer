@@ -38,10 +38,6 @@ function Agents_Page(props) {
 
     props.agents.push(tempAgent);
     var lastAgent = props.agents.slice(-1);
-    console.log(
-      "the last agent is",
-      props.agents[props.agents.length - 1].endColor
-    );
 
     const boardCopy = [...props.gridMap];
 
