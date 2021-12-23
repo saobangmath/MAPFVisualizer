@@ -7,12 +7,12 @@ function Agents_Page(props) {
   var [startBoard, setStartBoard] = useState(
     Array(5)
       .fill("")
-      .map((row) => new Array(5).fill(""))
+      .map((row) => new Array(5).fill(null))
   );
   var [endBoard, setEndBoard] = useState(
     Array(5)
       .fill("")
-      .map((row) => new Array(5).fill(""))
+      .map((row) => new Array(5).fill(null))
   );
   var [start, startPoint] = useState([]);
   var [end, endPoint] = useState([]);
@@ -28,8 +28,8 @@ function Agents_Page(props) {
       img: robot,
       endColor: endColor,
       agentNo: agentNum,
-      startPoint: start,
-      endPoint: end,
+      startPoint: start[start.length - 1],
+      endPoint: end[end.length - 1],
       gridMap: null,
       status: "Assigned",
       path: null,
@@ -38,42 +38,50 @@ function Agents_Page(props) {
 
     props.agents.push(tempAgent);
     var lastAgent = props.agents.slice(-1);
+    console.log(
+      "the last agent is",
+      props.agents[props.agents.length - 1].endColor
+    );
 
     const boardCopy = [...props.gridMap];
-    if (
-      boardCopy[lastAgent[0].startPoint[0].row[0]][
-        lastAgent[0].startPoint[0].col[0]
-      ] != null
-    ) {
-      boardCopy[lastAgent[0].startPoint[0].row[0]][
-        lastAgent[0].startPoint[0].col[0]
-      ].push(lastAgent);
-    } else {
-      boardCopy[lastAgent[0].startPoint[0].row[0]][
-        lastAgent[0].startPoint[0].col[0]
-      ] = lastAgent;
-    }
-    if (
-      boardCopy[lastAgent[0].endPoint[0].row[0]][
-        lastAgent[0].endPoint[0].col[0]
-      ] != null
-    ) {
-      boardCopy[lastAgent[0].endPoint[0].row[0]][
-        lastAgent[0].endPoint[0].col[0]
-      ].push(lastAgent);
-    } else {
-      boardCopy[lastAgent[0].endPoint[0].row[0]][
-        lastAgent[0].endPoint[0].col[0]
-      ] = lastAgent;
-    }
-    console.log(
-      "the end is",
-      boardCopy[lastAgent[0].endPoint[0].row[0]][
-        lastAgent[0].endPoint[0].col[0]
-      ]
-    );
-    props.mapping(boardCopy);
 
+    boardCopy[props.agents[props.agents.length - 1].startPoint.row[0]][
+      props.agents[props.agents.length - 1].startPoint.col[0]
+    ] = lastAgent;
+    boardCopy[props.agents[props.agents.length - 1].endPoint.row[0]][
+      props.agents[props.agents.length - 1].endPoint.col[0]
+    ] = lastAgent;
+    // if (
+    //   boardCopy[lastAgent[0].startPoint[0].row[0]][
+    //     lastAgent[0].startPoint[0].col[0]
+    //   ] != null
+    // ) {
+    //   boardCopy[lastAgent[0].startPoint[0].row[0]][
+    //     lastAgent[0].startPoint[0].col[0]
+    //   ].push(lastAgent);
+    // } else {
+    //   boardCopy[lastAgent[0].startPoint[0].row[0]][
+    //     lastAgent[0].startPoint[0].col[0]
+    //   ] = lastAgent;
+    // }
+    // if (
+    //   boardCopy[lastAgent[0].endPoint[0].row[0]][
+    //     lastAgent[0].endPoint[0].col[0]
+    //   ] != null
+    // ) {
+    //   boardCopy[lastAgent[0].endPoint[0].row[0]][
+    //     lastAgent[0].endPoint[0].col[0]
+    //   ].push(lastAgent);
+    // } else {
+    //   boardCopy[lastAgent[0].endPoint[0].row[0]][
+    //     lastAgent[0].endPoint[0].col[0]
+    //   ] = lastAgent;
+    // }
+    props.mapping(boardCopy);
+    endBoard = new Array(5).fill("").map((row) => new Array(5).fill(null));
+    startBoard = new Array(5).fill("").map((row) => new Array(5).fill(null));
+    setStartBoard(startBoard);
+    setEndBoard(endBoard);
     showPopup();
   };
   const showPopup = () => {
@@ -81,10 +89,12 @@ function Agents_Page(props) {
   };
 
   const setStartPoint = (row, col) => {
+    // start.length = 0;
     var sPosition = { row: row, col: col };
     start.push(sPosition);
   };
   const setEndPoint = (row, col) => {
+    // end.length = 0;
     var ePosition = { row: row, col: col };
     end.push(ePosition);
   };
@@ -135,13 +145,13 @@ function Square(props) {
   );
 }
 
-function Board({ board, onClick }) {
+function Board({ map, onClick }) {
   function renderSquare(item, rowIndex, colIndex) {
     return <Square onClick={() => onClick(rowIndex, colIndex)} value={item} />;
   }
   return (
     <div>
-      {board.map((row, rowIndex) => {
+      {map.map((row, rowIndex) => {
         return (
           <div>
             {row.map((col, colIndex) => renderSquare(col, rowIndex, colIndex))}
@@ -166,7 +176,7 @@ function Map({ destination, board, gridMap, onStart, onEnd, mainMap }) {
     <div className="game">
       <div className="game-board">
         <Board
-          board={board}
+          map={board}
           onClick={(rowIndex, colIndex) => handleClick(rowIndex, colIndex)}
         />
       </div>

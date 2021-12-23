@@ -1,9 +1,14 @@
 import React from "react";
 
 function Square(props) {
-  // if (props.value != null) {
-  //   console.log(props.value);
-  // }
+  if (props.value != null) {
+    console.log(
+      "the endCol is",
+      props.value[props.value.length - 1].endPoint.col[0],
+      props.value[props.value.length - 1].endPoint.row[0]
+    );
+    console.log("the col is ", props.col, props.row);
+  }
   return (
     <button
       className="square"
@@ -11,26 +16,19 @@ function Square(props) {
       style={{
         backgroundColor:
           props.value != null
-            ? props.value[props.value.length - 1].endPoint[
-                props.value[props.value.length - 1].endPoint.length - 1
-              ].col[0] === props.col &&
-              props.value[props.value.length - 1].endPoint[
-                props.value[props.value.length - 1].endPoint.length - 1
-              ].row[0] === props.row
+            ? props.value[props.value.length - 1].endPoint.col[0] ===
+                props.col &&
+              props.value[props.value.length - 1].endPoint.row[0] === props.row
               ? props.value[props.value.length - 1].endColor
               : null
             : null,
       }}
     >
       {props.value != null ? (
-        props.value[props.value.length - 1].startPoint[
-          props.value[props.value.length - 1].startPoint.length - 1
-        ].col[0] === props.col &&
-        props.value[props.value.length - 1].startPoint[
-          props.value[props.value.length - 1].startPoint.length - 1
-        ].row[0] === props.row ? (
+        props.value[props.value.length - 1].startPoint.col[0] === props.col &&
+        props.value[props.value.length - 1].startPoint.row[0] === props.row ? (
           <img
-            src={props.robotImage}
+            src={props.value[props.value.length - 1].img}
             style={{
               paddingTop: "15%",
               height: "80%",
@@ -44,7 +42,7 @@ function Square(props) {
   );
 }
 
-function Board({ board, onClick, robotImage }) {
+function Board({ map, onClick, robotImage }) {
   function renderSquare(item, rowIndex, colIndex) {
     return (
       <Square
@@ -58,7 +56,7 @@ function Board({ board, onClick, robotImage }) {
   }
   return (
     <div>
-      {board.map((row, rowIndex) => {
+      {map.map((row, rowIndex) => {
         return (
           <div>
             {row.map((col, colIndex) => renderSquare(col, rowIndex, colIndex))}
@@ -70,12 +68,13 @@ function Board({ board, onClick, robotImage }) {
 }
 
 function Map({ gridMap, agents, mapping, robotImage }) {
+  console.log("the map value is", gridMap);
   const handleClick = (rowIndex, colIndex) => {};
   return (
     <div className="game">
       <div className="game-board">
         <Board
-          board={gridMap}
+          map={gridMap}
           robotImage={robotImage}
           onClick={(rowIndex, colIndex) => handleClick(rowIndex, colIndex)}
         />

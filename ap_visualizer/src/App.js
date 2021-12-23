@@ -44,9 +44,9 @@ function App() {
         </div>
         <div className="Container">
           <AgentsPage
-            robotImage={robots[agents.length ? agents.length - 1 : 0]}
+            robotImage={robots[agents.length ? agents.length : 0]}
             agentNo={agents.length + 1}
-            endColor={pColors[agents.length ? agents.length - 1 : 0]}
+            endColor={pColors[agents.length ? agents.length : 0]}
             agents={agents}
             gridMap={gridMap}
             mapping={setMap}
