@@ -57,6 +57,9 @@ body.active_modal {
   max-height: 10rem;
   height: 10vmin;
 }
+.map {
+  text-align: center;
+}
 .image {
   display: block;
   margin-top: 1rem;
@@ -91,7 +94,10 @@ body.active_modal {
   margin: 12px;
   padding: 4px 12px 4px 12px;
 }
-
+.container {
+  display: inline-flex;
+  margin-right: 10px;
+}
 /* .modal {
     position: relative;
     width: 100%;

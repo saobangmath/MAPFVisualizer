@@ -22,9 +22,9 @@ function Square(props) {
           <img
             src={props.value[props.value.length - 1].img}
             style={{
-              paddingTop: "15%",
               height: "80%",
               width: "60%",
+              paddingBottom: "4px",
             }}
             alt="logo"
           />

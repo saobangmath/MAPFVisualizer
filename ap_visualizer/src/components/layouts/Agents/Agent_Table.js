@@ -33,27 +33,6 @@ const Agent_Table = ({ agents }) => {
         ))}
       </tbody>
     </table>
-    // <table>
-    //   <tr key={"header"}>
-    //     {/* {Object.keys(agent[0]).map((key) => (
-    //       <th>{key}</th>
-    //     ))} */}
-    //     <th>Robot No.</th>
-    //     <th>Status</th>
-    //     <th>Action</th>
-    //   </tr>
-    //   {agent.map((item) => (
-    //     <tr key={item.id}>
-    //       <td>{item.agentNo}</td>
-    //       <td>
-    //         <button className={styles.statusBtn}>Available</button>
-    //       </td>
-    //       <td>
-    //         <button className={styles.actionBtn}>Assign</button>
-    //       </td>
-    //     </tr>
-    //   ))}
-    // </table>
   );
 };
 

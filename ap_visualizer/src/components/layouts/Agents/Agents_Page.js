@@ -2,8 +2,20 @@ import React from "react";
 import classes from "./Agent_Page.module.css";
 import { useState } from "react";
 import AgentTable from "./Agent_Table";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+
 function Agents_Page(props) {
   var [addModal, setModalIsOpen] = useState(false);
+  var [startModal, setStartModalOpen] = useState(false);
+  var [endModal, setEndModalOpen] = useState(false);
+  var [priority, setPriority] = useState("");
+  var [algo, setAlgo] = useState("");
+  var [startCheck, setStartCheck] = useState(false);
+  var [endCheck, setEndCheck] = useState(false);
+
   var [startBoard, setStartBoard] = useState(
     Array(5)
       .fill("")
@@ -47,32 +59,7 @@ function Agents_Page(props) {
     boardCopy[props.agents[props.agents.length - 1].endPoint.row[0]][
       props.agents[props.agents.length - 1].endPoint.col[0]
     ] = lastAgent;
-    // if (
-    //   boardCopy[lastAgent[0].startPoint[0].row[0]][
-    //     lastAgent[0].startPoint[0].col[0]
-    //   ] != null
-    // ) {
-    //   boardCopy[lastAgent[0].startPoint[0].row[0]][
-    //     lastAgent[0].startPoint[0].col[0]
-    //   ].push(lastAgent);
-    // } else {
-    //   boardCopy[lastAgent[0].startPoint[0].row[0]][
-    //     lastAgent[0].startPoint[0].col[0]
-    //   ] = lastAgent;
-    // }
-    // if (
-    //   boardCopy[lastAgent[0].endPoint[0].row[0]][
-    //     lastAgent[0].endPoint[0].col[0]
-    //   ] != null
-    // ) {
-    //   boardCopy[lastAgent[0].endPoint[0].row[0]][
-    //     lastAgent[0].endPoint[0].col[0]
-    //   ].push(lastAgent);
-    // } else {
-    //   boardCopy[lastAgent[0].endPoint[0].row[0]][
-    //     lastAgent[0].endPoint[0].col[0]
-    //   ] = lastAgent;
-    // }
+
     props.mapping(boardCopy);
     endBoard = new Array(5).fill("").map((row) => new Array(5).fill(null));
     startBoard = new Array(5).fill("").map((row) => new Array(5).fill(null));
@@ -94,7 +81,21 @@ function Agents_Page(props) {
     var ePosition = { row: row, col: col };
     end.push(ePosition);
   };
-
+  const showStart = () => {
+    setStartModalOpen(!startModal);
+  };
+  const showEnd = () => {
+    setEndCheck(!endCheck);
+    setEndModalOpen(!endModal);
+  };
+  const selectPriority = (e) => {
+    console.log(e);
+    setPriority(e);
+  };
+  const selectAlgo = (e) => {
+    console.log(e);
+    setAlgo(e);
+  };
   return (
     <>
       <AgentTable agents={props.agents}></AgentTable>
@@ -111,9 +112,74 @@ function Agents_Page(props) {
           <div className={classes.modal_content}>
             <img className={classes.image} src={props.robotImage} alt="logo" />
             <p className={classes.heading}>Agent {props.agentNo}</p>
-            <p className={classes.title}>Task Priority:</p>
-            <p className={classes.title}>Algorithm:</p>
-            <p className={classes.title}>Start Position:</p>
+            <div>
+              <p className={classes.title}>Task Priority:</p>
+              <DropdownButton
+                alignRight
+                title={
+                  priority !== "" ? priority : "Choose the priority level..."
+                }
+                id="dropdown-menu-align-right"
+                onSelect={selectPriority}
+              >
+                <Dropdown.Item eventKey="Low">Low</Dropdown.Item>
+                <Dropdown.Item eventKey="Medium">Medium</Dropdown.Item>
+                <Dropdown.Item eventKey="High">High</Dropdown.Item>
+              </DropdownButton>
+            </div>
+            <div>
+              <p className={classes.title}>Algorithm:</p>
+              <DropdownButton
+                alignRight
+                title={algo !== "" ? algo : "Select Algorithm"}
+                id="dropdown-menu-align-right"
+                onSelect={selectAlgo}
+              >
+                <Dropdown.Item eventKey="Conflict Based Search">
+                  Conflict Based Search
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="A* Search">A* Search</Dropdown.Item>
+              </DropdownButton>
+            </div>
+
+            <button className={classes.btn} onClick={showStart}>
+              Set Start Point
+            </button>
+
+            {/* <div className={classes.map}>
+              <Map
+                destination="start"
+                board={startBoard}
+                gridMap={setStartBoard}
+                onStart={setStartPoint}
+              ></Map>
+            </div> */}
+
+            <button className={classes.btn} onClick={showEnd}>
+              Set Your Destination
+            </button>
+
+            {/* <div className={classes.map}>
+              <Map
+                destination="end"
+                board={endBoard}
+                gridMap={setEndBoard}
+                onEnd={setEndPoint}
+              ></Map>
+            </div> */}
+            <div></div>
+
+            <button className={classes.btn} onClick={AddAgent}>
+              Assign
+            </button>
+          </div>
+        </div>
+      )}
+      {startModal && (
+        <div className={classes.modalAdd}>
+          <div className={classes.overlay} onClick={showStart}></div>
+          <div className={classes.spacing}></div>
+          <div className={classes.modal_content}>
             <div className={classes.map}>
               <Map
                 destination="start"
@@ -121,9 +187,18 @@ function Agents_Page(props) {
                 gridMap={setStartBoard}
                 onStart={setStartPoint}
               ></Map>
+              <button className={classes.btn} onClick={showStart}>
+                Set StartPoint
+              </button>
             </div>
-
-            <p className={classes.title}>Destination:</p>
+          </div>
+        </div>
+      )}
+      {endModal && (
+        <div className={classes.modalAdd}>
+          <div className={classes.overlay} onClick={showEnd}></div>
+          <div className={classes.spacing}></div>
+          <div className={classes.modal_content}>
             <div className={classes.map}>
               <Map
                 destination="end"
@@ -131,11 +206,10 @@ function Agents_Page(props) {
                 gridMap={setEndBoard}
                 onEnd={setEndPoint}
               ></Map>
+              <button className={classes.btn} onClick={showEnd}>
+                Set Destination
+              </button>
             </div>
-
-            <button className={classes.btn} onClick={AddAgent}>
-              Assign
-            </button>
           </div>
         </div>
       )}
