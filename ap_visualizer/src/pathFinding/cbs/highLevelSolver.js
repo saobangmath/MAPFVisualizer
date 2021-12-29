@@ -23,9 +23,9 @@ class highLevelSolver {
 
     getEdgeConflict(node){ // return any edge edge conflicts within agents path that a CTNode has ;
         let solution = node.getSolution()
-        for (let agent1 = 0; agent1 < solution.length - 1; agent1++){
-            for (let agent2 = agent1 + 1; agent2 < solution.length; agent2++){
-                let conflict = this._getEdgeConflict(agent1, agent2, solution[agent1], solution[agent2]);
+        for (let agent1 = 1; agent1 <= solution.length - 1; agent1++){
+            for (let agent2 = agent1 + 1; agent2 <= solution.length; agent2++){
+                let conflict = this._getEdgeConflict(agent1, agent2, solution[agent1-1], solution[agent2-1]);
                 if (conflict != null){
                     return conflict
                 }
@@ -48,9 +48,9 @@ class highLevelSolver {
 
     getNormalConflict(node){ // check if a CTNode has any conflicts between agents path;
         let solution = node.getSolution()
-        for (let agent1 = 0; agent1 < solution.length-1; agent1++){
-            for (let agent2 = agent1+1; agent2 < solution.length; agent2++){
-                let conflict = this._getNormalConflict(agent1, agent2, solution[agent1], solution[agent2])
+        for (let agent1 = 1; agent1 <= solution.length-1; agent1++){
+            for (let agent2 = agent1+1; agent2 <= solution.length; agent2++){
+                let conflict = this._getNormalConflict(agent1, agent2, solution[agent1-1], solution[agent2-1])
                 if (conflict != null){
                     return conflict
                 }
@@ -92,7 +92,7 @@ class highLevelSolver {
             }
             if (normalConflict != null){
                 {
-                    let A1 = new CTNode(P.getConstraints())
+                    let A1 = new CTNode([... P.getConstraints()])
                     let newConstraint = new Constraint(normalConflict.cell1, normalConflict.agent1, normalConflict.t1)
                     A1.addConstraint(newConstraint)
                     A1.updateSolution(map)
@@ -102,7 +102,7 @@ class highLevelSolver {
                     }
                 }
                 {
-                    let A2 = new CTNode(P.getConstraints())
+                    let A2 = new CTNode([... P.getConstraints()])
                     let newConstraint = new Constraint(normalConflict.cell2, normalConflict.agent2, normalConflict.t2)
                     A2.addConstraint(newConstraint)
                     A2.updateSolution(map)
@@ -114,9 +114,9 @@ class highLevelSolver {
             }
             if (edgeConflict != null){
                 {
-                    let A1 = new CTNode(P.getConstraints())
-                    let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1 - 1)
-                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1)
+                    let A1 = new CTNode([... P.getConstraints()])
+                    let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1+1)
                     A1.addConstraint(newConstraint1)
                     A1.addConstraint(newConstraint2)
                     A1.updateSolution(map)
@@ -126,9 +126,9 @@ class highLevelSolver {
                     }
                 }
                 {
-                    let A2 = new CTNode(P.getConstraints())
-                    let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2 - 1)
-                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2)
+                    let A2 = new CTNode([... P.getConstraints()])
+                    let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2)
+                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2+1)
                     A2.addConstraint(newConstraint1)
                     A2.addConstraint(newConstraint2)
                     A2.updateSolution(map)

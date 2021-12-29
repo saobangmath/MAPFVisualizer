@@ -13,9 +13,6 @@ function Agents_Page(props) {
   var [endBoard, setEndBoard] = useState(props.gridMap);
   var [start, startPoint] = useState("");
   var [end, endPoint] = useState("");
-  var [agentPaths, setAgentPaths]  = useState([]); // storing step-by-step plan of the agents;
-  var [step, setStep] = useState(0); // the state use to display the step of the agent movement;
-
 
   //Add Agent
   const AddAgent = () => {
@@ -70,6 +67,12 @@ function Agents_Page(props) {
           mp.agents[i + 1] = agent;
       }
       let paths = new HighLevelSolver().solve(mp);
+      console.log(paths);
+      if (paths.length == 0){
+          alert("No possble plan found!");
+          return;
+      }
+      props.setStep(0)
       props.setAgentPaths(paths);
   };
   return (
@@ -87,7 +90,7 @@ function Agents_Page(props) {
           <div className={classes.spacing}></div>
           <div className={classes.modal_content}>
             <img src={props.robotImage} alt="logo" />
-            <h1>Agent {props.agentNo}</h1>
+            <h1>New Agent</h1>
             <p>Start Point:</p>
             <Map
               destination="start"

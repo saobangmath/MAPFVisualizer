@@ -1,5 +1,4 @@
-let directions = [[0, 1], [0, -1], [1, 0], [-1, 0]]
-
+let directions = [[0, 1], [0, -1], [1, 0], [-1, 0], [0, 0]]
 
 function validateCell(x, y, height, width){
     return x >= 0 && y >= 0 && x < height && y < width

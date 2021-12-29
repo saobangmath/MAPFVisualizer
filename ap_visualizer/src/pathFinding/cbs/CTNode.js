@@ -1,5 +1,4 @@
 const LowLevelSolver = require('./lowLevelSolver')
-const assert = require('assert')
 // represent a node in the Constraint Tree
 
 class CTNode{
