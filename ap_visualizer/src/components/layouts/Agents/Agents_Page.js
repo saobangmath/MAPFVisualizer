@@ -3,53 +3,126 @@ import classes from "./Agent_Page.module.css";
 import { useState } from "react";
 import AgentTable from "./Agent_Table";
 
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+
 const map = require('../../../pathFinding/Map');
 const Cell = require('../../../pathFinding/Cell');
 const HighLevelSolver = require('../../../pathFinding/cbs/highLevelSolver');
 
+// function Agents_Page(props) {
+//   var [addModal, setModalIsOpen] = useState(false);
+//   var [startBoard, setStartBoard] = useState(props.gridMap);
+//   var [endBoard, setEndBoard] = useState(props.gridMap);
+//   var [start, startPoint] = useState("");
+//   var [end, endPoint] = useState("");
+// =======
+
 function Agents_Page(props) {
   var [addModal, setModalIsOpen] = useState(false);
-  var [startBoard, setStartBoard] = useState(props.gridMap);
-  var [endBoard, setEndBoard] = useState(props.gridMap);
-  var [start, startPoint] = useState("");
-  var [end, endPoint] = useState("");
+  var [startModal, setStartModalOpen] = useState(false);
+  var [endModal, setEndModalOpen] = useState(false);
+  var [priority, setPriority] = useState("");
+  var [algo, setAlgo] = useState("");
+  var [startCheck, setStartCheck] = useState(false);
+  var [endCheck, setEndCheck] = useState(false);
+
+  var [startBoard, setStartBoard] = useState(
+      Array(props.gridMap.length)
+          .fill(null)
+          .map((row) => new Array(props.gridMap[0].length).fill(null))
+  );
+  var [endBoard, setEndBoard] = useState(
+      Array(props.gridMap.length)
+          .fill(null)
+          .map((row) => new Array(props.gridMap[0].length).fill(null))
+  );
+
+  var [start, startPoint] = useState([]);
+  var [end, endPoint] = useState([]);
 
   //Add Agent
   const AddAgent = () => {
-    var agentNum = props.agentNo;
-
-    var agent = {
+    let agentNum = props.agentNo;
+    let endColor = props.endColor;
+    let robot = props.robotImage;
+    let agent = {
       height: props.gridMap.length,
       width: props.gridMap[0].length,
+      img: robot,
+      endColor: endColor,
       agentNo: agentNum,
-      startPoint: start,
-      endPoint: end,
+      startPoint: start[start.length - 1],
+      endPoint: end[end.length - 1],
       gridMap: null,
-      status: null,
+      status: "Assigned",
       path: null,
       priority: null,
     };
     props.agents.push(agent);
     props.setAgentPaths()
+    console.log(agent)
     const boardCopy = [...props.gridMap];
-    for (var index = 0; index < props.agents.length; index++) {
-      boardCopy[Math.floor(props.agents[index].startPoint / boardCopy[0].length)][props.agents[index].startPoint % boardCopy[0].length] = "S" + (index + 1);
-      boardCopy[Math.floor(props.agents[index].endPoint / boardCopy[0].length)][props.agents[index].endPoint % boardCopy[0].length] = "E" + (index + 1);
-    }
+
+    let lastAgent = props.agents.slice(-1);
+
+    boardCopy[props.agents[props.agents.length - 1].startPoint.row][
+      props.agents[props.agents.length - 1].startPoint.col[0]] = lastAgent;
+
+    boardCopy[props.agents[props.agents.length - 1].endPoint.row][
+      props.agents[props.agents.length - 1].endPoint.col] = lastAgent;
+
     props.mapping(boardCopy);
+    endBoard = new Array(props.gridMap.length).fill("").map((row) => new Array(props.gridMap[0].length).fill(null));
+    startBoard = new Array(props.gridMap.length).fill("").map((row) => new Array(props.gridMap[0].length).fill(null));
+    setStartBoard(startBoard);
+    setEndBoard(endBoard);
     showPopup();
   };
+
   const showPopup = () => {
     setModalIsOpen(!addModal);
   };
 
-  const setStartPoint = (point) => {
-    startPoint(point);
-  };
-  const setEndPoint = (point) => {
-    endPoint(point);
+  // set start location for the new agent;
+  const setStartPoint = (row, col) => {
+    let sPosition = { row: row, col: col };
+    start.push(sPosition);
   };
 
+  // set end location for the new agent;
+  const setEndPoint = (row, col) => {
+    let ePosition = { row: row, col: col };
+    end.push(ePosition);
+  };
+
+  // TODO add comment
+  const showStart = () => {
+    setStartModalOpen(!startModal);
+  };
+
+  // TODO add comment
+  const showEnd = () => {
+    setEndCheck(!endCheck);
+    setEndModalOpen(!endModal);
+  };
+
+  // TODO add comment
+  const selectPriority = (e) => {
+    console.log(e);
+    setPriority(e);
+  };
+
+  // select the algo to apply the planning; for now it is the CBS;
+  const selectAlgo = (e) => {
+    console.log(e);
+    setAlgo(e);
+  };
+
+  // run the CBS algo with the added agents;
+  // TODO refactor tomorrow;
   const runCBSAlgo = () => {
       let mp = new map();
       mp.height = props.gridMap.length;
@@ -60,10 +133,14 @@ function Agents_Page(props) {
           alert("There is no agents to run the CBS!");
           return;
       }
-      // add agents in props to map agents;
+      // add agents in props to map agents with the format used in the cbs;
       for (let i = 0; i < props.agents.length; i++){
-          let agent = {"START" : new Cell(Math.floor(props.agents[i].startPoint / mp.width), props.agents[i].startPoint % mp.width),
-                       "DEST" : new Cell(Math.floor(props.agents[i].endPoint / mp.width), props.agents[i].endPoint % mp.width)};
+          let start_row = props.agents[i].startPoint.row;
+          let start_col = props.agents[i].startPoint.col;
+          let end_row = props.agents[i].endPoint.row;
+          let end_col = props.agents[i].endPoint.col;
+          let agent = {"START" : new Cell(start_row, start_col),
+                       "DEST" : new Cell(end_row, end_col)};
           mp.agents[i + 1] = agent;
       }
       let paths = new HighLevelSolver().solve(mp);
@@ -73,8 +150,9 @@ function Agents_Page(props) {
           return;
       }
       props.setStep(0)
-      props.setAgentPaths(paths);
+      props.setAgentPaths(paths); // TODO: set the path here for each agents;
   };
+
   return (
     <>
       <AgentTable agents={props.agents}></AgentTable>
@@ -89,23 +167,87 @@ function Agents_Page(props) {
           <div className={classes.overlay} onClick={showPopup}></div>
           <div className={classes.spacing}></div>
           <div className={classes.modal_content}>
-            <img src={props.robotImage} alt="logo" />
-            <h1>New Agent</h1>
-            <p>Start Point:</p>
-            <Map
-              destination="start"
-              board={startBoard}
-              gridMap={setStartBoard}
-              onStart={setStartPoint}
-            ></Map>
-            <p>End Point:</p>
-            <Map
-              destination="end"
-              board={endBoard}
-              gridMap={setEndBoard}
-              onEnd={setEndPoint}
-            ></Map>
-            <button onClick={AddAgent}>Assign</button>
+            <img className={classes.image} src={props.robotImage} alt="logo" />
+            <p className={classes.heading}>Agent {props.agentNo}</p>
+            <div>
+              <p className={classes.title}>Task Priority:</p>
+              <DropdownButton
+                alignRight
+                title={
+                  priority !== "" ? priority : "Choose the priority level..."
+                }
+                id="dropdown-menu-align-right"
+                onSelect={selectPriority}
+              >
+                <Dropdown.Item eventKey="Low">Low</Dropdown.Item>
+                <Dropdown.Item eventKey="Medium">Medium</Dropdown.Item>
+                <Dropdown.Item eventKey="High">High</Dropdown.Item>
+              </DropdownButton>
+            </div>
+            <div>
+              <p className={classes.title}>Algorithm:</p>
+              <DropdownButton
+                alignRight
+                title={algo !== "" ? algo : "Select Algorithm"}
+                id="dropdown-menu-align-right"
+                onSelect={selectAlgo}
+              >
+                <Dropdown.Item eventKey="Conflict Based Search">
+                  Conflict Based Search
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="A* Search">A* Search</Dropdown.Item>
+              </DropdownButton>
+            </div>
+
+            <button className={classes.btn} onClick={showStart}>
+              Set Start Point
+            </button>
+            <button className={classes.btn} onClick={showEnd}>
+              Set Your Destination
+            </button>
+            <div></div>
+
+            <button className={classes.btn} onClick={AddAgent}>
+              Assign
+            </button>
+          </div>
+        </div>
+      )}
+      {startModal && (
+        <div className={classes.modalAdd}>
+          <div className={classes.overlay} onClick={showStart}></div>
+          <div className={classes.spacing}></div>
+          <div className={classes.modal_content}>
+            <div className={classes.map}>
+              <Map
+                destination="start"
+                board={startBoard}
+                gridMap={setStartBoard}
+                onStart={setStartPoint}
+              ></Map>
+              <button className={classes.btn} onClick={showStart}>
+                Set StartPoint
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {endModal && (
+        <div className={classes.modalAdd}>
+          <div className={classes.overlay} onClick={showEnd}></div>
+          <div className={classes.spacing}></div>
+          <div className={classes.modal_content}>
+            <div className={classes.map}>
+              <Map
+                destination="end"
+                board={endBoard}
+                gridMap={setEndBoard}
+                onEnd={setEndPoint}
+              ></Map>
+              <button className={classes.btn} onClick={showEnd}>
+                Set Destination
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -122,57 +264,40 @@ function Square(props) {
 }
 
 function Board(props) {
-    let boards = []
-    let rows = props.squares.length;
-    let cols = props.squares[0].length;
-
-    function renderSquare(id) {
-        let x = Math.floor(id/cols)
-        let y = id % cols
-        return <Square value={props.squares[x][y]} onClick={() => props.onClick(id)} />;
-    }
-    for (let row = 0; row < rows; row++){
-        boards.push(<div className="board-row"/>)
-        for (let col = 0; col < cols; col++){
-            boards.push(renderSquare(row * cols + col))
-        }
-        boards.push(<div/>)
-    }
-    return (
-        <div>
-            {boards}
-        </div>
-    );
+  function renderSquare(item, rowIndex, colIndex) {
+    return <Square onClick={() => props.onClick(rowIndex, colIndex)} value={item} />;
+  }
+  return (
+    <div>
+      {props.map.map((row, rowIndex) => {
+        return (
+          <div>
+            {row.map((col, colIndex) => renderSquare(col, rowIndex, colIndex))}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
-function Map({ destination, board, gridMap, onStart, onEnd, mainMap}) { // TODO
-  const handleClick = (i) => {
-    const boardCopy = [];
-    for (let row = 0; row < board.length; row++){
-        boardCopy.push([])
-        for (let col = 0; col < board[0].length; col++){
-            boardCopy[row].push(board[row][col])
-        }
-    }
-    let x = Math.floor(i / board[0].length);
-    let y = i % board[0].length
-    console.log(x, y)
-    if (destination == "start") {
-        boardCopy[x][y] = "S";
-    }
-    else {
-        boardCopy[x][y] = "E"
-    }
+
+function Map({ destination, board, gridMap, onStart, onEnd, mainMap }) {
+  const handleClick = (rowIndex, colIndex) => {
+    const boardCopy = [...board];
+    boardCopy[rowIndex][colIndex] = "X";
     gridMap(boardCopy);
     if (destination === "start") {
-      onStart(i);
+      onStart(rowIndex, colIndex);
     } else {
-      onEnd(i);
+      onEnd(rowIndex, colIndex);
     }
   };
   return (
     <div className="game">
       <div className="game-board">
-        <Board squares={board} onClick={(i) => handleClick(i)} />
+        <Board
+          map={board}
+          onClick={(rowIndex, colIndex) => handleClick(rowIndex, colIndex)}
+        />
       </div>
     </div>
   );

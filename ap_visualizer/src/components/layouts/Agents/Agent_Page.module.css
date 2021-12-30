@@ -1,7 +1,11 @@
 body.active_modal {
   overflow-y: hidden;
 }
-
+.heading {
+  font-family: "Roboto", sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+}
 .btn_modal {
   padding: 10px 20px;
   display: block;
@@ -51,7 +55,10 @@ body.active_modal {
   position: relative;
   transform: translateX(-50%);
   max-height: 10rem;
-  height: 25vmin;
+  height: 10vmin;
+}
+.map {
+  text-align: center;
 }
 .image {
   display: block;
@@ -61,8 +68,12 @@ body.active_modal {
   position: relative;
   transform: translateX(-50%);
   max-height: 5rem;
-  height: 25vmin;
+  height: 15vmin;
 }
+.title {
+  text-align: left;
+}
+
 .model_desc {
   margin-top: -2rem;
 }
@@ -83,7 +94,10 @@ body.active_modal {
   margin: 12px;
   padding: 4px 12px 4px 12px;
 }
-
+.container {
+  display: inline-flex;
+  margin-right: 10px;
+}
 /* .modal {
     position: relative;
     width: 100%;
