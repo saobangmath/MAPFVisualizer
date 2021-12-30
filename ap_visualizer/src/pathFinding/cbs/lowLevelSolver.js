@@ -95,7 +95,7 @@ class LowLevelSolver{
                 if (Utils.validateCell(next_x, next_y, map.height, map.width) && map.grid[next_x][next_y] != '@') {
                     let expanded_cell = new Cell(next_x, next_y);
                     expanded_cell.g = current_cell.g + 1;
-                    expanded_cell.h = Utils.getManhattanDistance(expanded_cell, destCell);
+                    expanded_cell.h = Utils.getHeuristicDistance(expanded_cell, destCell, Utils.getManhattanDistance);
                     expanded_cell.f = expanded_cell.g + expanded_cell.h;
                     expanded_cell.time = current_cell.time + 1;
                     if (this.isConstraint(agentID, expanded_cell, constraints)) {

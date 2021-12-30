@@ -28,8 +28,8 @@ test('../maps/input_4x4_2_bahar_0.txt')
 console.log("========= Test for input_4x4_3_bahar_0 map =========")
 test('../maps/input_4x4_3_bahar_0.txt')
 
-// console.log("========= Test for paper map =========")
-// test('../maps/paper.map')
+console.log("========= Test for paper map =========")
+test('../maps/paper.map')
 //
 // console.log("========= Test for no_path map =========")
 // test('../maps/no_path.map')

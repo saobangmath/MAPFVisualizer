@@ -13,7 +13,19 @@ function idToCoordinates(id, width){
 }
 
 function getManhattanDistance(cell1, cell2){
-    return Math.abs(cell1.x - cell2.x) + Math.abs(cell1.y - cell2.y)
+    let dx = Math.ceil(cell1.x - cell2.x);
+    let dy = Math.ceil(cell1.y - cell2.y);
+    return dx + dy;
 }
 
-module.exports = {directions, validateCell, coordinatesToId, idToCoordinates, getManhattanDistance}
+function getEuclideanDistance(cell1, cell2){
+    let dx = Math.ceil(cell1.x - cell2.x);
+    let dy = Math.ceil(cell1.y - cell2.y);
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function getHeuristicDistance(cell1, cell2, f){
+    return f(cell1, cell2);
+}
+
+module.exports = {directions, validateCell, coordinatesToId, idToCoordinates, getManhattanDistance, getEuclideanDistance ,getHeuristicDistance}

@@ -10,10 +10,10 @@ import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
 
 // hard coded map for now;
-let grid =  [['.', '.', '.', '.'],
+let grid =  [['@', '.', '.', '@'],
              ['.', '.', '.', '.'],
-             ['.', '@', '@', '.'],
-             ['@', '.', '.', '.']]
+             ['.', '.', '.', '.'],
+             ['@', '.', '.', '@']]
 
 function App() {
   var [agents, setAgentList] = useState([]);
