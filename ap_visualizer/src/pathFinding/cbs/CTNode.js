@@ -21,6 +21,11 @@ class CTNode{
     }
 
     addConstraint(constraint){
+        for (let i=0;i<this.constraints.length;i++){
+           if (constraint.is_equal(this.constraints[i])) { // make sure no new added constraint has been added before;
+                return;
+           }
+        }
         this.constraints.push(constraint)
     }
 
@@ -31,7 +36,9 @@ class CTNode{
 
     updateCost(){ // update cost of the solution
         let new_cost = 0
-        this.solution.forEach((route, i) => new_cost += route.length)
+        for (let id in this.solution){
+            new_cost += this.solution[id].length;
+        }
         this.cost = new_cost
     }
 };

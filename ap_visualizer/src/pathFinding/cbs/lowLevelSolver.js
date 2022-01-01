@@ -17,8 +17,8 @@ class LowLevelSolver{
     findMinCostCellPosition(paths){
         let pos = -1;
         let curCost = 1e9
-        for (let i = 0; i < paths.length; paths++){
-            if (paths[i].f < curCost){
+        for (let i = 0; i < paths.length; i++) {
+            if (paths[i].f < curCost) {
                 pos = i
                 curCost = paths[i].f
             }
@@ -26,12 +26,12 @@ class LowLevelSolver{
         return pos;
     }
 
-    // the index (w.r.t L) of element == successor with minimum f value;
+    // the index (w.r.t L) of element == successor with minimum f value as well as time >= successor;
     findBestIndex(L, successor){
         let minCost = 1e9, index = -1
         for (let i = 0; i < L.length; i++){
             assert(L[i]!=null)
-            if (L[i].is_equal(successor) && L[i].f < minCost) {
+            if (L[i].is_equal(successor) && L[i].f < minCost && L[i].time >= successor.time) {
                 index = i
                 minCost = L[i].f
             }
@@ -39,11 +39,26 @@ class LowLevelSolver{
         return index
     }
 
-    isConstraint(time, agentID, cell, constraints){
+    // remove bad candidates in list L;
+    go(L, successor){
+        let candidates = [];
+        let remove = 0;
+        for (let i = 0; i < L.length; i++){
+            if (L[i].is_equal(successor) && L[i].f >= successor.f && L[i].time <= successor.time) {
+                candidates.push(i);
+            }
+        }
+        for (let i = 0; i < candidates.length; i++){
+            L.splice(candidates[i] - remove, 1);
+            remove++;
+        }
+    }
+
+    isConstraint(agentID, cell, constraints){
         for (let i = 0; i < constraints.length; i++){
             let constraint = constraints[i];
             assert(constraint.cell != null)
-            if (constraint.agentID == agentID && constraint.cell.is_equal(cell) && constraint.time == time){
+            if (constraint.agentID == agentID && constraint.cell.is_equal(cell) && constraint.time == cell.time){
                 return true;
             }
         }
@@ -51,23 +66,28 @@ class LowLevelSolver{
     }
 
     findOptimalPathForIndividualAgent(constraints, map, agentID){
-        // console.log("Constraints: " + constraints)
         this.optimalPath = []
-        let parentMaps = {}
+        let parentMaps = {} // {[id,time]: [id,time]}
         let startCell = map.agents[agentID]["START"]
         let destCell = map.agents[agentID]["DEST"]
         this.OPEN.push(startCell)
         /// A* algorithm search use for the low-level search
         let pos = 0
         let current_cell = startCell
-        // console.log("LowLevelSolver: START")
+        let cur_x = destCell.x;
+        let cur_y = destCell.y;
+        let cur_time = -1
+        let found = false;
         while (this.OPEN.length > 0) {
             pos = this.findMinCostCellPosition(this.OPEN)
             current_cell = this.OPEN.splice(pos, 1)[0]
             this.CLOSE.push(current_cell)
             if (current_cell.is_equal(destCell)) { // find solution
+                cur_time = current_cell.time
+                found = true;
                 break;
             }
+
             for (let i = 0; i  < Utils.directions.length; i++) { // expanded to the neighbors;
                 let direction = Utils.directions[i];
                 let next_x = direction[0] + current_cell.x;
@@ -75,62 +95,57 @@ class LowLevelSolver{
                 if (Utils.validateCell(next_x, next_y, map.height, map.width) && map.grid[next_x][next_y] != '@') {
                     let expanded_cell = new Cell(next_x, next_y);
                     expanded_cell.g = current_cell.g + 1;
-                    expanded_cell.h = Utils.getManhattanDistance(expanded_cell, destCell);
+                    expanded_cell.h = Utils.getHeuristicDistance(expanded_cell, destCell, Utils.getManhattanDistance);
                     expanded_cell.f = expanded_cell.g + expanded_cell.h;
                     expanded_cell.time = current_cell.time + 1;
-                    if (this.isConstraint(expanded_cell.time, agentID, expanded_cell, constraints)) {
+                    if (this.isConstraint(agentID, expanded_cell, constraints)) {
                         continue;
                     }
+                    this.go(this.OPEN, expanded_cell)
+                    this.go(this.CLOSE, expanded_cell)
                     let openIndex = this.findBestIndex(this.OPEN, expanded_cell)
                     let closeIndex = this.findBestIndex(this.CLOSE, expanded_cell)
                     if (openIndex != -1 && expanded_cell.f > this.OPEN[openIndex].f){ // same cell in open list with better f value;
-                        //console.log("Continue as open has better node!")
                         continue;
                     }
                     if (closeIndex != -1 && expanded_cell.f > this.CLOSE[closeIndex].f){ // same cell in close list with better f value;
-                        //console.log("Continue as close has better node!")
                         continue;
                     }
-                    if (openIndex != -1){ // remove the worst state in OPEN list;
-                        // console.log(this.OPEN)
-                        this.OPEN.splice(openIndex, 1)
-                        //console.log(this.OPEN)
-                    }
-                    if (closeIndex != -1){ // remove the worst state in CLOSE list;
-                        //console.log(this.CLOSE)
-                        this.CLOSE.splice(closeIndex, 1);
-                        //console.log(this.CLOSE)
-                    }
-                    parentMaps[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width)] =
-                               Utils.coordinatesToId(current_cell.x, current_cell.y, map.width)
+                    parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
+                        [Utils.coordinatesToId(current_cell.x, current_cell.y, map.width), current_cell.time]
                     this.OPEN.push(expanded_cell);
                 }
-            };
+            }
         }
-        // console.log("LowLevelSolver: " + "Done with process OPEN List")
-        let cur_x = destCell.x;
-        let cur_y = destCell.y;
-        // console.log("Startcell: " + startCell.x + ", " + startCell.y);
-        // console.log("Destcell: " + destCell.x + ", " + destCell.y);
+        if (!found){
+            return [];
+        }
         while (!(cur_x == startCell.x && cur_y == startCell.y)){
             this.optimalPath.push(new Cell(cur_x, cur_y));
-            let XY = Utils.idToCoordinates(parentMaps[Utils.coordinatesToId(cur_x, cur_y, map.width)], map.width);
-            cur_x = XY[0];
-            cur_y = XY[1];
+            let [XY, time] = parentMaps[[Utils.coordinatesToId(cur_x, cur_y, map.width), cur_time]];
+            XY = Utils.idToCoordinates(XY, map.width)
+            cur_x = XY[0]
+            cur_y = XY[1]
+            cur_time = time;
         }
         this.optimalPath.push(startCell)
         this.optimalPath.reverse()
         this.OPEN = []
         this.CLOSE = []
-        // console.log("Done!")
         return this.optimalPath
     }
 
     findOptimalPaths(constraints, map){
-        let optimalPaths = []
+        let optimalPaths = {}
         // solve for each agent individually;
         for (let id = 1; id <= map.no_agents; id++){
-            optimalPaths.push(this.findOptimalPathForIndividualAgent(constraints, map, id))
+            let individualPath = this.findOptimalPathForIndividualAgent(constraints, map, id);
+            if (individualPath.length > 0) {
+                optimalPaths[id] = individualPath
+            }
+            else{
+                return []
+            }
         }
         return optimalPaths
     }
