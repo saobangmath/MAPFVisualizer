@@ -5,36 +5,20 @@ import "./App.css";
 import * as React from "react";
 import CelebrateLogo from "./images/celebration.png";
 import Game from "./components/layouts/Boards/gridmap";
-import robots from "./images/robot.png";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
-import agent1 from "./images/agent1.png";
-import agent2 from "./images/agent2.png";
-import agent3 from "./images/agent3.png";
+import {robots, pColors} from './utility/Constants'
 
-// hard coded map for now;
-let grid =  [['@', '.', '.', '@'],
-             ['.', '.', '.', '.'],
-             ['.', '.', '.', '.'],
-             ['@', '.', '.', '@']]
-
-//1: [[0,1] -> [0,2]]; 2: [[0,3] -> [0,4]] -> [[[0,1], [0,2]], [[0,3],[0,4]]]
 function App() {
-  let [agents, setAgentList] = useState([]);
+  let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
   let [gridMap, setGridMap] = useState( // hard-coded for now;
       Array(5)
           .fill(null)
           .map((row) => new Array(5).fill(null))
   );
   let [agentPaths, setAgentPaths] = useState([]);
-  let [step, setStep] = useState(0); // display the step that the current gridmap is visualized;
+  let [step, setStep] = useState(0); // display the step that the current grid map is visualized;
 
-  let robots = [agent1, agent2, agent3]; // hard-coded robots image;
-  let pColors = ["#EC10FF", "#06538D", "#FFAE11"]; // hard-coded colors;
-
-  const getAgentList = (agent) => {
-    setAgentList(agent);
-  };
   const setMap = (points) => {
     setGridMap(points);
   };
@@ -49,15 +33,16 @@ function App() {
                 mapping={setMap}
                 step = {step}
                 agentPaths = {agentPaths}
-                robotImage={robots[0]}>
+          >
           </Game>
         </div>
         <div className="Agent-Container">
           <AgentsPage
-            robotImage={robots[agents.length ? agents.length : 0]}
-            agentNo={agents.length + 1}
-            endColor={pColors[agents.length ? agents.length : 0]}
+            robotImage={robots[ Object.keys(agents).length + 1]}
+            agentNo={Object.keys(agents).length+1}
+            endColor={pColors[Object.keys(agents).length + 1]}
             agents={agents}
+            setAgentsList={setAgentsList}
             gridMap={gridMap}
             mapping={setMap}
             setStep={setStep}

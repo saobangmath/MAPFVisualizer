@@ -36,7 +36,9 @@ class CTNode{
 
     updateCost(){ // update cost of the solution
         let new_cost = 0
-        this.solution.forEach((route, i) => new_cost += route.length)
+        for (let id in this.solution){
+            new_cost += this.solution[id].length;
+        }
         this.cost = new_cost
     }
 };

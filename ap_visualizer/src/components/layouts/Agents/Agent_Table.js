@@ -2,9 +2,7 @@ import React from "react";
 import { useState } from "react";
 import styles from "./Agent_Table.module.css";
 
-const Agent_Table = ({ agents }) => {
-  const [agent, setAgentList] = useState(agents);
-  console.log("agent is", agent);
+const Agent_Table = (props) => {
   return (
     <table className={styles.styledTable}>
       <thead>
@@ -15,12 +13,12 @@ const Agent_Table = ({ agents }) => {
         </tr>
       </thead>
       <tbody>
-        {agent.map((item) => (
-          <tr key={item.id}>
+        {Object.keys(props.agents).map((key, index) => (
+          <tr key={key}>
             <td>
               <p>
-                <p className={styles.content}>Robot {item.agentNo}</p>
-                {<img className={styles.image} src={item.img} alt="logo" />}
+                <p className={styles.content}>Robot {key}</p>
+                {<img className={styles.image} src={props.agents[key].img} alt="logo" />}
               </p>
             </td>
             <td>

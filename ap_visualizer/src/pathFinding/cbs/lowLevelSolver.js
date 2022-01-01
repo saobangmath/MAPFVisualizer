@@ -136,12 +136,12 @@ class LowLevelSolver{
     }
 
     findOptimalPaths(constraints, map){
-        let optimalPaths = []
+        let optimalPaths = {}
         // solve for each agent individually;
         for (let id = 1; id <= map.no_agents; id++){
             let individualPath = this.findOptimalPathForIndividualAgent(constraints, map, id);
             if (individualPath.length > 0) {
-                optimalPaths.push(individualPath)
+                optimalPaths[id] = individualPath
             }
             else{
                 return []
