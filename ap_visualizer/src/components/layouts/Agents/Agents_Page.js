@@ -133,9 +133,9 @@ function Agents_Page(props) {
                        "DEST" : new Cell(end_row, end_col)};
           mp.agents[id] = agent;
       }
-      let paths = new HighLevelSolver().solve(mp);
-      console.log({paths});
-      if (paths.length == 0){
+      let paths = new HighLevelSolver(mp).solve();
+      console.log(paths);
+      if (Object.keys(paths).length == 0){ // there is no possible plan;
           alert("No possible plan found!");
           return;
       }
