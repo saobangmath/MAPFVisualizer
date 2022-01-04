@@ -33,9 +33,7 @@ function Square(props) {
 }
 
 function Game(props) {
-  const handleClick = (i) => {
-    console.log("the default map is", maps.mapdefault);
-  };
+  const handleClick = (i) => {};
   return (
     <div className="game">
       <div className="game-board">
@@ -53,7 +51,6 @@ function Game(props) {
 }
 
 function Board(props) {
-  console.log("the mapprops", props);
   function renderSquare(rowIndex, colIndex) {
     let agentId = -1; // at step i, if there is an agent at the square -> the agentId != -1 else it is equal to -1;
     let no_agent = Object.keys(props.agents).length;

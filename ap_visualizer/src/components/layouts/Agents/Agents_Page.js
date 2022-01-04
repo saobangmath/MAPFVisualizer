@@ -28,7 +28,6 @@ function Agents_Page(props) {
   let [start, startPoint] = useState([]); //the start point of the robot
   let [end, endPoint] = useState([]); //the end point of the robot
 
-  console.log("the original map is ", props.originalMap);
   //Add Agent
   const AddAgent = () => {
     let agentId = Object.keys(props.agents).length + 1;
@@ -59,9 +58,10 @@ function Agents_Page(props) {
     ] = lastAgent;
 
     props.mapping(boardCopy);
+    let newMap = resetMap(boardCopy);
 
-    setStartBoard(props.originalMap);
-    setEndBoard(props.originalMap);
+    setStartBoard(newMap);
+    setEndBoard(newMap);
     showPopup();
   };
 
@@ -75,15 +75,27 @@ function Agents_Page(props) {
     hasEnd(!validateEnd);
   };
   // set start location for the new agent;
-  const setStartPoint = (row, col) => {
+  const setStartPoint = (row, col, check) => {
     let sPosition = { row: row, col: col };
-    start.push(sPosition);
+    if (!check) {
+      start.push(sPosition);
+    } else {
+      //remove the previous clicked data.
+      start.pop();
+      start.push(sPosition);
+    }
   };
 
   // set end location for the new agent;
-  const setEndPoint = (row, col) => {
+  const setEndPoint = (row, col, check) => {
     let ePosition = { row: row, col: col };
-    end.push(ePosition);
+    if (!check) {
+      end.push(ePosition);
+    } else {
+      //remove the previous clicked data.
+      end.pop();
+      end.push(ePosition);
+    }
   };
   // show the start modal to indicate the start location of the new agent;
   const showStart = () => {
@@ -231,7 +243,7 @@ function Agents_Page(props) {
                 gridMap={setStartBoard}
                 onStart={setStartPoint}
                 isChecked={startCheck}
-                mapNo={props.mapNo}
+                originalMap={props.originalMap}
                 check={validateStart}
               ></Map>
               <button className={classes.btn} onClick={closeStart}>
@@ -253,7 +265,7 @@ function Agents_Page(props) {
                 gridMap={setEndBoard}
                 onEnd={setEndPoint}
                 isChecked={endCheck}
-                mapNo={props.mapNo}
+                originalMap={props.originalMap}
                 check={validateEnd}
               ></Map>
               <button className={classes.btn} onClick={showEnd}>
@@ -268,7 +280,6 @@ function Agents_Page(props) {
 }
 
 function Square(props) {
-  console.log("the sqaure props is", props);
   return (
     <button
       className="square"
@@ -311,21 +322,33 @@ function Board(props) {
     </div>
   );
 }
-
+function resetMap(board) {
+  for (var i = 0; i < Object.keys(board).length; i++) {
+    for (var j = 0; j < Object.keys(board).length; j++) {
+      if (board[i][j] === "X") {
+        board[i][j] = ".";
+      }
+    }
+  }
+  return board;
+}
 function Map(props) {
-  console.log("the map props is ", props);
   const handleClick = (rowIndex, colIndex, check) => {
-    const reset = maps.mapdefault;
-    let boardCopy = [...reset];
-    console.log("i click", rowIndex, colIndex);
-    props.isChecked();
+    const board = props.board;
+    let boardCopy = [...board];
+    if (boardCopy[rowIndex][colIndex] !== "@") {
+      props.isChecked();
 
-    boardCopy[rowIndex][colIndex] = "X";
-    props.gridMap(boardCopy);
-    if (props.destination === "start") {
-      props.onStart(rowIndex, colIndex);
+      boardCopy = resetMap(boardCopy);
+      boardCopy[rowIndex][colIndex] = "X";
+      props.gridMap(boardCopy);
+      if (props.destination === "start") {
+        props.onStart(rowIndex, colIndex, check);
+      } else {
+        props.onEnd(rowIndex, colIndex, check);
+      }
     } else {
-      props.onEnd(rowIndex, colIndex);
+      alert("Please do not choose the obstacles.");
     }
   };
   return (

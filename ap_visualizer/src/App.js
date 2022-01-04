@@ -9,37 +9,37 @@ import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
 import { robots, pColors } from "./utility/Constants";
 import { maps } from "./maps";
+import { dupMaps } from "./dupMaps";
 
 function App() {
   let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
-  let defaultMap = maps.mapdefault;
-  let [dupMap, setDupMap] = useState(maps.mapdefault.map((value) => value)); //duplicating the original map
-  let [gridMap, setGridMap] = useState(defaultMap);
+  let [dupMap, setDupMap] = useState(dupMaps.mapdefault); //duplicating the original map
+  let [gridMap, setGridMap] = useState(maps.mapdefault);
   let [agentPaths, setAgentPaths] = useState([]);
   let [step, setStep] = useState(0); // display the step that the current grid map is visualized;
   function changeGrid(value) {
     switch (value) {
       case "1":
         setGridMap((prevGridMap) => maps.map1);
-        setDupMap(maps.map1.map((value) => value));
+        setDupMap(dupMaps.map1);
         break;
       case "2":
         setGridMap((prevGridMap) => maps.map2);
-        setDupMap(maps.map2.map((value) => value));
+        setDupMap(dupMaps.map2);
         break;
       case "3":
         setGridMap((prevGridMap) => maps.map3);
-        setDupMap(maps.map3.map((value) => value));
+        setDupMap(dupMaps.map3);
 
         break;
       case "4":
         setGridMap((prevGridMap) => maps.map4);
-        setDupMap(maps.map4.map((value) => value));
+        setDupMap(dupMaps.map4);
 
         break;
       default:
         setGridMap((prevGridMap) => maps.mapdefault);
-        setDupMap(maps.mapdefault.map((value) => value));
+        setDupMap(dupMaps.mapdefault);
         break;
     }
   }
