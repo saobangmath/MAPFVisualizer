@@ -13,17 +13,15 @@ const Agent_Table = (props) => {
   let [endModal, setEndModalOpen] = useState(false);
   let [priority, setPriority] = useState("");
   let [algo, setAlgo] = useState("");
-  let [validateStart, hasStart] = useState(false); //validate only 1 startpoint
-  let [validateEnd, hasEnd] = useState(false); //validate only 1 endpoint
+  let [validateStart, hasStart] = useState(false); //to validate only 1 startpoint in the start array.
+  let [validateEnd, hasEnd] = useState(false); //to validate only 1 endpoint in the end array
   let [startBoard, setStartBoard] = useState(maps.mapdefault);
   let [endBoard, setEndBoard] = useState(maps.mapdefault);
   let [start, startPoint] = useState([]); //the start point of the robot
   let [end, endPoint] = useState([]); //the end point of the robot
-  var [selectedAgent, setSelectedAgent] = useState();
+  var [selectedAgent, setSelectedAgent] = useState(); //get the selected agents
   const showPopup = (agent) => {
-    console.log("agents", agent);
     setSelectedAgent(agent);
-    console.log("first", selectedAgent);
     setModalIsOpen(!addModal);
   };
   const closePopup = () => {
@@ -58,45 +56,14 @@ const Agent_Table = (props) => {
       end.push(ePosition);
     }
   };
-  // show the start modal to indicate the start location of the new agent;
-  const showStart = () => {
-    setStartModalOpen(!startModal);
-  };
-  //close the start modal using the assign button(future implementation for validation)
-  const closeStart = () => {
-    var updatedAgent = selectedAgent;
 
-    updatedAgent.startPoint = start[start.length - 1];
-    updatedAgent.endPoint = end[end.length - 1];
-    setSelectedAgent(updatedAgent);
-    props.agents[updatedAgent.agentId] = updatedAgent;
-    props.setAgentsList(props.agents);
-    setStartModalOpen(!startModal);
-    const boardCopy = [...startBoard];
-
-    startBoard[props.agents[updatedAgent.agentId].startPoint.row][
-      props.agents[updatedAgent.agentId].startPoint.col
-    ] = updatedAgent;
-
-    setStartBoard(boardCopy);
+  //close/open the start modal using the assign button(future implementation for validation)
+  const startMapModal = () => {
     setStartModalOpen(!startModal);
   };
 
   // show the end modal to indicate the end location of the new agent;
-  const showEnd = () => {
-    setEndModalOpen(!endModal);
-  };
-  const closeEnd = () => {
-    var updatedAgent = selectedAgent;
-    updatedAgent.endPoint = end[end.length - 1];
-    setSelectedAgent(updatedAgent);
-    props.agents[updatedAgent.agentId] = updatedAgent;
-    props.setAgentsList(props.agents);
-    const boardCopy = [...endBoard];
-    boardCopy[props.agents[updatedAgent.agentId].endPoint.row][
-      props.agents[updatedAgent.agentId].endPoint.col
-    ] = updatedAgent;
-    setEndBoard(boardCopy);
+  const endMapModal = () => {
     setEndModalOpen(!endModal);
   };
 
@@ -113,6 +80,9 @@ const Agent_Table = (props) => {
     // update the selectedAgent
     var updatedAgent = selectedAgent;
     updatedAgent.status = "Assigned";
+
+    updatedAgent.startPoint = start[start.length - 1];
+    updatedAgent.endPoint = end[end.length - 1];
     props.agents[updatedAgent.agentId] = updatedAgent;
     props.setAgentsList(props.agents);
     props.setAgentPaths([]); // reset the agent path from the previous CBS algo run;
@@ -211,10 +181,10 @@ const Agent_Table = (props) => {
               </DropdownButton>
             </div>
 
-            <button className={classes.btn} onClick={showStart}>
+            <button className={classes.btn} onClick={startMapModal}>
               Set Start Point
             </button>
-            <button className={classes.btn} onClick={showEnd}>
+            <button className={classes.btn} onClick={endMapModal}>
               Set Your Destination
             </button>
             <div></div>
@@ -227,7 +197,7 @@ const Agent_Table = (props) => {
       )}
       {startModal && (
         <div className={classes.modalAdd}>
-          <div className={classes.overlay} onClick={showStart}></div>
+          <div className={classes.overlay} onClick={startMapModal}></div>
           <div className={classes.spacing}></div>
           <div className={classes.modal_content}>
             <div className={classes.map}>
@@ -240,7 +210,7 @@ const Agent_Table = (props) => {
                 originalMap={props.originalMap}
                 check={validateStart}
               ></Map>
-              <button className={classes.btn} onClick={closeStart}>
+              <button className={classes.btn} onClick={startMapModal}>
                 Set StartPoint
               </button>
             </div>
@@ -249,7 +219,7 @@ const Agent_Table = (props) => {
       )}
       {endModal && (
         <div className={classes.modalAdd}>
-          <div className={classes.overlay} onClick={showEnd}></div>
+          <div className={classes.overlay} onClick={endMapModal}></div>
           <div className={classes.spacing}></div>
           <div className={classes.modal_content}>
             <div className={classes.map}>
@@ -262,7 +232,7 @@ const Agent_Table = (props) => {
                 originalMap={props.originalMap}
                 check={validateEnd}
               ></Map>
-              <button className={classes.btn} onClick={closeEnd}>
+              <button className={classes.btn} onClick={endMapModal}>
                 Set Destination
               </button>
             </div>
@@ -282,12 +252,14 @@ function Square(props) {
         backgroundColor: props.value === "@" ? "black" : "white",
       }}
     >
-      {/* if the sqaure value has an agents */}
-      {typeof props.value === "object" ||
-      props.value === "@" ||
-      props.value === "."
+      {/* Only display the value if it is X or O */}
+      {typeof props.value === "object"
         ? null
-        : props.value}
+        : props.value === "O" && props.boardType === "start"
+        ? props.value
+        : props.value === "X" && props.boardType === "end"
+        ? props.value
+        : null}
     </button>
   );
 }
@@ -300,6 +272,7 @@ function Board(props) {
         value={item}
         rowIndex={rowIndex}
         colIndex={colIndex}
+        boardType={props.boardType}
         isChecked={props.isChecked}
       />
     );
@@ -319,7 +292,7 @@ function Board(props) {
 function resetMap(map) {
   for (var i = 0; i < Object.keys(map).length; i++) {
     for (var j = 0; j < Object.keys(map).length; j++) {
-      if (map[i][j] === "X") {
+      if (map[i][j] === "X" || map[i][j] === "O") {
         map[i][j] = ".";
       }
     }
@@ -327,20 +300,23 @@ function resetMap(map) {
   return map;
 }
 function Map(props) {
-  console.log("the map props is", props.board);
   const handleClick = (rowIndex, colIndex, check) => {
     const board = props.board;
     let boardCopy = [...board];
+    //update the map if the cell is not an obstacles.
     if (boardCopy[rowIndex][colIndex] !== "@") {
       props.isChecked();
-
       boardCopy = resetMap(boardCopy);
-      boardCopy[rowIndex][colIndex] = "X";
-      props.gridMap(boardCopy);
+
+      // 'O' represent the start position 'X' represent the end position
       if (props.destination === "start") {
+        boardCopy[rowIndex][colIndex] = "O";
         props.onStart(rowIndex, colIndex, check);
+        props.gridMap(boardCopy);
       } else {
+        boardCopy[rowIndex][colIndex] = "X";
         props.onEnd(rowIndex, colIndex, check);
+        props.gridMap(boardCopy);
       }
     } else {
       alert("Please do not choose the obstacles.");
@@ -354,6 +330,7 @@ function Map(props) {
           onClick={(rowIndex, colIndex) =>
             handleClick(rowIndex, colIndex, props.check)
           }
+          boardType={props.destination}
           isChecked={props.check}
         />
       </div>
