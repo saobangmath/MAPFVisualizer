@@ -129,7 +129,7 @@ function Agents_Page(props) {
     mp.width = props.gridMap[0].length;
     mp.grid = [...props.gridMap];
     mp.no_agents = Object.keys(props.agents).length;
-    if (mp.no_agents === 0) {
+    if (mp.no_agents == 0) {
       alert("There is no agents to run the CBS!");
       return;
     }
@@ -143,12 +143,12 @@ function Agents_Page(props) {
         START: new Cell(start_row, start_col),
         DEST: new Cell(end_row, end_col),
       };
-      console.log("the map agents is", agent);
       mp.agents[id] = agent;
     }
-    let paths = new HighLevelSolver().solve(mp);
-    console.log("the highlevel path is", { paths });
-    if (paths.length === 0) {
+    let paths = new HighLevelSolver(mp).solve();
+    console.log(paths);
+    if (Object.keys(paths).length == 0) {
+      // there is no possible plan;
       alert("No possible plan found!");
       return;
     }

@@ -98,6 +98,9 @@ class LowLevelSolver{
                     expanded_cell.h = Utils.getHeuristicDistance(expanded_cell, destCell, Utils.getManhattanDistance);
                     expanded_cell.f = expanded_cell.g + expanded_cell.h;
                     expanded_cell.time = current_cell.time + 1;
+                    if (expanded_cell.time >= 20){
+                        continue;
+                    }
                     if (this.isConstraint(agentID, expanded_cell, constraints)) {
                         continue;
                     }
@@ -118,6 +121,7 @@ class LowLevelSolver{
             }
         }
         if (!found){
+            console.log("No solution for agent " + agentID);
             return [];
         }
         while (!(cur_x == startCell.x && cur_y == startCell.y)){
@@ -144,10 +148,10 @@ class LowLevelSolver{
                 optimalPaths[id] = individualPath
             }
             else{
-                return []
+                return {};
             }
         }
-        return optimalPaths
+        return optimalPaths;
     }
 }
 
