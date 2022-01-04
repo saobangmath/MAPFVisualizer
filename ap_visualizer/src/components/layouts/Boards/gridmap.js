@@ -50,9 +50,11 @@ function Game(props) {
 }
 
 function Board(props) {
+  console.log("the mapprops", props);
   function renderSquare(rowIndex, colIndex) {
     let agentId = -1; // at step i, if there is an agent at the square -> the agentId != -1 else it is equal to -1;
     let no_agent = Object.keys(props.agents).length;
+    let backgroundColor;
     if (Object.keys(props.agentPaths).length > 0) {
       // the CBS algorithm has been run;
       for (let id = 1; id <= no_agent; id++) {
@@ -76,18 +78,24 @@ function Board(props) {
         }
       }
     }
-
-    let backgroundColor = "white";
-    // check if the square is the destination of any robots -> change it background color accordingly
-    for (let id = 1; id <= no_agent; id++) {
-      if (
-        props.agents[id].endPoint.row === rowIndex &&
-        props.agents[id].endPoint.col === colIndex
-      ) {
-        backgroundColor = pColors[id];
-        break;
+    if (props.map[rowIndex][colIndex] === ".") {
+      backgroundColor = "white";
+    } else if (props.map[rowIndex][colIndex] === "@") {
+      backgroundColor = "black";
+    } else {
+      for (let id = 1; id <= no_agent; id++) {
+        if (
+          props.agents[id].endPoint.row === rowIndex &&
+          props.agents[id].endPoint.col === colIndex
+        ) {
+          backgroundColor = pColors[id];
+          break;
+        }
       }
     }
+
+    // check if the square is the destination of any robots -> change it background color accordingly
+
     return (
       <Square
         robotImage={agentId !== -1 ? props.agents[agentId].img : null}

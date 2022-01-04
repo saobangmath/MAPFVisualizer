@@ -5,7 +5,7 @@ import AgentTable from "./Agent_Table";
 
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
-
+import { maps } from "../../../maps";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const map = require("../../../pathFinding/Map");
@@ -21,17 +21,9 @@ function Agents_Page(props) {
   let [validateStart, hasStart] = useState(false); //validate only 1 startpoint
   let [validateEnd, hasEnd] = useState(false); //validate only 1 endpoint
 
-  let [startBoard, setStartBoard] = useState(
-    Array(props.gridMap.length)
-      .fill(null)
-      .map((row) => new Array(props.gridMap[0].length).fill(null))
-  );
+  let [startBoard, setStartBoard] = useState(props.gridMap);
 
-  let [endBoard, setEndBoard] = useState(
-    Array(props.gridMap.length)
-      .fill(null)
-      .map((row) => new Array(props.gridMap[0].length).fill(null))
-  );
+  let [endBoard, setEndBoard] = useState(props.gridMap);
 
   let [start, startPoint] = useState([]); //the start point of the robot
   let [end, endPoint] = useState([]); //the end point of the robot
@@ -97,7 +89,6 @@ function Agents_Page(props) {
     let ePosition = { row: row, col: col };
     end.push(ePosition);
   };
-
   // show the start modal to indicate the start location of the new agent;
   const showStart = () => {
     setStartModalOpen(!startModal);
@@ -129,7 +120,7 @@ function Agents_Page(props) {
     mp.width = props.gridMap[0].length;
     mp.grid = [...props.gridMap];
     mp.no_agents = Object.keys(props.agents).length;
-    if (mp.no_agents == 0) {
+    if (mp.no_agents === 0) {
       alert("There is no agents to run the CBS!");
       return;
     }
@@ -147,7 +138,7 @@ function Agents_Page(props) {
     }
     let paths = new HighLevelSolver(mp).solve();
     console.log(paths);
-    if (Object.keys(paths).length == 0) {
+    if (Object.keys(paths).length === 0) {
       // there is no possible plan;
       alert("No possible plan found!");
       return;
@@ -244,6 +235,7 @@ function Agents_Page(props) {
                 gridMap={setStartBoard}
                 onStart={setStartPoint}
                 isChecked={startCheck}
+                mapNo={props.mapNo}
                 check={validateStart}
               ></Map>
               <button className={classes.btn} onClick={closeStart}>
@@ -265,6 +257,7 @@ function Agents_Page(props) {
                 gridMap={setEndBoard}
                 onEnd={setEndPoint}
                 isChecked={endCheck}
+                mapNo={props.mapNo}
                 check={validateEnd}
               ></Map>
               <button className={classes.btn} onClick={showEnd}>
@@ -280,8 +273,14 @@ function Agents_Page(props) {
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
-      {props.value}
+    <button
+      className="square"
+      onClick={props.onClick}
+      style={{
+        backgroundColor: props.value === "@" ? "black" : "white",
+      }}
+    >
+      {props.value !== "." && props.value !== "@" ? props.value : null}
     </button>
   );
 }
@@ -306,10 +305,27 @@ function Board(props) {
 }
 
 function Map(props) {
+  console.log("the map is", props.mapNo);
+  let currentMap;
+  switch (props.mapNo) {
+    case "1":
+      currentMap = maps.map1;
+      break;
+    case "2":
+      currentMap = maps.map2;
+      break;
+    case "3":
+      currentMap = maps.map3;
+      break;
+    case "4":
+      currentMap = maps.map4;
+      break;
+    default:
+      currentMap = maps.mapdefault;
+      break;
+  }
   const handleClick = (rowIndex, colIndex, check) => {
-    const reset = new Array(props.board.length)
-      .fill("")
-      .map((row) => new Array(props.board[0].length).fill(null));
+    let reset = currentMap;
     let boardCopy = [...reset];
 
     props.isChecked();
