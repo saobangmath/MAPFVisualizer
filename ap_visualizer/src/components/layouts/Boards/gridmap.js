@@ -1,5 +1,6 @@
 import React from "react";
 import { pColors } from "../../../utility/Constants";
+import { maps } from "../../../maps";
 
 /** props : {robotImage={props.robotImage},
  *         onClick={() => props.onClick(rowIndex, colIndex)},
@@ -32,7 +33,9 @@ function Square(props) {
 }
 
 function Game(props) {
-  const handleClick = (i) => {};
+  const handleClick = (i) => {
+    console.log("the default map is", maps.mapdefault);
+  };
   return (
     <div className="game">
       <div className="game-board">
@@ -77,17 +80,24 @@ function Board(props) {
       }
     }
 
-    let backgroundColor = "white";
-    // check if the square is the destination of any robots -> change it background color accordingly
-    for (let id = 1; id <= no_agent; id++) {
-      if (
-        props.agents[id].endPoint.row === rowIndex &&
-        props.agents[id].endPoint.col === colIndex
-      ) {
-        backgroundColor = pColors[id];
-        break;
+    let backgroundColor = "";
+    if (props.map[rowIndex][colIndex] === ".") {
+      backgroundColor = "white";
+    } else if (props.map[rowIndex][colIndex] === "@") {
+      backgroundColor = "black";
+    } else {
+      // check if the square is the destination of any robots -> change it background color accordingly
+      for (let id = 1; id <= no_agent; id++) {
+        if (
+          props.agents[id].endPoint.row === rowIndex &&
+          props.agents[id].endPoint.col === colIndex
+        ) {
+          backgroundColor = pColors[id];
+          break;
+        }
       }
     }
+
     return (
       <Square
         robotImage={agentId !== -1 ? props.agents[agentId].img : null}
