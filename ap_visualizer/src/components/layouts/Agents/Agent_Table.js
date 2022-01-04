@@ -3,6 +3,9 @@ import { useState } from "react";
 import styles from "./Agent_Table.module.css";
 
 const Agent_Table = (props) => {
+  const assignAgent = (agent) => {
+    // console.log("the agent data is", agent);
+  };
   return (
     <table className={styles.styledTable}>
       <thead>
@@ -18,14 +21,25 @@ const Agent_Table = (props) => {
             <td>
               <p>
                 <p className={styles.content}>Robot {key}</p>
-                {<img className={styles.image} src={props.agents[key].img} alt="logo" />}
+                {
+                  <img
+                    className={styles.image}
+                    src={props.agents[key].img}
+                    alt="logo"
+                  />
+                }
               </p>
             </td>
             <td>
               <button className={styles.statusBtn}>Available</button>
             </td>
             <td>
-              <button className={styles.actionBtn}>Assign</button>
+              <button
+                className={styles.actionBtn}
+                onClick={assignAgent(props.agents[key])}
+              >
+                Assign
+              </button>
             </td>
           </tr>
         ))}

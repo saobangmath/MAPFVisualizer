@@ -25,17 +25,15 @@
 }
 .Main-Container {
   width: 100%;
-  /* position: relative; */
 }
 .Agent-Container {
   display: inline-block;
   vertical-align: top;
-  margin-left: 10%;
 }
 .Map-Container {
-  display: inline-block;
   vertical-align: top;
-  margin-left: 10%;
+  margin-left: 30%;
+  float: left;
 }
 
 /* @media (prefers-reduced-motion: no-preference) {
