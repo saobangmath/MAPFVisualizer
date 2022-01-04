@@ -8,53 +8,37 @@ import Game from "./components/layouts/Boards/gridmap";
 import robots from "./images/robot.png";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
+import { maps } from './maps';
 
-// hard coded map for now;
-let grid = [['@', '1' , '.', '@'],
-                  ['.', '.', '.', '.'],
-                  ['.', '.', '.', '.'],
-                  ['@', '.', '.', '@']];
 
 
 function App() {
   var [agents, setAgentList] = useState([]);
-  var [gridMap, setGridMap] = useState(grid);
-  var [mapNumber, setMapNumber] = useState(1);
+  var [gridMap, setGridMap] = useState(maps.mapdefault);
 
-  function changeGrid(){
-    if (mapNumber != 3){
-      setMapNumber(prevMapnumber => prevMapnumber + 1)}
-    if (mapNumber === 3){
-      setMapNumber(prevMapnumber => 1)}
+  function changeGrid(value){
 
-    switch(mapNumber) {
-      case 1:
+    
+    switch(value) {
+      case "1":
         setGridMap(prevGridMap => 
-        [['@', '2' , '.','@'],
-        ['.', '.', '.', '.'],
-        ['.', '.', '.', '.'],
-        ['@', '.', '.', '@']])
+        maps.map1)
         break;
-      case 2:
+      case "2":
         setGridMap(prevGridMap => 
-        [['@', '3' , '.','@'],
-        ['.', '.', '.', '.'],
-        ['.', '.', '.', '.'],
-        ['@', '.', '.', '@']])
+        maps.map2)
         break;
-      case 3:
+      case "3":
         setGridMap(prevGridMap => 
-        [['@', '1' , '.','@'],
-        ['.', '.', '.', '.'],
-        ['.', '.', '.', '.'],
-        ['@', '.', '.', '@']])
+        maps.map3)
+        break;
+      case "4":
+        setGridMap(prevGridMap => 
+        maps.map4)
         break;
       default:
         setGridMap(prevGridMap => 
-        [['@', '.' , '.','@'],
-        ['.', '.', '.', '.'],
-        ['.', '.', '.', '.'],
-        ['@', '.', '.', '@']])
+        maps.mapdefault)
   }
 }
 
@@ -83,8 +67,14 @@ function App() {
           ></AgentsPage>
         </div>
       </div>
-      <button onClick={changeGrid}>Change Map</button>
-      <span>{mapNumber}</span>
+      <span>Map</span>
+      <select onChange={e=>changeGrid(e.target.value)}>
+    <option value="N/A">N/A</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+      </select>
     </div>
   );
 }
