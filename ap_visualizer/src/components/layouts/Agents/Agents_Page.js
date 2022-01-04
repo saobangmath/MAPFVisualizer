@@ -166,18 +166,20 @@ function Agents_Page(props) {
         Start
       </button>
       <button
+        className={classes.btn}
         onClick={() => {
           props.setStep(props.agentStep + 1);
         }}
       >
-        NEXT
+        Next
       </button>
       <button
+        className={classes.btn}
         onClick={() => {
           props.setStep(Math.max(props.agentStep - 1, 0));
         }}
       >
-        PREV
+        Prev
       </button>
       {addModal && (
         <div className={classes.modalAdd}>
