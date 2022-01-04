@@ -21,13 +21,14 @@ function Agents_Page(props) {
   let [validateStart, hasStart] = useState(false); //validate only 1 startpoint
   let [validateEnd, hasEnd] = useState(false); //validate only 1 endpoint
 
-  let [startBoard, setStartBoard] = useState(props.gridMap);
+  let [startBoard, setStartBoard] = useState(maps.mapdefault);
 
-  let [endBoard, setEndBoard] = useState(props.gridMap);
+  let [endBoard, setEndBoard] = useState(maps.mapdefault);
 
   let [start, startPoint] = useState([]); //the start point of the robot
   let [end, endPoint] = useState([]); //the end point of the robot
 
+  console.log("the original map is ", props.originalMap);
   //Add Agent
   const AddAgent = () => {
     let agentId = Object.keys(props.agents).length + 1;
@@ -58,14 +59,9 @@ function Agents_Page(props) {
     ] = lastAgent;
 
     props.mapping(boardCopy);
-    endBoard = new Array(props.gridMap.length)
-      .fill("")
-      .map((row) => new Array(props.gridMap[0].length).fill(null));
-    startBoard = new Array(props.gridMap.length)
-      .fill("")
-      .map((row) => new Array(props.gridMap[0].length).fill(null));
-    setStartBoard(startBoard);
-    setEndBoard(endBoard);
+
+    setStartBoard(props.originalMap);
+    setEndBoard(props.originalMap);
     showPopup();
   };
 
@@ -272,6 +268,7 @@ function Agents_Page(props) {
 }
 
 function Square(props) {
+  console.log("the sqaure props is", props);
   return (
     <button
       className="square"
@@ -280,7 +277,12 @@ function Square(props) {
         backgroundColor: props.value === "@" ? "black" : "white",
       }}
     >
-      {props.value !== "." && props.value !== "@" ? props.value : null}
+      {/* if the sqaure value has an agents */}
+      {typeof props.value === "object" ||
+      props.value === "@" ||
+      props.value === "."
+        ? null
+        : props.value}
     </button>
   );
 }
@@ -288,7 +290,13 @@ function Square(props) {
 function Board(props) {
   function renderSquare(item, rowIndex, colIndex) {
     return (
-      <Square onClick={() => props.onClick(rowIndex, colIndex)} value={item} />
+      <Square
+        onClick={() => props.onClick(rowIndex, colIndex)}
+        value={item}
+        rowIndex={rowIndex}
+        colIndex={colIndex}
+        isChecked={props.isChecked}
+      />
     );
   }
   return (
@@ -305,30 +313,13 @@ function Board(props) {
 }
 
 function Map(props) {
-  console.log("the map is", props.mapNo);
-  let currentMap;
-  switch (props.mapNo) {
-    case "1":
-      currentMap = maps.map1;
-      break;
-    case "2":
-      currentMap = maps.map2;
-      break;
-    case "3":
-      currentMap = maps.map3;
-      break;
-    case "4":
-      currentMap = maps.map4;
-      break;
-    default:
-      currentMap = maps.mapdefault;
-      break;
-  }
+  console.log("the map props is ", props);
   const handleClick = (rowIndex, colIndex, check) => {
-    let reset = currentMap;
+    const reset = maps.mapdefault;
     let boardCopy = [...reset];
-
+    console.log("i click", rowIndex, colIndex);
     props.isChecked();
+
     boardCopy[rowIndex][colIndex] = "X";
     props.gridMap(boardCopy);
     if (props.destination === "start") {
@@ -345,6 +336,7 @@ function Map(props) {
           onClick={(rowIndex, colIndex) =>
             handleClick(rowIndex, colIndex, props.check)
           }
+          isChecked={props.check}
         />
       </div>
     </div>
