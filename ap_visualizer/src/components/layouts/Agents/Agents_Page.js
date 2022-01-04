@@ -29,41 +29,41 @@ function Agents_Page(props) {
   let [end, endPoint] = useState([]); //the end point of the robot
 
   //Add Agent
-  const AddAgent = () => {
-    let agentId = Object.keys(props.agents).length + 1;
-    let endColor = props.endColor;
-    let robot = props.robotImage;
-    let agent = {
-      img: robot,
-      endColor: endColor,
-      agentId: agentId,
-      startPoint: start[start.length - 1],
-      endPoint: end[end.length - 1],
-      status: "Assigned",
-      priority: null,
-    };
-    props.agents[agentId] = agent;
-    props.setAgentsList(props.agents); // add the new agents to the current agents;
-    props.setAgentPaths([]); // reset the agent path from the previous CBS algo run;
+  // const AddAgent = () => {
+  //   let agentId = Object.keys(props.agents).length + 1;
+  //   let endColor = props.endColor;
+  //   let robot = props.robotImage;
+  //   let agent = {
+  //     img: robot,
+  //     endColor: endColor,
+  //     agentId: agentId,
+  //     startPoint: start[start.length - 1],
+  //     endPoint: end[end.length - 1],
+  //     status: "Assigned",
+  //     priority: null,
+  //   };
+  //   props.agents[agentId] = agent;
+  //   props.setAgentsList(props.agents); // add the new agents to the current agents;
+  //   props.setAgentPaths([]); // reset the agent path from the previous CBS algo run;
 
-    const boardCopy = [...props.gridMap];
-    let lastAgent = props.agents[agentId];
+  //   const boardCopy = [...props.gridMap];
+  //   let lastAgent = props.agents[agentId];
 
-    boardCopy[props.agents[agentId].startPoint.row][
-      props.agents[agentId].startPoint.col
-    ] = lastAgent;
+  //   boardCopy[props.agents[agentId].startPoint.row][
+  //     props.agents[agentId].startPoint.col
+  //   ] = lastAgent;
 
-    boardCopy[props.agents[agentId].endPoint.row][
-      props.agents[agentId].endPoint.col
-    ] = lastAgent;
+  //   boardCopy[props.agents[agentId].endPoint.row][
+  //     props.agents[agentId].endPoint.col
+  //   ] = lastAgent;
 
-    props.mapping(boardCopy);
-    let newMap = resetMap(boardCopy);
+  //   props.mapping(boardCopy);
+  //   let newMap = resetMap(boardCopy);
 
-    setStartBoard(newMap);
-    setEndBoard(newMap);
-    showPopup();
-  };
+  //   setStartBoard(newMap);
+  //   setEndBoard(newMap);
+  //   showPopup();
+  // };
   function newAgent() {
     let agentId = Object.keys(props.agents).length + 1;
     let endColor = props.endColor;
@@ -190,7 +190,13 @@ function Agents_Page(props) {
 
   return (
     <>
-      <AgentTable agents={props.agents}></AgentTable>
+      <AgentTable
+        agents={props.agents}
+        setAgentsList={props.setAgentsList}
+        setAgentPaths={props.setAgentPaths}
+        gridMap={props.gridMap}
+        mapping={props.mapping}
+      ></AgentTable>
       <button className={classes.btn} onClick={newAgent}>
         Add
       </button>
@@ -213,7 +219,7 @@ function Agents_Page(props) {
       >
         Prev
       </button>
-      {addModal && (
+      {/* {addModal && (
         <div className={classes.modalAdd}>
           <div className={classes.overlay} onClick={showPopup}></div>
           <div className={classes.spacing}></div>
@@ -307,96 +313,96 @@ function Agents_Page(props) {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 }
 
-function Square(props) {
-  return (
-    <button
-      className="square"
-      onClick={props.onClick}
-      style={{
-        backgroundColor: props.value === "@" ? "black" : "white",
-      }}
-    >
-      {/* if the sqaure value has an agents */}
-      {typeof props.value === "object" ||
-      props.value === "@" ||
-      props.value === "."
-        ? null
-        : props.value}
-    </button>
-  );
-}
+// function Square(props) {
+//   return (
+//     <button
+//       className="square"
+//       onClick={props.onClick}
+//       style={{
+//         backgroundColor: props.value === "@" ? "black" : "white",
+//       }}
+//     >
+//       {/* if the sqaure value has an agents */}
+//       {typeof props.value === "object" ||
+//       props.value === "@" ||
+//       props.value === "."
+//         ? null
+//         : props.value}
+//     </button>
+//   );
+// }
 
-function Board(props) {
-  function renderSquare(item, rowIndex, colIndex) {
-    return (
-      <Square
-        onClick={() => props.onClick(rowIndex, colIndex)}
-        value={item}
-        rowIndex={rowIndex}
-        colIndex={colIndex}
-        isChecked={props.isChecked}
-      />
-    );
-  }
-  return (
-    <div>
-      {props.map.map((row, rowIndex) => {
-        return (
-          <div>
-            {row.map((col, colIndex) => renderSquare(col, rowIndex, colIndex))}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-function resetMap(map) {
-  for (var i = 0; i < Object.keys(map).length; i++) {
-    for (var j = 0; j < Object.keys(map).length; j++) {
-      if (map[i][j] === "X") {
-        map[i][j] = ".";
-      }
-    }
-  }
-  return map;
-}
-function Map(props) {
-  const handleClick = (rowIndex, colIndex, check) => {
-    const board = props.board;
-    let boardCopy = [...board];
-    if (boardCopy[rowIndex][colIndex] !== "@") {
-      props.isChecked();
+// function Board(props) {
+//   function renderSquare(item, rowIndex, colIndex) {
+//     return (
+//       <Square
+//         onClick={() => props.onClick(rowIndex, colIndex)}
+//         value={item}
+//         rowIndex={rowIndex}
+//         colIndex={colIndex}
+//         isChecked={props.isChecked}
+//       />
+//     );
+//   }
+//   return (
+//     <div>
+//       {props.map.map((row, rowIndex) => {
+//         return (
+//           <div>
+//             {row.map((col, colIndex) => renderSquare(col, rowIndex, colIndex))}
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// }
+// function resetMap(map) {
+//   for (var i = 0; i < Object.keys(map).length; i++) {
+//     for (var j = 0; j < Object.keys(map).length; j++) {
+//       if (map[i][j] === "X") {
+//         map[i][j] = ".";
+//       }
+//     }
+//   }
+//   return map;
+// }
+// function Map(props) {
+//   const handleClick = (rowIndex, colIndex, check) => {
+//     const board = props.board;
+//     let boardCopy = [...board];
+//     if (boardCopy[rowIndex][colIndex] !== "@") {
+//       props.isChecked();
 
-      boardCopy = resetMap(boardCopy);
-      boardCopy[rowIndex][colIndex] = "X";
-      props.gridMap(boardCopy);
-      if (props.destination === "start") {
-        props.onStart(rowIndex, colIndex, check);
-      } else {
-        props.onEnd(rowIndex, colIndex, check);
-      }
-    } else {
-      alert("Please do not choose the obstacles.");
-    }
-  };
-  return (
-    <div className="game">
-      <div className="game-board">
-        <Board
-          map={props.board}
-          onClick={(rowIndex, colIndex) =>
-            handleClick(rowIndex, colIndex, props.check)
-          }
-          isChecked={props.check}
-        />
-      </div>
-    </div>
-  );
-}
+//       boardCopy = resetMap(boardCopy);
+//       boardCopy[rowIndex][colIndex] = "X";
+//       props.gridMap(boardCopy);
+//       if (props.destination === "start") {
+//         props.onStart(rowIndex, colIndex, check);
+//       } else {
+//         props.onEnd(rowIndex, colIndex, check);
+//       }
+//     } else {
+//       alert("Please do not choose the obstacles.");
+//     }
+//   };
+//   return (
+//     <div className="game">
+//       <div className="game-board">
+//         <Board
+//           map={props.board}
+//           onClick={(rowIndex, colIndex) =>
+//             handleClick(rowIndex, colIndex, props.check)
+//           }
+//           isChecked={props.check}
+//         />
+//       </div>
+//     </div>
+//   );
+// }
 
 export default Agents_Page;
