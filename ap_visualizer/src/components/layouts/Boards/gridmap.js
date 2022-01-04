@@ -1,51 +1,114 @@
 import React from "react";
-var assert = require('assert')
+import { pColors } from "../../../utility/Constants";
 
+/** props : {robotImage={props.robotImage},
+ *         onClick={() => props.onClick(rowIndex, colIndex)},
+ *         row={rowIndex},
+ *         col={colIndex},
+ *         value={val}}
+ */
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
-      {props.value}
+    <button
+      className="square"
+      onClick={props.onClick}
+      style={{
+        backgroundColor: props.backgroundColor,
+      }}
+    >
+      {props.robotImage != null ? ( // in case there is a robot at that position;
+        <img
+          src={props.robotImage}
+          style={{
+            height: "80%",
+            width: "60%",
+            paddingBottom: "4px",
+          }}
+          alt="logo"
+        />
+      ) : null}
     </button>
   );
 }
 
-function Board(props) {
-    console.log(props)
-    let boards = []
-    let rows = props.squares.length;
-    let cols = props.squares[0].length;
-
-    function renderSquare(id) {
-        let x = Math.floor(id/cols)
-        let y = id % cols
-        assert(x < rows && y < cols);
-        return <Square value={props.squares[x][y]} onClick={() => props.onClick(id)} />;
-    }
-    for (let row = 0; row < rows; row++){
-      boards.push(<div className="board-row"/>)
-      for (let col = 0; col < cols; col++){
-          boards.push(renderSquare(row * cols + col))
-      }
-      boards.push(<div/>)
-    }
-    return (
-     <div>
-        {boards}
-     </div>
-   );
-}
-
-function Map({ gridMap, agents, mapping }) {
+function Game(props) {
   const handleClick = (i) => {};
   return (
     <div className="game">
       <div className="game-board">
-        <Board squares={gridMap} onClick={(i) => handleClick(i)} />
+        <Board
+          map={props.gridMap}
+          agents={props.agents}
+          mapping={props.mapping}
+          step={props.step}
+          agentPaths={props.agentPaths}
+          onClick={(i) => handleClick(i)}
+        />
       </div>
     </div>
   );
 }
 
-export default Map;
+function Board(props) {
+  function renderSquare(rowIndex, colIndex) {
+    let agentId = -1; // at step i, if there is an agent at the square -> the agentId != -1 else it is equal to -1;
+    let no_agent = Object.keys(props.agents).length;
+    if (Object.keys(props.agentPaths).length > 0) {
+      // the CBS algorithm has been run;
+      for (let id = 1; id <= no_agent; id++) {
+        let cell =
+          props.agentPaths[id][
+            Math.min(props.step, props.agentPaths[id].length - 1)
+          ];
+        if (cell.x === rowIndex && cell.y === colIndex) {
+          agentId = id;
+          break;
+        }
+      }
+    } else {
+      //When CBS is not run yet
+      for (let index = 1; index <= Object.keys(props.agents).length; index++) {
+        if (
+          props.agents[index].startPoint.row === rowIndex &&
+          props.agents[index].startPoint.col === colIndex
+        ) {
+          agentId = props.agents[index].agentId;
+        }
+      }
+    }
 
-// ========================================
+    let backgroundColor = "white";
+    // check if the square is the destination of any robots -> change it background color accordingly
+    for (let id = 1; id <= no_agent; id++) {
+      if (
+        props.agents[id].endPoint.row === rowIndex &&
+        props.agents[id].endPoint.col === colIndex
+      ) {
+        backgroundColor = pColors[id];
+        break;
+      }
+    }
+    return (
+      <Square
+        robotImage={agentId !== -1 ? props.agents[agentId].img : null}
+        onClick={() => props.onClick(rowIndex, colIndex)}
+        row={rowIndex}
+        col={colIndex}
+        backgroundColor={backgroundColor}
+      />
+    );
+  }
+  return (
+    <div>
+      {props.map.map((row, rowIndex) => {
+        return (
+          <div>
+            {row.map((col, colIndex) => renderSquare(rowIndex, colIndex))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default Game;

@@ -5,47 +5,43 @@ import "./App.css";
 import * as React from "react";
 import CelebrateLogo from "./images/celebration.png";
 import Game from "./components/layouts/Boards/gridmap";
-import robots from "./images/robot.png";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
-import { maps } from './maps';
-
-
+import { robots, pColors } from "./utility/Constants";
+import { maps } from "./maps";
 
 function App() {
-  var [agents, setAgentList] = useState([]);
   var [gridMap, setGridMap] = useState(maps.mapdefault);
+  let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
 
-  function changeGrid(value){
-
-    
-    switch(value) {
+  let [agentPaths, setAgentPaths] = useState([]);
+  let [step, setStep] = useState(0);
+  var [mapNo, setMapNo] = useState("mapdefault");
+  function changeGrid(value) {
+    switch (value) {
       case "1":
-        setGridMap(prevGridMap => 
-        maps.map1)
+        setGridMap((prevGridMap) => maps.map1);
+        setMapNo("map1");
         break;
       case "2":
-        setGridMap(prevGridMap => 
-        maps.map2)
+        setGridMap((prevGridMap) => maps.map2);
+        setMapNo("map2");
         break;
       case "3":
-        setGridMap(prevGridMap => 
-        maps.map3)
+        setGridMap((prevGridMap) => maps.map3);
+        setMapNo("map3");
         break;
       case "4":
-        setGridMap(prevGridMap => 
-        maps.map4)
+        setGridMap((prevGridMap) => maps.map4);
+        setMapNo("map4");
         break;
       default:
-        setGridMap(prevGridMap => 
-        maps.mapdefault)
+        setGridMap((prevGridMap) => maps.mapdefault);
+        setMapNo("mapdefault");
+        break;
+    }
   }
-}
 
-  const getAgentList = (agent) => {
-    setAgentList(agent);
-    console.log("the agent is ", agent);
-  };
   const setMap = (points) => {
     setGridMap(points);
   };
@@ -53,27 +49,39 @@ function App() {
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
       <LandingPage image={logo} image1={PathImage} image2={CelebrateLogo} />
-      <div>
-        <div className="Container">
-          <Game gridMap={gridMap} agents={agents} mapping={setMap}></Game>
-        </div>
-        <div className="Container">
-          <AgentsPage
-            robotImage={robots}
-            agentNo={1}
+      <div className="Main-Container">
+        <div className="Map-Container">
+          <Game
+            gridMap={gridMap}
             agents={agents}
+            mapping={setMap}
+            step={step}
+            agentPaths={agentPaths}
+          ></Game>
+        </div>
+        <div className="Agent-Container">
+          <AgentsPage
+            mapNo={mapNo}
+            robotImage={robots[Object.keys(agents).length + 1]}
+            agentNo={Object.keys(agents).length + 1}
+            endColor={pColors[Object.keys(agents).length + 1]}
+            agents={agents}
+            setAgentsList={setAgentsList}
             gridMap={gridMap}
             mapping={setMap}
+            setStep={setStep}
+            agentStep={step}
+            setAgentPaths={setAgentPaths}
           ></AgentsPage>
         </div>
       </div>
       <span>Map</span>
-      <select onChange={e=>changeGrid(e.target.value)}>
-    <option value="N/A">N/A</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
+      <select onChange={(e) => changeGrid(e.target.value)}>
+        <option value="N/A">N/A</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
       </select>
     </div>
   );

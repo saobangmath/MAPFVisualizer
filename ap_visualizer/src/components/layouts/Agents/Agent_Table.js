@@ -2,36 +2,48 @@ import React from "react";
 import { useState } from "react";
 import styles from "./Agent_Table.module.css";
 
-const Agent_Table = ({ agents }) => {
-  console.log("the agents is", agents);
-  const [agent, setAgentList] = useState(agents);
-
-  // const initState = [
-  //   { num: 1, name: "bread", quantitiy: 50, location: "cupboard" },
-  //   { num: 2, name: "milk", quantitiy: 20, location: "fridge" },
-  //   { num: 3, name: "water", quantitiy: 10, location: "fridge" },
-  // ];
+const Agent_Table = (props) => {
+  const assignAgent = (agent) => {
+    // console.log("the agent data is", agent);
+  };
   return (
-    <table>
-      <tr key={"header"}>
-        {/* {Object.keys(agent[0]).map((key) => (
-          <th>{key}</th>
-        ))} */}
-        <th>Robot No.</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-      {agent.map((item) => (
-        <tr key={item.id}>
-          <td>{item.agentNo}</td>
-          <td>
-            <button className={styles.statusBtn}>Available</button>
-          </td>
-          <td>
-            <button className={styles.actionBtn}>Assign</button>
-          </td>
+    <table className={styles.styledTable}>
+      <thead>
+        <tr>
+          <th>Robot No.</th>
+          <th>Status</th>
+          <th>Action</th>
         </tr>
-      ))}
+      </thead>
+      <tbody>
+        {Object.keys(props.agents).map((key, index) => (
+          <tr key={key}>
+            <td>
+              <p>
+                <p className={styles.content}>Robot {key}</p>
+                {
+                  <img
+                    className={styles.image}
+                    src={props.agents[key].img}
+                    alt="logo"
+                  />
+                }
+              </p>
+            </td>
+            <td>
+              <button className={styles.statusBtn}>Available</button>
+            </td>
+            <td>
+              <button
+                className={styles.actionBtn}
+                onClick={assignAgent(props.agents[key])}
+              >
+                Assign
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
     </table>
   );
 };

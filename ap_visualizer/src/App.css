@@ -2,6 +2,7 @@
   text-align: center;
   background-color: #ebf7f8;
   min-height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,8 +23,16 @@
   height: 35vmin;
   pointer-events: none;
 }
-
-.Container {
+.Main-Container {
+  width: 100%;
+}
+.Agent-Container {
+  display: inline-block;
+  vertical-align: top;
+}
+.Map-Container {
+  vertical-align: top;
+  margin-left: 30%;
   float: left;
 }
 

@@ -8,8 +8,9 @@ const Conflict = require('../Conflict')
  */
 
 class highLevelSolver {
-    constructor() {
-
+    constructor(map) {
+        this.map = map;
+        this.no_agents = map.no_agents;
     }
 
     _getEdgeConflict(agent1, agent2, route1, route2) { // return any common edges (edge conflicts) between 2 given routes
@@ -23,8 +24,8 @@ class highLevelSolver {
 
     getEdgeConflict(node){ // return any edge edge conflicts within agents path that a CTNode has ;
         let solution = node.getSolution()
-        for (let agent1 = 0; agent1 < solution.length - 1; agent1++){
-            for (let agent2 = agent1 + 1; agent2 < solution.length; agent2++){
+        for (let agent1 = 1; agent1 <= this.no_agents - 1; agent1++){
+            for (let agent2 = agent1 + 1; agent2 <= this.no_agents; agent2++){
                 let conflict = this._getEdgeConflict(agent1, agent2, solution[agent1], solution[agent2]);
                 if (conflict != null){
                     return conflict
@@ -40,7 +41,7 @@ class highLevelSolver {
             let t2 = Math.min(time, route2.length - 1);
             if (route1[t1].is_equal(route2[t2])){
                 let conflict = new Conflict(agent1, agent2, route1[t1], route2[t2], t1, t2);
-                return conflict
+                return conflict;
             }
         }
         return null;
@@ -48,8 +49,8 @@ class highLevelSolver {
 
     getNormalConflict(node){ // check if a CTNode has any conflicts between agents path;
         let solution = node.getSolution()
-        for (let agent1 = 0; agent1 < solution.length-1; agent1++){
-            for (let agent2 = agent1+1; agent2 < solution.length; agent2++){
+        for (let agent1 = 1; agent1 <= this.no_agents-1; agent1++){
+            for (let agent2 = agent1+1; agent2 <= this.no_agents; agent2++){
                 let conflict = this._getNormalConflict(agent1, agent2, solution[agent1], solution[agent2])
                 if (conflict != null){
                     return conflict
@@ -75,12 +76,15 @@ class highLevelSolver {
         return pos
     }
 
-    solve(map) { // return a list of cells
+    solve() { // return a list of cells
         let root = new CTNode([])
-        root.updateSolution(map)
+        root.updateSolution(this.map)
         root.updateCost()
         let tree = []
         tree.push(root)
+        if (Object.keys(root.solution).length == 0){ // there is some agents can't even simply go from start to destination;
+            return {};
+        }
         while (tree.length > 0){
             let pos = this.findBestNodePosition(tree) // get the node with minimum cost;
             let P = tree[pos]
@@ -92,54 +96,54 @@ class highLevelSolver {
             }
             if (normalConflict != null){
                 {
-                    let A1 = new CTNode(P.getConstraints())
+                    let A1 = new CTNode([... P.getConstraints()])
                     let newConstraint = new Constraint(normalConflict.cell1, normalConflict.agent1, normalConflict.t1)
                     A1.addConstraint(newConstraint)
-                    A1.updateSolution(map)
+                    A1.updateSolution(this.map)
                     A1.updateCost()
-                    if (A1.getSolution().length > 0){ // the solution is not empty;
+                    if (Object.keys(A1.getSolution()).length > 0){ // the solution is not empty;
                         tree.push(A1)
                     }
                 }
                 {
-                    let A2 = new CTNode(P.getConstraints())
+                    let A2 = new CTNode([... P.getConstraints()])
                     let newConstraint = new Constraint(normalConflict.cell2, normalConflict.agent2, normalConflict.t2)
                     A2.addConstraint(newConstraint)
-                    A2.updateSolution(map)
+                    A2.updateSolution(this.map)
                     A2.updateCost()
-                    if (A2.getSolution().length > 0){ // the solution is not empty
+                    if (Object.keys(A2.getSolution()).length > 0){ // the solution is not empty
                         tree.push(A2)
                     }
                 }
             }
             if (edgeConflict != null){
                 {
-                    let A1 = new CTNode(P.getConstraints())
-                    let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1 - 1)
-                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1)
+                    let A1 = new CTNode([... P.getConstraints()])
+                    let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1+1)
                     A1.addConstraint(newConstraint1)
                     A1.addConstraint(newConstraint2)
-                    A1.updateSolution(map)
+                    A1.updateSolution(this.map)
                     A1.updateCost()
-                    if (A1.getSolution().length > 0){
+                    if (Object.keys(A1.getSolution()).length > 0){
                         tree.push(A1)
                     }
                 }
                 {
-                    let A2 = new CTNode(P.getConstraints())
-                    let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2 - 1)
-                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2)
+                    let A2 = new CTNode([... P.getConstraints()])
+                    let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2)
+                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2+1)
                     A2.addConstraint(newConstraint1)
                     A2.addConstraint(newConstraint2)
-                    A2.updateSolution(map)
+                    A2.updateSolution(this.map)
                     A2.updateCost()
-                    if (A2.getSolution().length > 0){
+                    if (Object.keys(A2.getSolution()).length > 0){
                         tree.push(A2)
                     }
                 }
             }
         }
-        return [] // can't find any solution
+        return {} // can't find any solution
     }
 }
 
