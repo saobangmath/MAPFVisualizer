@@ -39,7 +39,7 @@ class LowLevelSolver{
         return index
     }
 
-    // remove bad candidates in list L;
+    // remove bad expanded candidates in list L;
     go(L, successor){
         let candidates = [];
         let remove = 0;
@@ -73,7 +73,7 @@ class LowLevelSolver{
         this.OPEN.push(startCell)
         /// A* algorithm search use for the low-level search
         let pos = 0
-        let current_cell = startCell
+        let current_cell = startCell;
         let cur_x = destCell.x;
         let cur_y = destCell.y;
         let cur_time = -1
@@ -124,7 +124,8 @@ class LowLevelSolver{
             console.log("No solution for agent " + agentID);
             return [];
         }
-        while (!(cur_x == startCell.x && cur_y == startCell.y)){
+        //console.log(cur_time);
+        while (!(cur_x == startCell.x && cur_y == startCell.y && cur_time == 0)){
             this.optimalPath.push(new Cell(cur_x, cur_y));
             let [XY, time] = parentMaps[[Utils.coordinatesToId(cur_x, cur_y, map.width), cur_time]];
             XY = Utils.idToCoordinates(XY, map.width)
@@ -145,7 +146,7 @@ class LowLevelSolver{
         for (let id = 1; id <= map.no_agents; id++){
             let individualPath = this.findOptimalPathForIndividualAgent(constraints, map, id);
             if (individualPath.length > 0) {
-                optimalPaths[id] = individualPath
+                optimalPaths[id] = individualPath;
             }
             else{
                 return {};
