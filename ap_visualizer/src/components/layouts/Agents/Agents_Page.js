@@ -64,6 +64,39 @@ function Agents_Page(props) {
     setEndBoard(newMap);
     showPopup();
   };
+  function newAgent() {
+    let agentId = Object.keys(props.agents).length + 1;
+    let endColor = props.endColor;
+    let robot = props.robotImage;
+    var startP = generateStartPosition(props.gridMap);
+    let agent = {
+      img: robot,
+      endColor: endColor,
+      agentId: agentId,
+      startPoint: startP,
+      endPoint: "",
+      status: "Available",
+      priority: null,
+    };
+    props.agents[agentId] = agent;
+    props.setAgentsList(props.agents);
+    const boardCopy = [...props.gridMap];
+    let lastAgent = props.agents[agentId];
+    boardCopy[props.agents[agentId].startPoint.row][
+      props.agents[agentId].startPoint.col
+    ] = lastAgent;
+
+    props.mapping(boardCopy);
+  }
+  function generateStartPosition(map) {
+    var rowIndex, colIndex;
+    do {
+      rowIndex = Math.floor(Math.random() * 4);
+      colIndex = Math.floor(Math.random() * 4);
+    } while (map[rowIndex][colIndex] !== ".");
+    let sPosition = { row: rowIndex, col: colIndex };
+    return sPosition;
+  }
 
   const showPopup = () => {
     setModalIsOpen(!addModal);
@@ -158,7 +191,7 @@ function Agents_Page(props) {
   return (
     <>
       <AgentTable agents={props.agents}></AgentTable>
-      <button className={classes.btn} onClick={showPopup}>
+      <button className={classes.btn} onClick={newAgent}>
         Add
       </button>
       <button className={classes.btn} onClick={runCBSAlgo}>
@@ -322,15 +355,15 @@ function Board(props) {
     </div>
   );
 }
-function resetMap(board) {
-  for (var i = 0; i < Object.keys(board).length; i++) {
-    for (var j = 0; j < Object.keys(board).length; j++) {
-      if (board[i][j] === "X") {
-        board[i][j] = ".";
+function resetMap(map) {
+  for (var i = 0; i < Object.keys(map).length; i++) {
+    for (var j = 0; j < Object.keys(map).length; j++) {
+      if (map[i][j] === "X") {
+        map[i][j] = ".";
       }
     }
   }
-  return board;
+  return map;
 }
 function Map(props) {
   const handleClick = (rowIndex, colIndex, check) => {
