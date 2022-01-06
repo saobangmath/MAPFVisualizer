@@ -82,7 +82,7 @@ class LowLevelSolver{
             pos = this.findMinCostCellPosition(this.OPEN)
             current_cell = this.OPEN.splice(pos, 1)[0]
             this.CLOSE.push(current_cell)
-            if (current_cell.is_equal(destCell)) { // find solution
+            if (current_cell.is_equal(destCell) && !this.isConstraint(agentID, current_cell, constraints)) { // find solution when the current_cell is similar with the dest_cell & the expanded_cell is not the constraint;
                 cur_time = current_cell.time
                 found = true;
                 break;
@@ -124,7 +124,6 @@ class LowLevelSolver{
             console.log("No solution for agent " + agentID);
             return [];
         }
-        //console.log(cur_time);
         while (!(cur_x == startCell.x && cur_y == startCell.y && cur_time == 0)){
             this.optimalPath.push(new Cell(cur_x, cur_y));
             let [XY, time] = parentMaps[[Utils.coordinatesToId(cur_x, cur_y, map.width), cur_time]];
