@@ -12,7 +12,6 @@ const Agent_Table = (props) => {
   let [startModal, setStartModalOpen] = useState(false);
   let [endModal, setEndModalOpen] = useState(false);
   let [priority, setPriority] = useState("");
-  let [algo, setAlgo] = useState("");
   let [validateStart, hasStart] = useState(false); //to validate only 1 startpoint in the start array.
   let [validateEnd, hasEnd] = useState(false); //to validate only 1 endpoint in the end array
   let [startBoard, setStartBoard] = useState(maps.mapdefault);
@@ -79,13 +78,9 @@ const Agent_Table = (props) => {
     setPriority(e);
   };
 
-  // select the algo to apply the planning; for now it is the CBS;
-  const selectAlgo = (e) => {
-    setAlgo(e);
-  };
   const AddAgent = () => {
     // update the selectedAgent
-    var updatedAgent = selectedAgent;
+    let updatedAgent = selectedAgent;
     updatedAgent.status = "Assigned";
 
     updatedAgent.startPoint = start[start.length - 1];
@@ -171,20 +166,6 @@ const Agent_Table = (props) => {
                 <Dropdown.Item eventKey="Low">Low</Dropdown.Item>
                 <Dropdown.Item eventKey="Medium">Medium</Dropdown.Item>
                 <Dropdown.Item eventKey="High">High</Dropdown.Item>
-              </DropdownButton>
-            </div>
-            <div>
-              <p className={classes.title}>Algorithm:</p>
-              <DropdownButton
-                alignRight
-                title={algo !== "" ? algo : "Select Algorithm"}
-                id="dropdown-menu-align-right"
-                onSelect={selectAlgo}
-              >
-                <Dropdown.Item eventKey="Conflict Based Search">
-                  Conflict Based Search
-                </Dropdown.Item>
-                <Dropdown.Item eventKey="A* Search">A* Search</Dropdown.Item>
               </DropdownButton>
             </div>
 

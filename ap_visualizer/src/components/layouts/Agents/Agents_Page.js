@@ -1,23 +1,20 @@
 import React from "react";
 import classes from "./Agent_Page.module.css";
-import { useState } from "react";
 import AgentTable from "./Agent_Table";
 
-import Dropdown from "react-bootstrap/Dropdown";
-import DropdownButton from "react-bootstrap/DropdownButton";
-import { maps } from "../../../maps";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const map = require("../../../pathFinding/Map");
 const Cell = require("../../../pathFinding/Cell");
-const HighLevelSolver = require("../../../pathFinding/cbs/highLevelSolver");
+const CBS = require("../../../pathFinding/cbs/highLevelSolver");
+let interval = null; // the interval created to display the auto-movement of the agents;
 
 function Agents_Page(props) {
   function newAgent() {
     let agentId = Object.keys(props.agents).length + 1;
     let endColor = props.endColor;
     let robot = props.robotImage;
-    var startP = generateStartPosition(props.gridMap);
+    let startP = generateStartPosition(props.gridMap);
     let agent = {
       img: robot,
       endColor: endColor,
@@ -29,6 +26,7 @@ function Agents_Page(props) {
     };
     props.agents[agentId] = agent;
     props.setAgentsList(props.agents);
+    props.setAgentPaths({});
     const boardCopy = [...props.gridMap];
     let lastAgent = props.agents[agentId];
     boardCopy[props.agents[agentId].startPoint.row][
@@ -38,7 +36,7 @@ function Agents_Page(props) {
     props.mapping(boardCopy);
   }
   function generateStartPosition(map) {
-    var rowIndex, colIndex;
+    let rowIndex, colIndex;
     do {
       rowIndex = Math.floor(Math.random() * 4);
       colIndex = Math.floor(Math.random() * 4);
@@ -47,8 +45,30 @@ function Agents_Page(props) {
     return sPosition;
   }
 
-  // run the CBS algo with the added agents;
-  const runCBSAlgo = () => {
+  // get the display speed in ms;
+  const getSpeed = (e) => {
+    if (e === "Fast") {
+      return 200;
+    } else if (e === "Average") {
+      return 500;
+    } else {
+      return 1000;
+    }
+  };
+
+  // get the choosen algo from the Algorithm drop down list;
+  const getAlgo = (mp) => {
+    if (props.algo === "CBS"){
+      return new CBS(mp);
+    }
+    return null; // this line never reached!;
+  };
+
+  // run the chosen algo with the added agents;
+  const runAlgo = () => {
+    if (interval != null){
+      clearInterval(interval);
+    }
     let mp = new map();
     mp.height = props.gridMap.length;
     mp.width = props.gridMap[0].length;
@@ -70,7 +90,8 @@ function Agents_Page(props) {
       };
       mp.agents[id] = agent;
     }
-    let paths = new HighLevelSolver(mp).solve();
+    let algo = getAlgo(mp);
+    let paths = algo.solve();
     console.log(paths);
     if (Object.keys(paths).length === 0) {
       // there is no possible plan;
@@ -79,6 +100,18 @@ function Agents_Page(props) {
     }
     props.setStep(0);
     props.setAgentPaths(paths);
+    let maxLength = 1;
+    for (let agentID in paths){
+      maxLength = Math.max(maxLength, paths[agentID].length);
+    }
+    let curStep = 0;
+    interval = setInterval(function (){
+      if (curStep >= maxLength){
+        return;
+      }
+      props.setStep(curStep + 1);
+      curStep += 1;
+    }, getSpeed(props.speed));
   };
 
   return (
@@ -93,24 +126,8 @@ function Agents_Page(props) {
       <button className={classes.btn} onClick={newAgent}>
         Add
       </button>
-      <button className={classes.btn} onClick={runCBSAlgo}>
+      <button className={classes.btn} onClick={runAlgo}>
         Start
-      </button>
-      <button
-        className={classes.btn}
-        onClick={() => {
-          props.setStep(props.agentStep + 1);
-        }}
-      >
-        Next
-      </button>
-      <button
-        className={classes.btn}
-        onClick={() => {
-          props.setStep(Math.max(props.agentStep - 1, 0));
-        }}
-      >
-        Prev
       </button>
     </>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-import { pColors } from "../../../utility/Constants";
+import { pColors } from "../../../Constants";
 import { maps } from "../../../maps";
 
 /** props : {robotImage={props.robotImage},
