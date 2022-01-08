@@ -7,7 +7,7 @@ import CelebrateLogo from "./images/celebration.png";
 import Game from "./components/layouts/Boards/gridmap";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
-import { robots, pColors } from "./utility/Constants";
+import { robots, pColors } from "./Constants";
 import { maps } from "./maps";
 import { dupMaps } from "./dupMaps";
 
@@ -17,6 +17,8 @@ function App() {
   let [gridMap, setGridMap] = useState(maps.mapdefault);
   let [agentPaths, setAgentPaths] = useState([]);
   let [step, setStep] = useState(0); // display the step that the current grid map is visualized;
+  let [speed, setSpeed] = useState("Fast"); // the speed of the animation for auto-move of the agent; default value is Slow
+  let [algo, setAlgo] = useState("CBS"); // the algorithm options; default value is CBS algorithm;
   function changeGrid(value) {
     switch (value) {
       case "1":
@@ -72,8 +74,9 @@ function App() {
             gridMap={gridMap}
             mapping={setMap}
             setStep={setStep}
-            agentStep={step}
             setAgentPaths={setAgentPaths}
+            speed={speed}
+            algo={algo}
           ></AgentsPage>
         </div>
       </div>
@@ -84,6 +87,16 @@ function App() {
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
+      </select>
+      <span>Speed</span>
+      <select onChange={(e) => setSpeed(e.target.value)}>
+        <option value = "Fast">Fast</option>
+        <option value = "Average">Average</option>
+        <option value = "Slow">Slow</option>
+      </select>
+      <span>Algorithm</span>
+      <select onChange={(e) => setAlgo(e.target.value)}>
+        <option value = "CBS">CBS</option>
       </select>
     </div>
   );
