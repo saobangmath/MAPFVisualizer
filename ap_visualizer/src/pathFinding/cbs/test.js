@@ -51,3 +51,4 @@ test('../maps/special-2.map')
 
 console.log("========= Test for special3 agent map =========")
 test('../maps/special-3.map')
+

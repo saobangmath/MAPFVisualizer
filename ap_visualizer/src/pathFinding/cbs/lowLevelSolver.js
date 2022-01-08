@@ -1,6 +1,7 @@
 const Cell = require('../Cell')
 const Utils = require('../utils')
 const assert = require('assert')
+const constants = require('./Constants')
 
 /**
  * return the plan of individual agents such that it is consistent to its own constraint.
@@ -98,7 +99,7 @@ class LowLevelSolver{
                     expanded_cell.h = Utils.getHeuristicDistance(expanded_cell, destCell, Utils.getManhattanDistance);
                     expanded_cell.f = expanded_cell.g + expanded_cell.h;
                     expanded_cell.time = current_cell.time + 1;
-                    if (expanded_cell.time >= 20){
+                    if (expanded_cell.time >= constants.STEPS_CUTOFF){
                         continue;
                     }
                     if (this.isConstraint(agentID, expanded_cell, constraints)) {
