@@ -38,8 +38,8 @@ function Agents_Page(props) {
   function generateStartPosition(map) {
     let rowIndex, colIndex;
     do {
-      rowIndex = Math.floor(Math.random() * 4);
-      colIndex = Math.floor(Math.random() * 4);
+      rowIndex = Math.floor(Math.random() * 9);
+      colIndex = Math.floor(Math.random() * 14);
     } while (map[rowIndex][colIndex] !== ".");
     let sPosition = { row: rowIndex, col: colIndex };
     return sPosition;
@@ -58,7 +58,7 @@ function Agents_Page(props) {
 
   // get the choosen algo from the Algorithm drop down list;
   const getAlgo = (mp) => {
-    if (props.algo === "CBS"){
+    if (props.algo === "CBS") {
       return new CBS(mp);
     }
     return null; // this line never reached!;
@@ -66,7 +66,7 @@ function Agents_Page(props) {
 
   // run the chosen algo with the added agents;
   const runAlgo = () => {
-    if (interval != null){
+    if (interval != null) {
       clearInterval(interval);
     }
     let mp = new map();
@@ -101,12 +101,12 @@ function Agents_Page(props) {
     props.setStep(0);
     props.setAgentPaths(paths);
     let maxLength = 1;
-    for (let agentID in paths){
+    for (let agentID in paths) {
       maxLength = Math.max(maxLength, paths[agentID].length);
     }
     let curStep = 0;
-    interval = setInterval(function (){
-      if (curStep >= maxLength){
+    interval = setInterval(function () {
+      if (curStep >= maxLength) {
         return;
       }
       props.setStep(curStep + 1);

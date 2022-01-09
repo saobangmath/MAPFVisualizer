@@ -72,7 +72,16 @@ const Agent_Table = (props) => {
   const endMapModal = () => {
     setEndModalOpen(!endModal);
   };
-
+  const closeStartMapModal = () => {
+    setStartModalOpen(!startModal);
+  };
+  const closeEndMapModal = (end) => {
+    if (end.length === 0) {
+      alert("please select one end point");
+    } else {
+      setEndModalOpen(!endModal);
+    }
+  };
   // select the priority of the agents;
   const selectPriority = (e) => {
     setPriority(e);
@@ -82,26 +91,34 @@ const Agent_Table = (props) => {
     // update the selectedAgent
     let updatedAgent = selectedAgent;
     updatedAgent.status = "Assigned";
+    if (start.length != 0) {
+      updatedAgent.startPoint = start[start.length - 1];
+    }
+    if (priority === "") {
+      alert("Please choose your task priority!");
+    } else if (end.length === 0) {
+      alert("Please select the robot destination!");
+    } else {
+      updatedAgent.priority = priority;
+      updatedAgent.endPoint = end[end.length - 1];
+      props.agents[updatedAgent.agentId] = updatedAgent;
+      props.setAgentsList(props.agents);
+      props.setAgentPaths([]); // reset the agent path from the previous CBS algo run;
 
-    updatedAgent.startPoint = start[start.length - 1];
-    updatedAgent.endPoint = end[end.length - 1];
-    props.agents[updatedAgent.agentId] = updatedAgent;
-    props.setAgentsList(props.agents);
-    props.setAgentPaths([]); // reset the agent path from the previous CBS algo run;
+      // Update the main map in gridMap.js
+      const boardCopy = [...props.gridMap];
+      let lastAgent = selectedAgent;
+      boardCopy[props.agents[updatedAgent.agentId].startPoint.row][
+        props.agents[updatedAgent.agentId].startPoint.col
+      ] = lastAgent;
 
-    // Update the main map in gridMap.js
-    const boardCopy = [...props.gridMap];
-    let lastAgent = selectedAgent;
-    boardCopy[props.agents[updatedAgent.agentId].startPoint.row][
-      props.agents[updatedAgent.agentId].startPoint.col
-    ] = lastAgent;
-
-    boardCopy[props.agents[updatedAgent.agentId].endPoint.row][
-      props.agents[updatedAgent.agentId].endPoint.col
-    ] = lastAgent;
-
-    props.mapping(boardCopy);
-    closePopup();
+      boardCopy[props.agents[updatedAgent.agentId].endPoint.row][
+        props.agents[updatedAgent.agentId].endPoint.col
+      ] = lastAgent;
+      console.log("the lastAgent", lastAgent);
+      props.mapping(boardCopy);
+      closePopup();
+    }
   };
 
   return (
@@ -170,13 +187,12 @@ const Agent_Table = (props) => {
             </div>
 
             <button className={classes.btn} onClick={startMapModal}>
-              Set Start Point
+              Click to Set
             </button>
             <button className={classes.btn} onClick={endMapModal}>
-              Set Your Destination
+              Click to set
             </button>
             <div></div>
-
             <button className={classes.btn} onClick={AddAgent}>
               Assign
             </button>
@@ -199,7 +215,10 @@ const Agent_Table = (props) => {
                 check={validateStart}
                 agents={props.agents}
               ></Map>
-              <button className={classes.btn} onClick={startMapModal}>
+              <button
+                className={classes.btn}
+                onClick={() => closeStartMapModal(end)}
+              >
                 Set StartPoint
               </button>
             </div>
@@ -222,7 +241,10 @@ const Agent_Table = (props) => {
                 check={validateEnd}
                 agents={props.agents}
               ></Map>
-              <button className={classes.btn} onClick={endMapModal}>
+              <button
+                className={classes.btn}
+                onClick={() => closeEndMapModal(selectedAgent)}
+              >
                 Set Destination
               </button>
             </div>
@@ -293,48 +315,67 @@ function Map(props) {
   const handleClick = (rowIndex, colIndex, check) => {
     const board = props.board;
     let boardCopy = [...board];
-    //update the map if the cell is not an obstacles.
-    if (boardCopy[rowIndex][colIndex] !== "@") {
+    if (typeof boardCopy[rowIndex][colIndex] === "object") {
+      alert(
+        "Please choose another start/end point! Please do not choose the same as other agents!"
+      );
+    } else if (boardCopy[rowIndex][colIndex] === "@") {
+      alert("Please do not choose the obstacles.");
+    } else {
+      //Using an checker for a final check againts all the agents start and end point.
       let startChecker = false;
       let endChecker = false;
       for (var index = 1; index <= Object.keys(props.agents).length; index++) {
+        //validate the start points between agents
         if (
           props.agents[index].startPoint.row === rowIndex &&
           props.agents[index].startPoint.col === colIndex
         ) {
           if (props.destination === "start") {
             startChecker = !startChecker;
+            break;
+          }
+        }
+        //validate the end points between agents
+        if (props.agents[index].endPoint.length !== 0) {
+          if (props.destination === "end") {
+            if (
+              props.agents[index].endPoint.row === rowIndex &&
+              props.agents[index].endPoint.col === colIndex
+            ) {
+              endChecker = !endChecker;
+              break;
+            }
+          }
+        }
+        // 'O' represent the start position 'X' represent the end position
+        if (props.destination === "start") {
+          if (!startChecker) {
+            props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
+            boardCopy = resetMap(boardCopy); //reset to the orignal layout map
+            boardCopy[rowIndex][colIndex] = "O";
+            props.onStart(rowIndex, colIndex, check);
+            props.gridMap(boardCopy);
+          } else {
+            alert(
+              "Please choose another start point that is not the same as other agents"
+            );
+          }
+        }
+        if (props.destination === "end") {
+          if (!endChecker) {
+            props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
+            boardCopy = resetMap(boardCopy); //reset to the orignal layout map
+            boardCopy[rowIndex][colIndex] = "X";
+            props.onEnd(rowIndex, colIndex, check);
+            props.gridMap(boardCopy);
+          } else {
+            alert(
+              "Please choose another end point that is not the same as other agents"
+            );
           }
         }
       }
-      // 'O' represent the start position 'X' represent the end position
-      if (props.destination === "start") {
-        if (!startChecker) {
-          props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
-          boardCopy = resetMap(boardCopy); //reset to the orignal layout map
-          boardCopy[rowIndex][colIndex] = "O";
-          props.onStart(rowIndex, colIndex, check);
-          props.gridMap(boardCopy);
-        } else {
-          alert(
-            "Please choose another start point that is not the same as other agents"
-          );
-        }
-      } else {
-        if (!endChecker) {
-          props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
-          boardCopy = resetMap(boardCopy); //reset to the orignal layout map
-          boardCopy[rowIndex][colIndex] = "X";
-          props.onEnd(rowIndex, colIndex, check);
-          props.gridMap(boardCopy);
-        } else {
-          alert(
-            "Please choose another end point that is not the same as other agents"
-          );
-        }
-      }
-    } else {
-      alert("Please do not choose the obstacles.");
     }
   };
   return (
