@@ -3,6 +3,7 @@ import classes from "./Agent_Page.module.css";
 import AgentTable from "./Agent_Table";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import {clone2DArray, getSpeed, getNextAgentID} from '../../utility/Utility';
 
 const map = require("../../../pathFinding/Map");
 const Cell = require("../../../pathFinding/Cell");
@@ -11,7 +12,7 @@ let interval = null; // the interval created to display the auto-movement of the
 
 function Agents_Page(props) {
   function newAgent() {
-    let agentId = Object.keys(props.agents).length + 1;
+    let agentId = getNextAgentID(props.agents);
     let endColor = props.endColor;
     let robot = props.robotImage;
     let startP = generateStartPosition(props.gridMap);
@@ -27,7 +28,7 @@ function Agents_Page(props) {
     props.agents[agentId] = agent;
     props.setAgentsList(props.agents);
     props.setAgentPaths({});
-    const boardCopy = [...props.gridMap];
+    const boardCopy = clone2DArray(props.gridMap);
     let lastAgent = props.agents[agentId];
     boardCopy[props.agents[agentId].startPoint.row][
       props.agents[agentId].startPoint.col
@@ -45,18 +46,7 @@ function Agents_Page(props) {
     return sPosition;
   }
 
-  // get the display speed in ms;
-  const getSpeed = (e) => {
-    if (e === "Fast") {
-      return 200;
-    } else if (e === "Average") {
-      return 500;
-    } else {
-      return 1000;
-    }
-  };
-
-  // get the choosen algo from the Algorithm drop down list;
+  // get the chosen algo from the Algorithm drop down list;
   const getAlgo = (mp) => {
     if (props.algo === "CBS") {
       return new CBS(mp);
@@ -72,29 +62,35 @@ function Agents_Page(props) {
     let mp = new map();
     mp.height = props.gridMap.length;
     mp.width = props.gridMap[0].length;
-    mp.grid = [...props.gridMap];
-    mp.no_agents = Object.keys(props.agents).length;
+    mp.grid = clone2DArray(props.gridMap);
+    // add agents in props to map agents with the format used in the cbs;
+    for (let id in props.agents) {
+      let start_row = props.agents[id].startPoint.row;
+      let start_col = props.agents[id].startPoint.col;
+      let status = props.agents[id].status;
+      if (status === "Assigned"){ // only added those assigned agent into the algorithm plan;
+        let end_row = props.agents[id].endPoint.row;
+        let end_col = props.agents[id].endPoint.col;
+        let agent = {
+          START: new Cell(start_row, start_col),
+          DEST: new Cell(end_row, end_col),
+        };
+        mp.agents[id] = agent;
+      }
+      else if (status === "Available"){ // treat those unassigned agents as the obstacles in the grid map;
+        mp.grid[start_row][start_col] = "@";
+      }
+    }
+    props.setAlgoFinished(false); // the algorithm is in executing progress;
+    mp.no_agents = Object.keys(mp.agents).length;
     if (mp.no_agents === 0) {
       alert("There is no agents to run the CBS!");
       return;
     }
-    // add agents in props to map agents with the format used in the cbs;
-    for (let id = 1; id <= mp.no_agents; id++) {
-      let start_row = props.agents[id].startPoint.row;
-      let start_col = props.agents[id].startPoint.col;
-      let end_row = props.agents[id].endPoint.row;
-      let end_col = props.agents[id].endPoint.col;
-      let agent = {
-        START: new Cell(start_row, start_col),
-        DEST: new Cell(end_row, end_col),
-      };
-      mp.agents[id] = agent;
-    }
     let algo = getAlgo(mp);
     let paths = algo.solve();
     console.log(paths);
-    if (Object.keys(paths).length === 0) {
-      // there is no possible plan;
+    if (Object.keys(paths).length === 0) { // there is no possible plan;
       alert("No possible plan found!");
       return;
     }
@@ -107,6 +103,7 @@ function Agents_Page(props) {
     let curStep = 0;
     interval = setInterval(function () {
       if (curStep >= maxLength) {
+        props.setAlgoFinished(true);
         return;
       }
       props.setStep(curStep + 1);
@@ -122,6 +119,8 @@ function Agents_Page(props) {
         setAgentPaths={props.setAgentPaths}
         gridMap={props.gridMap}
         mapping={props.mapping}
+        algoFinished={props.algoFinished}
+        setAlgoFinished={props.setAlgoFinished}
       ></AgentTable>
       <button className={classes.btn} onClick={newAgent}>
         Add

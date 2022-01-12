@@ -6,6 +6,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import { maps } from "../../../maps";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./Agent_Page.module.css";
+import {clone2DArray} from '../../utility/Utility'
 
 const Agent_Table = (props) => {
   let [addModal, setModalIsOpen] = useState(false);
@@ -18,7 +19,7 @@ const Agent_Table = (props) => {
   let [endBoard, setEndBoard] = useState(maps.mapdefault);
   let [start, startPoint] = useState([]); //the start point of the robot
   let [end, endPoint] = useState([]); //the end point of the robot
-  var [selectedAgent, setSelectedAgent] = useState(); //get the selected agents
+  let [selectedAgent, setSelectedAgent] = useState(); //get the selected agents
   const showPopup = (agent) => {
     setSelectedAgent(agent);
     setStartMap(agent);
@@ -26,7 +27,7 @@ const Agent_Table = (props) => {
   };
   const setStartMap = (agent) => {
     const board = props.gridMap;
-    let boardCopy = [...board];
+    let boardCopy = clone2DArray(board);
     boardCopy[agent.startPoint.row][agent.startPoint.col] = "O";
     props.mapping(boardCopy);
   };
@@ -103,10 +104,11 @@ const Agent_Table = (props) => {
       updatedAgent.endPoint = end[end.length - 1];
       props.agents[updatedAgent.agentId] = updatedAgent;
       props.setAgentsList(props.agents);
-      props.setAgentPaths([]); // reset the agent path from the previous CBS algo run;
+      props.setAgentPaths({}); // reset the agent path from the previous CBS algo run;
+      props.setAlgoFinished(true); // reset the algoFinished to be true;
 
       // Update the main map in gridMap.js
-      const boardCopy = [...props.gridMap];
+      const boardCopy = clone2DArray(props.gridMap);
       let lastAgent = selectedAgent;
       boardCopy[props.agents[updatedAgent.agentId].startPoint.row][
         props.agents[updatedAgent.agentId].startPoint.col
@@ -121,6 +123,35 @@ const Agent_Table = (props) => {
     }
   };
 
+  // remove the agent in the map;
+  const RemoveAgent = (id) => {
+    if (Object.keys(props.agents).length == 1){
+      alert("The number of agent could not be zero!");
+      return;
+    }
+    console.log(props.algoFinished)
+    if (!props.algoFinished){
+      alert("Can't remove the agent when the algorithm is in progress!");
+      return;
+    }
+    console.log("Remove agent id: " + id);
+    for (let row = 0; row < props.gridMap.length; row++){
+      for (let col = 0; col < props.gridMap[0].length; col++){
+        if (props.gridMap[row][col] !== null && props.gridMap[row][col].agentId === id){
+          props.gridMap[row][col] = null;
+        }
+      }
+    }
+    let new_agents = {};
+    for (let key in props.agents){
+      if (key != id){
+        new_agents[key] = props.agents[key];
+      }
+    }
+    props.setAgentsList(new_agents);
+    props.setAgentPaths({});
+  };
+
   return (
     <>
       <table id="agentTable" className={styles.styledTable}>
@@ -129,6 +160,7 @@ const Agent_Table = (props) => {
             <th>Robot No.</th>
             <th>Status</th>
             <th>Action</th>
+            <th>Remove Agent</th>
           </tr>
         </thead>
         <tbody>
@@ -157,6 +189,13 @@ const Agent_Table = (props) => {
                   onClick={() => showPopup(props.agents[key])}
                 >
                   Assign
+                </button>
+              </td>
+              <td>
+                <button
+                  className={styles.removeBtn}
+                  onClick={() => RemoveAgent(key)}>
+                  Remove
                 </button>
               </td>
             </tr>
@@ -325,7 +364,7 @@ function Map(props) {
       //Using an checker for a final check againts all the agents start and end point.
       let startChecker = false;
       let endChecker = false;
-      for (var index = 1; index <= Object.keys(props.agents).length; index++) {
+      for (let index in props.agents) {
         //validate the start points between agents
         if (
           props.agents[index].startPoint.row === rowIndex &&
