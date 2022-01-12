@@ -39,8 +39,8 @@ function Agents_Page(props) {
   function generateStartPosition(map) {
     let rowIndex, colIndex;
     do {
-      rowIndex = Math.floor(Math.random() * 9);
-      colIndex = Math.floor(Math.random() * 14);
+      rowIndex = Math.floor(Math.random() * map.length);
+      colIndex = Math.floor(Math.random() * map[0].length);
     } while (map[rowIndex][colIndex] !== ".");
     let sPosition = { row: rowIndex, col: colIndex };
     return sPosition;
