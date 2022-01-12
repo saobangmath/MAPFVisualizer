@@ -39,6 +39,9 @@ function Agents_Page(props) {
     props.agents[agentId] = agent;
     props.setAgentsList(props.agents);
     props.setAgentPaths({});
+
+    props.setAlgoFinished(true); // reset the algoFinished to be true;
+
     const boardCopy = [... props.gridMap];
     let lastAgent = props.agents[agentId];
     boardCopy[props.agents[agentId].startPoint.row][

@@ -232,11 +232,7 @@ const Agent_Table = (props) => {
             <tr key={key}>
               <td>
                 <p>
-<<<<<<< HEAD
                   Robot {index+1}
-=======
-                  Robot {index + 1}
->>>>>>> fixed display
                   {
                     <img
                       className={styles.image}
@@ -444,7 +440,7 @@ function resetMap(map) {
 function Map(props) {
   const handleClick = (rowIndex, colIndex, check) => {
     const board = props.board;
-    let boardCopy = clone2DArray(board);
+    let boardCopy = [... board];
     if (typeof boardCopy[rowIndex][colIndex] === "object") {
       alert(
         "Please choose another start/end point! Please do not choose the same as other agents!"
