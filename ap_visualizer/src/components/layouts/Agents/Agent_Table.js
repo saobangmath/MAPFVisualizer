@@ -434,12 +434,13 @@ function resetMap(map) {
       }
     }
   }
+  console.log(map);
   return map;
 }
 function Map(props) {
   const handleClick = (rowIndex, colIndex, check) => {
     const board = props.board;
-    let boardCopy = [...board];
+    let boardCopy = clone2DArray(board);
     if (typeof boardCopy[rowIndex][colIndex] === "object") {
       alert(
         "Please choose another start/end point! Please do not choose the same as other agents!"
