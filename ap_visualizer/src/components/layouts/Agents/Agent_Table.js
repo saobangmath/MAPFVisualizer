@@ -129,7 +129,6 @@ const Agent_Table = (props) => {
       alert("The number of agent could not be zero!");
       return;
     }
-    console.log(props.algoFinished)
     if (!props.algoFinished){
       alert("Can't remove the agent when the algorithm is in progress!");
       return;
@@ -168,7 +167,7 @@ const Agent_Table = (props) => {
             <tr key={key}>
               <td>
                 <p>
-                  Robot {key}
+                  Robot {index + 1}
                   {
                     <img
                       className={styles.image}
