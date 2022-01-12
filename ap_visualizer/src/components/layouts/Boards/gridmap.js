@@ -53,11 +53,9 @@ function Game(props) {
 function Board(props) {
   function renderSquare(rowIndex, colIndex) {
     let agentId = -1; // at step i, if there is an agent at the square -> the agentId != -1 else it is equal to -1;
-    let no_agent = Object.keys(props.agents).length;
     let backgroundColor;
-    if (Object.keys(props.agentPaths).length > 0) {
-      // the CBS algorithm has been run;
-      for (let id = 1; id <= no_agent; id++) {
+    if (Object.keys(props.agentPaths).length > 0) { // the CBS algorithm has been run;
+      for (let id in props.agentPaths) {
         let cell =
           props.agentPaths[id][
             Math.min(props.step, props.agentPaths[id].length - 1)
@@ -69,12 +67,12 @@ function Board(props) {
       }
     } else {
       //When CBS is not run yet
-      for (let index = 1; index <= Object.keys(props.agents).length; index++) {
+      for (let agentID in props.agents) {
         if (
-          props.agents[index].startPoint.row === rowIndex &&
-          props.agents[index].startPoint.col === colIndex
+          props.agents[agentID].startPoint.row === rowIndex &&
+          props.agents[agentID].startPoint.col === colIndex
         ) {
-          agentId = props.agents[index].agentId;
+          agentId = props.agents[agentID].agentId;
         }
       }
     }
@@ -84,11 +82,11 @@ function Board(props) {
     } else {
       backgroundColor = "white";
       // check if the square is the destination of any robots -> change it background color accordingly
-      for (let id = 1; id <= no_agent; id++) {
-        if (
-          props.agents[id].endPoint.row === rowIndex &&
-          props.agents[id].endPoint.col === colIndex
-        ) {
+      for (let id in props.agents) {
+        // the place which is the destination of some agent;
+        if (props.agents[id].endPoint.row === rowIndex &&
+            props.agents[id].endPoint.col === colIndex)
+        {
           backgroundColor = pColors[id];
         }
 
@@ -116,7 +114,6 @@ function Board(props) {
         }
       }
     }
-
     return (
       <Square
         robotImage={agentId !== -1 ? props.agents[agentId].img : null}

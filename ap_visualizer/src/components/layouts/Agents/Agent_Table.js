@@ -6,7 +6,10 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import { maps } from "../../../maps";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./Agent_Page.module.css";
+
 import Switch from "react-bootstrap/esm/Switch";
+import {clone2DArray} from '../../utility/Utility'
+
 
 const Agent_Table = (props) => {
   let [addModal, setModalIsOpen] = useState(false);
@@ -19,7 +22,8 @@ const Agent_Table = (props) => {
   let [endBoard, setEndBoard] = useState(maps.mapdefault);
   let [start, startPoint] = useState([]); //the start point of the robot
   let [end, endPoint] = useState([]); //the end point of the robot
-  var [selectedAgent, setSelectedAgent] = useState(); //get the selected agents
+
+  let [selectedAgent, setSelectedAgent] = useState(); //get the selected agents
   let [detailModal, setDetailModalOpen] = useState(false);
 
   const showPopup = (agent) => {
@@ -41,7 +45,7 @@ const Agent_Table = (props) => {
   };
   const setStartMap = (agent) => {
     const board = props.gridMap;
-    let boardCopy = [...board];
+    let boardCopy = [... board];
     boardCopy[agent.startPoint.row][agent.startPoint.col] = "O";
     props.mapping(boardCopy);
   };
@@ -141,6 +145,7 @@ const Agent_Table = (props) => {
     }
   };
   const AddAgent = () => {
+    console.log(props)
     // update the selectedAgent
     let updatedAgent = selectedAgent;
     updatedAgent.status = "Assigned";
@@ -156,10 +161,11 @@ const Agent_Table = (props) => {
       updatedAgent.endPoint = end[end.length - 1];
       props.agents[updatedAgent.agentId] = updatedAgent;
       props.setAgentsList(props.agents);
-      props.setAgentPaths([]); // reset the agent path from the previous CBS algo run;
+      props.setAgentPaths({}); // reset the agent path from the previous CBS algo run;
+      props.setAlgoFinished(true); // reset the algoFinished to be true;
 
       // Update the main map in gridMap.js
-      const boardCopy = [...props.gridMap];
+      const boardCopy = [... props.gridMap];
       let lastAgent = selectedAgent;
       boardCopy[props.agents[updatedAgent.agentId].startPoint.row][
         props.agents[updatedAgent.agentId].startPoint.col
@@ -173,7 +179,7 @@ const Agent_Table = (props) => {
     }
   };
 
-  for (let index = 1; index <= Object.keys(props.agents).length; index++) {
+  for (let index in props.agents) {
     console.log(
       "status is ",
       props.agents[index].status,
@@ -181,6 +187,35 @@ const Agent_Table = (props) => {
       props.agents[index].maxStep
     );
   }
+
+  // remove the agent in the map;
+  const RemoveAgent = (id) => {
+    if (Object.keys(props.agents).length == 1){
+      alert("The number of agent could not be zero!");
+      return;
+    }
+    if (!props.algoFinished){
+      alert("Can't remove the agent when the algorithm is in progress!");
+      return;
+    }
+    console.log("Remove agent id: " + id);
+    for (let row = 0; row < props.gridMap.length; row++){
+      for (let col = 0; col < props.gridMap[0].length; col++){
+        if (props.gridMap[row][col] !== null && props.gridMap[row][col].agentId === id){
+          props.gridMap[row][col] = null;
+        }
+      }
+    }
+    let new_agents = {};
+    for (let key in props.agents){
+      if (key != id){
+        new_agents[key] = props.agents[key];
+      }
+    }
+    props.setAgentsList(new_agents);
+    props.setAgentPaths({});
+    console.log(new_agents);
+  };
 
   return (
     <>
@@ -197,7 +232,7 @@ const Agent_Table = (props) => {
             <tr key={key}>
               <td>
                 <p>
-                  Robot {key}
+                  Robot {index+1}
                   {
                     <img
                       className={styles.image}
@@ -218,6 +253,9 @@ const Agent_Table = (props) => {
                   onClick={() => showPopup(props.agents[key])}
                 >
                   {actionTxt(props.agents[key].status)}
+                </button>
+                <button className={styles.removeBtn} onClick={() => RemoveAgent(key)}>
+                  Remove
                 </button>
               </td>
             </tr>
@@ -389,8 +427,8 @@ function Board(props) {
   );
 }
 function resetMap(map) {
-  for (var i = 0; i < Object.keys(map).length; i++) {
-    for (var j = 0; j < Object.keys(map).length; j++) {
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map[0].length; j++) {
       if (map[i][j] === "X" || map[i][j] === "O") {
         map[i][j] = ".";
       }
@@ -409,10 +447,10 @@ function Map(props) {
     } else if (boardCopy[rowIndex][colIndex] === "@") {
       alert("Please do not choose the obstacles.");
     } else {
-      //Using an checker for a final check againts all the agents start and end point.
+      //Using an checker for a final check against all the agents start and end point.
       let startChecker = false;
       let endChecker = false;
-      for (var index = 1; index <= Object.keys(props.agents).length; index++) {
+      for (let index in props.agents) {
         //validate the start points between agents
         if (
           props.agents[index].startPoint.row === rowIndex &&
@@ -439,7 +477,7 @@ function Map(props) {
         if (props.destination === "start") {
           if (!startChecker) {
             props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
-            boardCopy = resetMap(boardCopy); //reset to the orignal layout map
+            boardCopy = resetMap(boardCopy); //reset to the original layout map
             boardCopy[rowIndex][colIndex] = "O";
             props.onStart(rowIndex, colIndex, check);
             props.gridMap(boardCopy);
@@ -452,7 +490,7 @@ function Map(props) {
         if (props.destination === "end") {
           if (!endChecker) {
             props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
-            boardCopy = resetMap(boardCopy); //reset to the orignal layout map
+            boardCopy = resetMap(boardCopy); //reset to the original layout map
             boardCopy[rowIndex][colIndex] = "X";
             props.onEnd(rowIndex, colIndex, check);
             props.gridMap(boardCopy);

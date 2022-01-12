@@ -10,6 +10,7 @@ import { useState } from "react";
 import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./maps";
 import { dupMaps } from "./dupMaps";
+import {getNextAgentID} from './components/utility/Utility'
 
 function App() {
   let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
@@ -19,6 +20,7 @@ function App() {
   let [step, setStep] = useState(0); // display the step that the current grid map is visualized;
   let [speed, setSpeed] = useState("Fast"); // the speed of the animation for auto-move of the agent; default value is Slow
   let [algo, setAlgo] = useState("CBS"); // the algorithm options; default value is CBS algorithm;
+  let [algoFinished, setAlgoFinished] = useState(true); // the boolean value to indicate whether the algorithm is finished running;
   function changeGrid(value) {
     switch (value) {
       case "1":
@@ -45,10 +47,10 @@ function App() {
         break;
     }
   }
-
   const setMap = (points) => {
     setGridMap(points);
   };
+  let nextID = getNextAgentID(agents);
   return (
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
@@ -66,11 +68,11 @@ function App() {
         <div className="Agent-Container">
           <AgentsPage
             originalMap={dupMap}
-            robotImage={robots[Object.keys(agents).length + 1]}
-            agentNo={Object.keys(agents).length + 1}
-            endColor={pColors[Object.keys(agents).length + 1]}
-            pathColor={sColors[Object.keys(agents).length + 1]}
-            robotColor={rColors[Object.keys(agents).length + 1]}
+            robotImage={robots[nextID]}
+            agentNo={nextID}
+            endColor={pColors[nextID]}
+            pathColor={sColors[nextID]}
+            robotColor={rColors[nextID]}
             agents={agents}
             setAgentsList={setAgentsList}
             gridMap={gridMap}
@@ -79,6 +81,8 @@ function App() {
             setAgentPaths={setAgentPaths}
             speed={speed}
             algo={algo}
+            algoFinished={algoFinished}
+            setAlgoFinished={setAlgoFinished}
           ></AgentsPage>
         </div>
       </div>
