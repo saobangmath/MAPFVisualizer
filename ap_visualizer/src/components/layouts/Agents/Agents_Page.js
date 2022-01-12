@@ -14,12 +14,14 @@ function Agents_Page(props) {
     let agentId = Object.keys(props.agents).length + 1;
     let endColor = props.endColor;
     let pathColor = props.pathColor;
+    let robotColor = props.robotColor;
     let robot = props.robotImage;
     let startP = generateStartPosition(props.gridMap);
     let agent = {
       img: robot,
       endColor: endColor,
       pathColor: pathColor,
+      robotColor: robotColor,
       agentId: agentId,
       startPoint: startP,
       endPoint: "",

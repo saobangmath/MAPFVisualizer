@@ -1,5 +1,5 @@
 import React from "react";
-import { pColors } from "../../../Constants";
+import { pColors, rColors } from "../../../Constants";
 import { maps } from "../../../maps";
 
 /** props : {robotImage={props.robotImage},
@@ -91,6 +91,7 @@ function Board(props) {
         ) {
           backgroundColor = pColors[id];
         }
+
         //pathway coloring if the algo is being run.
         if (props.agents[id].path.length !== 0) {
           for (
@@ -103,6 +104,13 @@ function Board(props) {
               colIndex === props.agents[id].path[pathId].col
             ) {
               backgroundColor = props.agents[id].pathColor;
+            }
+            //set the start point colors (to cater the case where the user dk where is the start point)
+            if (
+              props.agents[id].startPoint.row === rowIndex &&
+              props.agents[id].startPoint.col === colIndex
+            ) {
+              backgroundColor = rColors[id];
             }
           }
         }

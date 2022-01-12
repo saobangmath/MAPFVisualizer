@@ -7,7 +7,7 @@ import CelebrateLogo from "./images/celebration.png";
 import Game from "./components/layouts/Boards/gridmap";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
-import { robots, pColors, sColors } from "./Constants";
+import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./maps";
 import { dupMaps } from "./dupMaps";
 
@@ -70,6 +70,7 @@ function App() {
             agentNo={Object.keys(agents).length + 1}
             endColor={pColors[Object.keys(agents).length + 1]}
             pathColor={sColors[Object.keys(agents).length + 1]}
+            robotColor={rColors[Object.keys(agents).length + 1]}
             agents={agents}
             setAgentsList={setAgentsList}
             gridMap={gridMap}
