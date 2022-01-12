@@ -341,19 +341,20 @@ function Board(props) {
   );
 }
 function resetMap(map) {
-  for (var i = 0; i < Object.keys(map).length; i++) {
-    for (var j = 0; j < Object.keys(map).length; j++) {
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map[0].length; j++) {
       if (map[i][j] === "X" || map[i][j] === "O") {
         map[i][j] = ".";
       }
     }
   }
+  console.log(map);
   return map;
 }
 function Map(props) {
   const handleClick = (rowIndex, colIndex, check) => {
     const board = props.board;
-    let boardCopy = [...board];
+    let boardCopy = clone2DArray(board);
     if (typeof boardCopy[rowIndex][colIndex] === "object") {
       alert(
         "Please choose another start/end point! Please do not choose the same as other agents!"
@@ -391,7 +392,7 @@ function Map(props) {
         if (props.destination === "start") {
           if (!startChecker) {
             props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
-            boardCopy = resetMap(boardCopy); //reset to the orignal layout map
+            boardCopy = resetMap(boardCopy); //reset to the original layout map
             boardCopy[rowIndex][colIndex] = "O";
             props.onStart(rowIndex, colIndex, check);
             props.gridMap(boardCopy);
@@ -404,7 +405,7 @@ function Map(props) {
         if (props.destination === "end") {
           if (!endChecker) {
             props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
-            boardCopy = resetMap(boardCopy); //reset to the orignal layout map
+            boardCopy = resetMap(boardCopy); //reset to the original layout map
             boardCopy[rowIndex][colIndex] = "X";
             props.onEnd(rowIndex, colIndex, check);
             props.gridMap(boardCopy);
