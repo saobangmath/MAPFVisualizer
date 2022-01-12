@@ -27,7 +27,7 @@ const Agent_Table = (props) => {
   };
   const setStartMap = (agent) => {
     const board = props.gridMap;
-    let boardCopy = clone2DArray(board);
+    let boardCopy = [... board];
     boardCopy[agent.startPoint.row][agent.startPoint.col] = "O";
     props.mapping(boardCopy);
   };
@@ -108,7 +108,7 @@ const Agent_Table = (props) => {
       props.setAlgoFinished(true); // reset the algoFinished to be true;
 
       // Update the main map in gridMap.js
-      const boardCopy = clone2DArray(props.gridMap);
+      const boardCopy = [... props.gridMap];
       let lastAgent = selectedAgent;
       boardCopy[props.agents[updatedAgent.agentId].startPoint.row][
         props.agents[updatedAgent.agentId].startPoint.col
@@ -353,7 +353,7 @@ function resetMap(map) {
 function Map(props) {
   const handleClick = (rowIndex, colIndex, check) => {
     const board = props.board;
-    let boardCopy = clone2DArray(board);
+    let boardCopy = [... board];
     if (typeof boardCopy[rowIndex][colIndex] === "object") {
       alert(
         "Please choose another start/end point! Please do not choose the same as other agents!"
