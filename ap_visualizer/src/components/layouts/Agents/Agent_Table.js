@@ -120,6 +120,15 @@ const Agent_Table = (props) => {
     }
   };
 
+  for (let index = 1; index <= Object.keys(props.agents).length; index++) {
+    console.log(
+      "status is ",
+      props.agents[index].status,
+      props.agents[index].curStep,
+      props.agents[index].maxStep
+    );
+  }
+
   return (
     <>
       <table id="agentTable" className={styles.styledTable}>

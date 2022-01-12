@@ -107,6 +107,7 @@ function Agents_Page(props) {
     }
     props.setStep(0);
     props.setAgentPaths(paths);
+    runMap(paths);
   };
   //store the algo path into each agents
   const storeAgentMapPath = (paths, agent) => {
@@ -116,9 +117,12 @@ function Agents_Page(props) {
       agentPath.push(path);
     }
     agent.path = agentPath;
+    agent.status = "Busy";
+    agent.maxStep = paths.length; //exclude start point, only count the path and the destination steps.
+
     props.agents[agent.agentId] = agent;
     props.setAgentsList(props.agents);
-    runMap(paths);
+    console.log(props.agents);
   };
   const runMap = (paths) => {
     if (interval != null) {
@@ -133,11 +137,25 @@ function Agents_Page(props) {
       if (curStep >= maxLength) {
         return;
       }
-      console.log("the cursteps is ", curStep);
       props.setStep(curStep + 1);
+      updateAgentStep(curStep + 1, props.agents); //update the current steps in the for each agents
       curStep += 1;
     }, getSpeed(props.speed));
+    props.setAgentsList(props.agents);
   };
+
+  const updateAgentStep = (curStep, agents) => {
+    for (let index = 1; index <= Object.keys(agents).length; index++) {
+      let curAgent = agents[index];
+      curAgent.curStep = curStep;
+      if (curStep === curAgent.maxStep) {
+        curAgent.status = "Completed";
+      }
+      props.agents[curAgent.agentId] = curAgent;
+      props.setAgentsList(props.agents);
+    }
+  };
+
   return (
     <>
       <AgentTable
