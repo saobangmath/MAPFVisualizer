@@ -7,7 +7,7 @@ import CelebrateLogo from "./images/celebration.png";
 import Game from "./components/layouts/Boards/gridmap";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
-import { robots, pColors } from "./Constants";
+import { robots, pColors, sColors } from "./Constants";
 import { maps } from "./maps";
 import { dupMaps } from "./dupMaps";
 
@@ -69,6 +69,7 @@ function App() {
             robotImage={robots[Object.keys(agents).length + 1]}
             agentNo={Object.keys(agents).length + 1}
             endColor={pColors[Object.keys(agents).length + 1]}
+            pathColor={sColors[Object.keys(agents).length + 1]}
             agents={agents}
             setAgentsList={setAgentsList}
             gridMap={gridMap}
@@ -90,13 +91,13 @@ function App() {
       </select>
       <span>Speed</span>
       <select onChange={(e) => setSpeed(e.target.value)}>
-        <option value = "Fast">Fast</option>
-        <option value = "Average">Average</option>
-        <option value = "Slow">Slow</option>
+        <option value="Fast">Fast</option>
+        <option value="Average">Average</option>
+        <option value="Slow">Slow</option>
       </select>
       <span>Algorithm</span>
       <select onChange={(e) => setAlgo(e.target.value)}>
-        <option value = "CBS">CBS</option>
+        <option value="CBS">CBS</option>
       </select>
     </div>
   );

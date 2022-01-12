@@ -13,16 +13,21 @@ function Agents_Page(props) {
   function newAgent() {
     let agentId = Object.keys(props.agents).length + 1;
     let endColor = props.endColor;
+    let pathColor = props.pathColor;
     let robot = props.robotImage;
     let startP = generateStartPosition(props.gridMap);
     let agent = {
       img: robot,
       endColor: endColor,
+      pathColor: pathColor,
       agentId: agentId,
       startPoint: startP,
       endPoint: "",
       status: "Available",
       priority: null,
+      curStep: "",
+      maxStep: "",
+      path: [],
     };
     props.agents[agentId] = agent;
     props.setAgentsList(props.agents);
@@ -66,9 +71,6 @@ function Agents_Page(props) {
 
   // run the chosen algo with the added agents;
   const runAlgo = () => {
-    if (interval != null) {
-      clearInterval(interval);
-    }
     let mp = new map();
     mp.height = props.gridMap.length;
     mp.width = props.gridMap[0].length;
@@ -92,14 +94,34 @@ function Agents_Page(props) {
     }
     let algo = getAlgo(mp);
     let paths = algo.solve();
-    console.log(paths);
     if (Object.keys(paths).length === 0) {
       // there is no possible plan;
       alert("No possible plan found!");
       return;
     }
+    //store the agent path
+    for (let agentId in paths) {
+      storeAgentMapPath(paths[agentId], props.agents[agentId]);
+    }
     props.setStep(0);
     props.setAgentPaths(paths);
+  };
+  //store the algo path into each agents
+  const storeAgentMapPath = (paths, agent) => {
+    let agentPath = agent.path;
+    for (let cellId = 0; cellId < paths.length; cellId++) {
+      let path = { row: paths[cellId].x, col: paths[cellId].y };
+      agentPath.push(path);
+    }
+    agent.path = agentPath;
+    props.agents[agent.agentId] = agent;
+    props.setAgentsList(props.agents);
+    runMap(paths);
+  };
+  const runMap = (paths) => {
+    if (interval != null) {
+      clearInterval(interval);
+    }
     let maxLength = 1;
     for (let agentID in paths) {
       maxLength = Math.max(maxLength, paths[agentID].length);
@@ -109,11 +131,11 @@ function Agents_Page(props) {
       if (curStep >= maxLength) {
         return;
       }
+      console.log("the cursteps is ", curStep);
       props.setStep(curStep + 1);
       curStep += 1;
     }, getSpeed(props.speed));
   };
-
   return (
     <>
       <AgentTable

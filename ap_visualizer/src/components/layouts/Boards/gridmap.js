@@ -79,11 +79,10 @@ function Board(props) {
       }
     }
 
-    if (props.map[rowIndex][colIndex] === ".") {
-      backgroundColor = "white";
-    } else if (props.map[rowIndex][colIndex] === "@") {
+    if (props.map[rowIndex][colIndex] === "@") {
       backgroundColor = "black";
     } else {
+      backgroundColor = "white";
       // check if the square is the destination of any robots -> change it background color accordingly
       for (let id = 1; id <= no_agent; id++) {
         if (
@@ -91,7 +90,21 @@ function Board(props) {
           props.agents[id].endPoint.col === colIndex
         ) {
           backgroundColor = pColors[id];
-          break;
+        }
+        //pathway coloring if the algo is being run.
+        if (props.agents[id].path.length !== 0) {
+          for (
+            let pathId = 1;
+            pathId < props.agents[id].path.length - 1;
+            pathId++
+          ) {
+            if (
+              rowIndex === props.agents[id].path[pathId].row &&
+              colIndex === props.agents[id].path[pathId].col
+            ) {
+              backgroundColor = props.agents[id].pathColor;
+            }
+          }
         }
       }
     }

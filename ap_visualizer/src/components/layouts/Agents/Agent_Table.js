@@ -91,7 +91,7 @@ const Agent_Table = (props) => {
     // update the selectedAgent
     let updatedAgent = selectedAgent;
     updatedAgent.status = "Assigned";
-    if (start.length != 0) {
+    if (start.length !== 0) {
       updatedAgent.startPoint = start[start.length - 1];
     }
     if (priority === "") {
@@ -115,7 +115,6 @@ const Agent_Table = (props) => {
       boardCopy[props.agents[updatedAgent.agentId].endPoint.row][
         props.agents[updatedAgent.agentId].endPoint.col
       ] = lastAgent;
-      console.log("the lastAgent", lastAgent);
       props.mapping(boardCopy);
       closePopup();
     }
