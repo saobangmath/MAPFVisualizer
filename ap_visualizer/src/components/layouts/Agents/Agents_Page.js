@@ -99,7 +99,7 @@ function Agents_Page(props) {
       alert("No possible plan found!");
       return;
     }
-    //store the agent path
+    //store the agent path into the agents list
     for (let agentId in paths) {
       storeAgentMapPath(paths[agentId], props.agents[agentId]);
     }
