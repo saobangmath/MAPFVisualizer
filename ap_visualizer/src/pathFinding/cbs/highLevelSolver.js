@@ -10,7 +10,6 @@ const Conflict = require('../Conflict')
 class highLevelSolver {
     constructor(map) {
         this.map = map;
-        this.no_agents = map.no_agents;
     }
 
     _getEdgeConflict(agent1, agent2, route1, route2) { // return any common edges (edge conflicts) between 2 given routes
@@ -24,8 +23,9 @@ class highLevelSolver {
 
     getEdgeConflict(node){ // return any edge edge conflicts within agents path that a CTNode has ;
         let solution = node.getSolution()
-        for (let agent1 = 1; agent1 <= this.no_agents - 1; agent1++){
-            for (let agent2 = agent1 + 1; agent2 <= this.no_agents; agent2++){
+        for (let agent1 in this.map.agents){
+            for (let agent2 in this.map.agents){
+                if (agent1 == agent2) continue;
                 let conflict = this._getEdgeConflict(agent1, agent2, solution[agent1], solution[agent2]);
                 if (conflict != null){
                     return conflict
@@ -49,8 +49,11 @@ class highLevelSolver {
 
     getNormalConflict(node){ // check if a CTNode has any conflicts between agents path;
         let solution = node.getSolution()
-        for (let agent1 = 1; agent1 <= this.no_agents-1; agent1++){
-            for (let agent2 = agent1+1; agent2 <= this.no_agents; agent2++){
+        for (let agent1 in this.map.agents){
+            for (let agent2 in this.map.agents){
+                if (agent1 == agent2){
+                    continue;
+                }
                 let conflict = this._getNormalConflict(agent1, agent2, solution[agent1], solution[agent2])
                 if (conflict != null){
                     return conflict
