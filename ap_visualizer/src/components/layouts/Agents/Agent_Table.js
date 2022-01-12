@@ -232,7 +232,11 @@ const Agent_Table = (props) => {
             <tr key={key}>
               <td>
                 <p>
+<<<<<<< HEAD
                   Robot {index+1}
+=======
+                  Robot {index + 1}
+>>>>>>> fixed display
                   {
                     <img
                       className={styles.image}
