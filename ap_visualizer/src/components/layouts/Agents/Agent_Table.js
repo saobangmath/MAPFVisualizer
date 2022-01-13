@@ -6,6 +6,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import { maps } from "../../../maps";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./Agent_Page.module.css";
+import Switch from "react-bootstrap/esm/Switch";
 
 const Agent_Table = (props) => {
   let [addModal, setModalIsOpen] = useState(false);
@@ -19,10 +20,24 @@ const Agent_Table = (props) => {
   let [start, startPoint] = useState([]); //the start point of the robot
   let [end, endPoint] = useState([]); //the end point of the robot
   var [selectedAgent, setSelectedAgent] = useState(); //get the selected agents
+  let [detailModal, setDetailModalOpen] = useState(false);
+
   const showPopup = (agent) => {
     setSelectedAgent(agent);
-    setStartMap(agent);
-    setModalIsOpen(!addModal);
+    switch (agent.status) {
+      case "Available":
+      case "Assigned": {
+        setStartMap(agent);
+        setModalIsOpen(!addModal);
+        break;
+      }
+      case "Completed": {
+        setDetailModalOpen(!detailModal);
+        break;
+      }
+      default:
+        break;
+    }
   };
   const setStartMap = (agent) => {
     const board = props.gridMap;
@@ -38,6 +53,9 @@ const Agent_Table = (props) => {
   };
   const endCheck = () => {
     hasEnd(!validateEnd);
+  };
+  const openDetailModal = () => {
+    setDetailModalOpen(!detailModal);
   };
   // set start location for the new agent;
   const setStartPoint = (row, col, check) => {
@@ -86,7 +104,42 @@ const Agent_Table = (props) => {
   const selectPriority = (e) => {
     setPriority(e);
   };
-
+  const statusLblColor = (status) => {
+    switch (status) {
+      case "Available":
+        return styles.lblAvailable;
+      case "Assigned":
+        return styles.lblAssigned;
+      case "Busy":
+        return styles.lblBusy;
+      default:
+        return styles.lblCompleted;
+    }
+  };
+  const actionBtnColor = (status) => {
+    switch (status) {
+      case "Available":
+        return styles.btnAssign;
+      case "Assigned":
+        return styles.btnReady;
+      case "Busy":
+        return styles.btnRunning;
+      default:
+        return styles.btnDetail;
+    }
+  };
+  const actionTxt = (status) => {
+    switch (status) {
+      case "Available":
+        return "Assign";
+      case "Assigned":
+        return "Ready";
+      case "Busy":
+        return "Running";
+      default:
+        return "Detail";
+    }
+  };
   const AddAgent = () => {
     // update the selectedAgent
     let updatedAgent = selectedAgent;
@@ -155,16 +208,16 @@ const Agent_Table = (props) => {
                 </p>
               </td>
               <td>
-                <button className={styles.statusBtn}>
+                <label className={statusLblColor(props.agents[key].status)}>
                   {props.agents[key].status}
-                </button>
+                </label>
               </td>
               <td>
                 <button
-                  className={styles.actionBtn}
+                  className={actionBtnColor(props.agents[key].status)}
                   onClick={() => showPopup(props.agents[key])}
                 >
-                  Assign
+                  {actionTxt(props.agents[key].status)}
                 </button>
               </td>
             </tr>
@@ -177,7 +230,7 @@ const Agent_Table = (props) => {
           <div className={classes.spacing}></div>
           <div className={classes.modal_content}>
             <img className={classes.image} src={selectedAgent.img} alt="logo" />
-            <p className={classes.heading}>Agent {selectedAgent.agentId}</p>
+            <p className={classes.heading}>Robot {selectedAgent.agentId}</p>
             <div>
               <p className={classes.title}>Task Priority:</p>
               <DropdownButton
@@ -256,6 +309,32 @@ const Agent_Table = (props) => {
                 Set Destination
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {detailModal && (
+        <div className={classes.modalAdd}>
+          <div className={classes.overlay} onClick={openDetailModal}></div>
+          <div className={classes.spacing}></div>
+          <div className={classes.modal_content}>
+            <img className={classes.image} src={selectedAgent.img} alt="logo" />
+            <p className={classes.heading}>Robot {selectedAgent.agentId}</p>
+            <table className={styles.detailTable}>
+              {/* detail NOt confirm */}
+              <tr>
+                <td>Total Time Taken: </td>
+                <td className={styles.detailColumn}>
+                  {selectedAgent.endColor}
+                </td>
+              </tr>
+              <tr>
+                <td>No. of steps:</td>
+                <td className={styles.detailColumn}>{selectedAgent.maxStep}</td>
+              </tr>
+            </table>
+            <button className={classes.btn} onClick={openDetailModal}>
+              Okay
+            </button>
           </div>
         </div>
       )}
