@@ -134,11 +134,11 @@ function Agents_Page(props) {
     }
     let curStep = 0;
     interval = setInterval(function () {
+      updateAgentStep(curStep, props.agents); //update the current steps in the for each agents
       if (curStep >= maxLength) {
         return;
       }
       props.setStep(curStep + 1);
-      updateAgentStep(curStep + 1, props.agents); //update the current steps in the for each agents
       curStep += 1;
     }, getSpeed(props.speed));
     props.setAgentsList(props.agents);
@@ -151,8 +151,9 @@ function Agents_Page(props) {
       if (curStep === curAgent.maxStep) {
         curAgent.status = "Completed";
       }
-      props.agents[curAgent.agentId] = curAgent;
-      props.setAgentsList(props.agents);
+      let clone_agents = {... props.agents};
+      clone_agents[curAgent.agentId] = curAgent;
+      props.setAgentsList(clone_agents);
     }
   };
 
