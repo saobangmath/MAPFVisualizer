@@ -88,9 +88,9 @@ function Agents_Page(props) {
         };
         mp.agents[id] = agent;
       }
-      else{ // for simplicity in case there is some robot in the map has not been assigned with any place -> the algo could not be executed;
-        alert("Please assigned the task for all agents or remove the agent with no assigned task!");
-        return;
+      else { // for simplicity in case there is some robot in the map has not been assigned with any place -> the algo could not be executed;
+          alert("Please assigned the task for all agents or remove the agent with no assigned task!");
+          return;
       }
     }
     props.setAlgoFinished(false); // the algorithm is in executing progress;
@@ -166,6 +166,10 @@ function Agents_Page(props) {
 
   // reset all of the configuration related to current MAPF problem;
   const reset = () => {
+    if (!props.algoFinished){
+        alert("The algo still run!");
+        return;
+    }
     props.setAgentsList({}); // reset the list of the agent to empty;
   }
 
