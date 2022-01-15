@@ -1,5 +1,5 @@
 import React from "react";
-import { pColors } from "../../../Constants";
+import { pColors, rColors } from "../../../Constants";
 import { maps } from "../../../maps";
 
 /** props : {robotImage={props.robotImage},
@@ -54,8 +54,7 @@ function Board(props) {
   function renderSquare(rowIndex, colIndex) {
     let agentId = -1; // at step i, if there is an agent at the square -> the agentId != -1 else it is equal to -1;
     let backgroundColor;
-    if (Object.keys(props.agentPaths).length > 0) {
-      // the CBS algorithm has been run;
+    if (Object.keys(props.agentPaths).length > 0) { // the CBS algorithm has been run;
       for (let id in props.agentPaths) {
         let cell =
           props.agentPaths[id][
@@ -78,11 +77,11 @@ function Board(props) {
       }
     }
 
-    if (props.map[rowIndex][colIndex] === ".") {
-      backgroundColor = "white";
-    } else if (props.map[rowIndex][colIndex] === "@") {
+    if (props.map[rowIndex][colIndex] === "@") {
       backgroundColor = "black";
     } else {
+      backgroundColor = "white";
+      // check if the square is the destination of any robots -> change it background color accordingly
       for (let id in props.agents) {
         // the agent that has not been assigned any task;
         if (props.agents[id].status === "Available" &&
@@ -96,7 +95,29 @@ function Board(props) {
             props.agents[id].endPoint.col === colIndex)
         {
           backgroundColor = pColors[id];
-          break;
+        }
+
+        //pathway coloring if the algo is being run.
+        if (props.agents[id].path.length !== 0) {
+          for (
+            let pathId = 1;
+            pathId < props.agents[id].path.length - 1;
+            pathId++
+          ) {
+            if (
+              rowIndex === props.agents[id].path[pathId].row &&
+              colIndex === props.agents[id].path[pathId].col
+            ) {
+              backgroundColor = props.agents[id].pathColor;
+            }
+            //set the start point colors (to cater the case where the user dk where is the start point)
+            if (
+              props.agents[id].startPoint.row === rowIndex &&
+              props.agents[id].startPoint.col === colIndex
+            ) {
+              backgroundColor = rColors[id];
+            }
+          }
         }
       }
     }

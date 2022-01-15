@@ -7,7 +7,7 @@ import CelebrateLogo from "./images/celebration.png";
 import Game from "./components/layouts/Boards/gridmap";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
-import { robots, pColors } from "./Constants";
+import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./maps";
 import { dupMaps } from "./dupMaps";
 import {getNextAgentID} from './components/utility/Utility'
@@ -50,6 +50,7 @@ function App() {
   const setMap = (points) => {
     setGridMap(points);
   };
+  let nextID = getNextAgentID(agents);
   return (
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
@@ -67,9 +68,11 @@ function App() {
         <div className="Agent-Container">
           <AgentsPage
             originalMap={dupMap}
-            robotImage={robots[getNextAgentID(agents)]}
-            agentNo={getNextAgentID(agents)}
-            endColor={pColors[getNextAgentID(agents)]}
+            robotImage={robots[nextID]}
+            agentNo={nextID}
+            endColor={pColors[nextID]}
+            pathColor={sColors[nextID]}
+            robotColor={rColors[nextID]}
             agents={agents}
             setAgentsList={setAgentsList}
             gridMap={gridMap}
@@ -93,13 +96,13 @@ function App() {
       </select>
       <span>Speed</span>
       <select onChange={(e) => setSpeed(e.target.value)}>
-        <option value = "Fast">Fast</option>
-        <option value = "Average">Average</option>
-        <option value = "Slow">Slow</option>
+        <option value="Fast">Fast</option>
+        <option value="Average">Average</option>
+        <option value="Slow">Slow</option>
       </select>
       <span>Algorithm</span>
       <select onChange={(e) => setAlgo(e.target.value)}>
-        <option value = "CBS">CBS</option>
+        <option value="CBS">CBS</option>
       </select>
     </div>
   );

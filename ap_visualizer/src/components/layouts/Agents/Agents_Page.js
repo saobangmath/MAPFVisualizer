@@ -12,23 +12,37 @@ let interval = null; // the interval created to display the auto-movement of the
 
 function Agents_Page(props) {
   function newAgent() {
+    if (!props.algoFinished){
+      alert("Can't add new agent when the algorithm is in-progress!");
+      return;
+    }
     let agentId = getNextAgentID(props.agents);
     let endColor = props.endColor;
+    let pathColor = props.pathColor;
+    let robotColor = props.robotColor;
     let robot = props.robotImage;
     let startP = generateStartPosition(props.gridMap);
     let agent = {
       img: robot,
       endColor: endColor,
+      pathColor: pathColor,
+      robotColor: robotColor,
       agentId: agentId,
       startPoint: startP,
       endPoint: "",
       status: "Available",
       priority: null,
+      curStep: "",
+      maxStep: "",
+      path: [],
     };
     props.agents[agentId] = agent;
     props.setAgentsList(props.agents);
     props.setAgentPaths({});
-    const boardCopy = clone2DArray(props.gridMap);
+
+    props.setAlgoFinished(true); // reset the algoFinished to be true;
+
+    const boardCopy = [... props.gridMap];
     let lastAgent = props.agents[agentId];
     boardCopy[props.agents[agentId].startPoint.row][
       props.agents[agentId].startPoint.col
@@ -56,9 +70,6 @@ function Agents_Page(props) {
 
   // run the chosen algo with the added agents;
   const runAlgo = () => {
-    if (interval != null) {
-      clearInterval(interval);
-    }
     let mp = new map();
     mp.height = props.gridMap.length;
     mp.width = props.gridMap[0].length;
@@ -77,8 +88,9 @@ function Agents_Page(props) {
         };
         mp.agents[id] = agent;
       }
-      else if (status === "Available"){ // treat those unassigned agents as the obstacles in the grid map;
-        mp.grid[start_row][start_col] = "@";
+      else { // for simplicity in case there is some robot in the map has not been assigned with any place -> the algo could not be executed;
+          alert("Please assigned the task for all agents or remove the agent with no assigned task!");
+          return;
       }
     }
     props.setAlgoFinished(false); // the algorithm is in executing progress;
@@ -89,27 +101,77 @@ function Agents_Page(props) {
     }
     let algo = getAlgo(mp);
     let paths = algo.solve();
+
     console.log(paths);
     if (Object.keys(paths).length === 0) { // there is no possible plan;
       alert("No possible plan found!");
       return;
     }
+    //store the agent path into the agents list
+    for (let agentId in paths) {
+      storeAgentMapPath(paths[agentId], props.agents[agentId]);
+    }
     props.setStep(0);
     props.setAgentPaths(paths);
+    runMap(paths);
+  };
+  //store the algo path into each agents
+  const storeAgentMapPath = (paths, agent) => {
+    let agentPath = agent.path;
+    for (let cellId = 0; cellId < paths.length; cellId++) {
+      let path = { row: paths[cellId].x, col: paths[cellId].y };
+      agentPath.push(path);
+    }
+    agent.path = agentPath;
+    agent.status = "Busy";
+    agent.maxStep = paths.length; //exclude start point, only count the path and the destination steps.
+
+    props.agents[agent.agentId] = agent;
+    props.setAgentsList(props.agents);
+    console.log(props.agents);
+  };
+  const runMap = (paths) => {
+    if (interval != null) {
+      clearInterval(interval);
+    }
     let maxLength = 1;
     for (let agentID in paths) {
       maxLength = Math.max(maxLength, paths[agentID].length);
     }
     let curStep = 0;
     interval = setInterval(function () {
-      if (curStep >= maxLength) {
+      if (curStep >= maxLength+1) {
         props.setAlgoFinished(true);
         return;
       }
+      updateAgentStep(curStep, props.agents); //update the current steps in the for each agents
       props.setStep(curStep + 1);
       curStep += 1;
     }, getSpeed(props.speed));
+    props.setAgentsList(props.agents);
   };
+
+  const updateAgentStep = (curStep, agents) => {
+    for (let index in agents) {
+      let curAgent = agents[index];
+      curAgent.curStep = curStep;
+      if (curStep === curAgent.maxStep) {
+        curAgent.status = "Completed";
+      }
+      let clone_agents = {... props.agents};
+      clone_agents[curAgent.agentId] = curAgent;
+      props.setAgentsList(clone_agents);
+    }
+  };
+
+  // reset all of the configuration related to current MAPF problem;
+  const reset = () => {
+    if (!props.algoFinished){
+        alert("The algo still run!");
+        return;
+    }
+    props.setAgentsList({}); // reset the list of the agent to empty;
+  }
 
   return (
     <>
@@ -127,6 +189,9 @@ function Agents_Page(props) {
       </button>
       <button className={classes.btn} onClick={runAlgo}>
         Start
+      </button>
+      <button className={classes.btn} onClick={reset}>
+        Reset
       </button>
     </>
   );
