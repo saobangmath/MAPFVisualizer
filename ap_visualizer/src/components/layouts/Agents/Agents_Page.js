@@ -140,7 +140,7 @@ function Agents_Page(props) {
     }
     let curStep = 0;
     interval = setInterval(function () {
-      if (curStep >= maxLength+1) {
+      if (curStep >= maxLength) {
         props.setAlgoFinished(true);
         return;
       }
@@ -155,7 +155,7 @@ function Agents_Page(props) {
     for (let index in agents) {
       let curAgent = agents[index];
       curAgent.curStep = curStep;
-      if (curStep === curAgent.maxStep) {
+      if (curStep === curAgent.maxStep-1) {
         curAgent.status = "Completed";
       }
       let clone_agents = {... props.agents};
@@ -167,10 +167,23 @@ function Agents_Page(props) {
   // reset all of the configuration related to current MAPF problem;
   const reset = () => {
     if (!props.algoFinished){
-        alert("The algo still run!");
+        alert("Can't reset the map when the algorithm is executed!");
         return;
     }
     props.setAgentsList({}); // reset the list of the agent to empty;
+    props.setAgentPaths({}); // reset the agent path;
+    let originalGridMap = [... props.gridMap];
+    for (let row = 0; row < originalGridMap.length; row++){
+      for (let col = 0; col < originalGridMap[0].length; col++){
+        if (originalGridMap[row][col] === "@"){
+          continue;
+        }
+        else{
+          originalGridMap[row][col] = ".";
+        }
+      }
+    }
+    props.mapping(originalGridMap); // reset the gridmap to the original version;
   }
 
   return (

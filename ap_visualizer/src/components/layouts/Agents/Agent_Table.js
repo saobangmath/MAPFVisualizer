@@ -362,7 +362,7 @@ const Agent_Table = (props) => {
               <tr>
                 <td>Total Time Taken: </td>
                 <td className={styles.detailColumn}>
-                  {selectedAgent.endColor}
+                  {selectedAgent.maxStep}
                 </td>
               </tr>
               <tr>

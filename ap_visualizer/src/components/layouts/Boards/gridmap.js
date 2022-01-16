@@ -83,13 +83,6 @@ function Board(props) {
       backgroundColor = "white";
       // check if the square is the destination of any robots -> change it background color accordingly
       for (let id in props.agents) {
-        // the agent that has not been assigned any task;
-        if (props.agents[id].status === "Available" &&
-            props.agents[id].startPoint.row === rowIndex &&
-            props.agents[id].startPoint.col === colIndex) {
-          agentId = id;
-          break;
-        }
         // the place which is the destination of some agent;
         if (props.agents[id].endPoint.row === rowIndex &&
             props.agents[id].endPoint.col === colIndex)
