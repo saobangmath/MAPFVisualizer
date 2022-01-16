@@ -9,43 +9,38 @@ import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
 import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./maps";
-import { dupMaps } from "./dupMaps";
-import {getNextAgentID} from './components/utility/Utility'
+import {clone2DArray, getNextAgentID} from './components/utility/Utility'
 
 function App() {
   let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
-  let [dupMap, setDupMap] = useState(dupMaps.mapdefault); //duplicating the original map
-  let [gridMap, setGridMap] = useState(maps.mapdefault);
-  let [agentPaths, setAgentPaths] = useState([]);
+  let [gridMap, setGridMap] = useState(clone2DArray(maps["0"]));
+  let [agentPaths, setAgentPaths] = useState({});
   let [step, setStep] = useState(0); // display the step that the current grid map is visualized;
   let [speed, setSpeed] = useState("Fast"); // the speed of the animation for auto-move of the agent; default value is Slow
   let [algo, setAlgo] = useState("CBS"); // the algorithm options; default value is CBS algorithm;
   let [algoFinished, setAlgoFinished] = useState(true); // the boolean value to indicate whether the algorithm is finished running;
-  function changeGrid(value) {
-    switch (value) {
-      case "1":
-        setGridMap((prevGridMap) => maps.map1);
-        setDupMap(dupMaps.map1);
-        break;
-      case "2":
-        setGridMap((prevGridMap) => maps.map2);
-        setDupMap(dupMaps.map2);
-        break;
-      case "3":
-        setGridMap((prevGridMap) => maps.map3);
-        setDupMap(dupMaps.map3);
+  let [startBoard, setStartBoard] = useState(gridMap); // the start board in each agent entry;
+  let [endBoard, setEndBoard] = useState(gridMap); // the end board in each agent entry;
 
-        break;
-      case "4":
-        setGridMap((prevGridMap) => maps.map4);
-        setDupMap(dupMaps.map4);
-
-        break;
-      default:
-        setGridMap((prevGridMap) => maps.mapdefault);
-        setDupMap(dupMaps.mapdefault);
-        break;
+  // reset all the variables of the gridMap;
+  function resetMap(mapID) {
+    if (!algoFinished){
+      alert("Can't reset the map when the algorithm is executed!");
+      return;
     }
+    console.log(mapID);
+    let updatedGridMap = null;
+    // reset the gridMap
+    if (mapID === "N/A"){
+        updatedGridMap= clone2DArray(maps["0"]);
+    }
+    else{
+        updatedGridMap = clone2DArray(maps[mapID]);
+    }
+    setMap(updatedGridMap);
+    // reset the old agents;
+    setAgentsList({});
+    setAgentPaths({});
   }
   const setMap = (points) => {
     setGridMap(points);
@@ -67,7 +62,6 @@ function App() {
         </div>
         <div className="Agent-Container">
           <AgentsPage
-            originalMap={dupMap}
             robotImage={robots[nextID]}
             agentNo={nextID}
             endColor={pColors[nextID]}
@@ -83,11 +77,15 @@ function App() {
             algo={algo}
             algoFinished={algoFinished}
             setAlgoFinished={setAlgoFinished}
+            startBoard={startBoard}
+            endBoard={endBoard}
+            setStartBoard={setStartBoard}
+            setEndBoard={setEndBoard}
           ></AgentsPage>
         </div>
       </div>
       <span>Map</span>
-      <select onChange={(e) => changeGrid(e.target.value)}>
+      <select onChange={(e) => resetMap(e.target.value)}>
         <option value="N/A">N/A</option>
         <option value="1">1</option>
         <option value="2">2</option>

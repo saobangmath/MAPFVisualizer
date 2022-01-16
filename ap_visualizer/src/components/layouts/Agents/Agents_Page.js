@@ -48,6 +48,8 @@ function Agents_Page(props) {
       props.agents[agentId].startPoint.col
     ] = lastAgent;
 
+    props.setStartBoard(boardCopy);
+    props.setEndBoard(boardCopy);
     props.mapping(boardCopy);
   }
   function generateStartPosition(map) {
@@ -105,6 +107,7 @@ function Agents_Page(props) {
     console.log(paths);
     if (Object.keys(paths).length === 0) { // there is no possible plan;
       alert("No possible plan found!");
+      props.setAlgoFinished(true);
       return;
     }
     //store the agent path into the agents list
@@ -165,7 +168,7 @@ function Agents_Page(props) {
   };
 
   // reset all of the configuration related to current MAPF problem;
-  const reset = () => {
+  const resetAgents = () => {
     if (!props.algoFinished){
         alert("Can't reset the map when the algorithm is executed!");
         return;
@@ -196,6 +199,10 @@ function Agents_Page(props) {
         mapping={props.mapping}
         algoFinished={props.algoFinished}
         setAlgoFinished={props.setAlgoFinished}
+        startBoard={props.startBoard}
+        endBoard={props.endBoard}
+        setStartBoard={props.setStartBoard}
+        setEndBoard={props.setEndBoard}
       ></AgentTable>
       <button className={classes.btn} onClick={newAgent}>
         Add
@@ -203,7 +210,7 @@ function Agents_Page(props) {
       <button className={classes.btn} onClick={runAlgo}>
         Start
       </button>
-      <button className={classes.btn} onClick={reset}>
+      <button className={classes.btn} onClick={resetAgents}>
         Reset
       </button>
     </>

@@ -18,8 +18,6 @@ const Agent_Table = (props) => {
   let [priority, setPriority] = useState("");
   let [validateStart, hasStart] = useState(false); //to validate only 1 startpoint in the start array.
   let [validateEnd, hasEnd] = useState(false); //to validate only 1 endpoint in the end array
-  let [startBoard, setStartBoard] = useState(maps.mapdefault);
-  let [endBoard, setEndBoard] = useState(maps.mapdefault);
   let [start, startPoint] = useState([]); //the start point of the robot
   let [end, endPoint] = useState([]); //the end point of the robot
 
@@ -306,11 +304,10 @@ const Agent_Table = (props) => {
             <div className={classes.map}>
               <Map
                 destination="start"
-                board={startBoard}
-                gridMap={setStartBoard}
+                board={props.startBoard}
+                gridMap={props.setStartBoard}
                 onStart={setStartPoint}
                 isChecked={startCheck}
-                originalMap={props.originalMap}
                 check={validateStart}
                 agents={props.agents}
               ></Map>
@@ -332,11 +329,10 @@ const Agent_Table = (props) => {
             <div className={classes.map}>
               <Map
                 destination="end"
-                board={endBoard}
-                gridMap={setEndBoard}
+                board={props.endBoard}
+                gridMap={props.setEndBoard}
                 onEnd={setEndPoint}
                 isChecked={endCheck}
-                originalMap={props.originalMap}
                 check={validateEnd}
                 agents={props.agents}
               ></Map>
