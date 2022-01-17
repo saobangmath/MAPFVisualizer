@@ -67,6 +67,9 @@ function Agents_Page(props) {
     if (props.algo === "CBS") {
       return new CBS(mp);
     }
+    if (props.algo === "A*+OD"){ // TODO: implement the A*+OD;
+      return new CBS(mp);
+    }
     return null; // this line never reached!;
   };
 

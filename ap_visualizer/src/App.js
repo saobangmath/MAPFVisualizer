@@ -8,7 +8,7 @@ import Game from "./components/layouts/Boards/gridmap";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
 import { robots, pColors, sColors, rColors } from "./Constants";
-import { maps } from "./maps";
+import { maps } from "./mapconfig/maps";
 import {clone2DArray, getNextAgentID} from './components/utility/Utility'
 
 function App() {
@@ -101,6 +101,7 @@ function App() {
       <span>Algorithm</span>
       <select onChange={(e) => setAlgo(e.target.value)}>
         <option value="CBS">CBS</option>
+        <option value="A*+OD">A*+OD</option>
       </select>
     </div>
   );
