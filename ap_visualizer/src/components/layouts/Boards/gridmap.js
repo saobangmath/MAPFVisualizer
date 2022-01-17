@@ -1,6 +1,6 @@
 import React from "react";
 import { pColors, rColors } from "../../../Constants";
-import { maps } from "../../../maps";
+import { maps } from "../../../mapconfig/maps";
 
 /** props : {robotImage={props.robotImage},
  *         onClick={() => props.onClick(rowIndex, colIndex)},

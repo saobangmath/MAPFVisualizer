@@ -3,7 +3,7 @@ import { useState } from "react";
 import styles from "./Agent_Table.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
-import { maps } from "../../../maps";
+import { maps } from "../../../mapconfig/maps";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./Agent_Page.module.css";
 

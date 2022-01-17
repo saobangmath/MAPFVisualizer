@@ -8,6 +8,8 @@ import {clone2DArray, getSpeed, getNextAgentID} from '../../utility/Utility';
 const map = require("../../../pathFinding/Map");
 const Cell = require("../../../pathFinding/Cell");
 const CBS = require("../../../pathFinding/cbs/highLevelSolver");
+const AStar = require("../../../pathFinding/aStar/AStar");
+
 let interval = null; // the interval created to display the auto-movement of the agents;
 
 function Agents_Page(props) {
@@ -66,6 +68,9 @@ function Agents_Page(props) {
   const getAlgo = (mp) => {
     if (props.algo === "CBS") {
       return new CBS(mp);
+    }
+    if (props.algo === "A*+OD"){ // TODO: implement the A*+OD;
+      return new AStar(mp);
     }
     return null; // this line never reached!;
   };
