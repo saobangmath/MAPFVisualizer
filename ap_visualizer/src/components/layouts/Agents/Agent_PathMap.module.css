@@ -1,0 +1,24 @@
+.map {
+  zoom: 0.5;
+}
+.startLegend {
+  float: left;
+  margin-top: 5%;
+  margin-left: 5rem;
+  padding-right: 1rem;
+}
+.pathLegend {
+  float: left;
+  margin-top: 5%;
+  padding-right: 1rem;
+}
+
+.endLegend {
+  float: left;
+  margin-top: 5%;
+}
+.legendText {
+  text-align: center;
+  padding-left: 2rem;
+  font-weight: bold;
+}
