@@ -8,8 +8,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./Agent_Page.module.css";
 
 import Switch from "react-bootstrap/esm/Switch";
-import {clone2DArray} from '../../utility/Utility'
-
+import { clone2DArray } from "../../utility/Utility";
+import AgentPathMap from "./Agent_PathMap";
 
 const Agent_Table = (props) => {
   let [addModal, setModalIsOpen] = useState(false);
@@ -43,7 +43,7 @@ const Agent_Table = (props) => {
   };
   const setStartMap = (agent) => {
     const board = props.gridMap;
-    let boardCopy = [... board];
+    let boardCopy = [...board];
     boardCopy[agent.startPoint.row][agent.startPoint.col] = "O";
     props.mapping(boardCopy);
   };
@@ -143,7 +143,7 @@ const Agent_Table = (props) => {
     }
   };
   const AddAgent = () => {
-    console.log(props)
+    console.log(props);
     // update the selectedAgent
     let updatedAgent = selectedAgent;
     updatedAgent.status = "Assigned";
@@ -163,7 +163,7 @@ const Agent_Table = (props) => {
       props.setAlgoFinished(true); // reset the algoFinished to be true;
 
       // Update the main map in gridMap.js
-      const boardCopy = [... props.gridMap];
+      const boardCopy = [...props.gridMap];
       let lastAgent = selectedAgent;
       boardCopy[props.agents[updatedAgent.agentId].startPoint.row][
         props.agents[updatedAgent.agentId].startPoint.col
@@ -188,25 +188,28 @@ const Agent_Table = (props) => {
 
   // remove the agent in the map;
   const RemoveAgent = (id) => {
-    if (Object.keys(props.agents).length == 1){
+    if (Object.keys(props.agents).length == 1) {
       alert("The number of agent could not be zero!");
       return;
     }
-    if (!props.algoFinished){
+    if (!props.algoFinished) {
       alert("Can't remove the agent when the algorithm is in progress!");
       return;
     }
     console.log("Remove agent id: " + id);
-    for (let row = 0; row < props.gridMap.length; row++){
-      for (let col = 0; col < props.gridMap[0].length; col++){
-        if (props.gridMap[row][col] !== null && props.gridMap[row][col].agentId === id){
+    for (let row = 0; row < props.gridMap.length; row++) {
+      for (let col = 0; col < props.gridMap[0].length; col++) {
+        if (
+          props.gridMap[row][col] !== null &&
+          props.gridMap[row][col].agentId === id
+        ) {
           props.gridMap[row][col] = null;
         }
       }
     }
     let new_agents = {};
-    for (let key in props.agents){
-      if (key != id){
+    for (let key in props.agents) {
+      if (key != id) {
         new_agents[key] = props.agents[key];
       }
     }
@@ -230,7 +233,7 @@ const Agent_Table = (props) => {
             <tr key={key}>
               <td>
                 <p>
-                  Robot {index+1}
+                  Robot {index + 1}
                   {
                     <img
                       className={styles.image}
@@ -252,7 +255,10 @@ const Agent_Table = (props) => {
                 >
                   {actionTxt(props.agents[key].status)}
                 </button>
-                <button className={styles.removeBtn} onClick={() => RemoveAgent(key)}>
+                <button
+                  className={styles.removeBtn}
+                  onClick={() => RemoveAgent(key)}
+                >
                   Remove
                 </button>
               </td>
@@ -357,16 +363,21 @@ const Agent_Table = (props) => {
               {/* detail NOt confirm */}
               <tr>
                 <td>Total Time Taken: </td>
-                <td className={styles.detailColumn}>
-                  {selectedAgent.maxStep}
-                </td>
+                <td className={styles.detailColumn}>{selectedAgent.maxStep}</td>
               </tr>
               <tr>
                 <td>No. of steps:</td>
                 <td className={styles.detailColumn}>{selectedAgent.maxStep}</td>
               </tr>
             </table>
-            <button className={classes.btn} onClick={openDetailModal}>
+            <div className={styles.map}>
+              <AgentPathMap
+                agent={selectedAgent}
+                map={props.startBoard}
+              ></AgentPathMap>
+            </div>
+
+            <button className={styles.btn} onClick={openDetailModal}>
               Okay
             </button>
           </div>
@@ -436,7 +447,7 @@ function resetMap(map) {
 function Map(props) {
   const handleClick = (rowIndex, colIndex, check) => {
     const board = props.board;
-    let boardCopy = [... board];
+    let boardCopy = [...board];
     if (typeof boardCopy[rowIndex][colIndex] === "object") {
       alert(
         "Please choose another start/end point! Please do not choose the same as other agents!"
