@@ -10,7 +10,7 @@ class AStar{
             this.parentMaps[agentID] = {}; // the map to map the parent of one cell -> other;
         }
     }
-    solve(){ // TODO: add pruning with CLOSE_LIST and OPEN_LIST;
+    async solve(){
         let OPEN_LIST = []; // the queue to process the expanded node;
         let CLOSE_LIST = []; // those nodes that has been expanded;
         let curState = {} // initial location of the agents;
@@ -26,28 +26,27 @@ class AStar{
         let last_moment = -1;
         OPEN_LIST.push(INITIAL_STATE);
         while (OPEN_LIST.length > 0){
+            //console.log(OPEN_LIST.length);
             let pos = this.getMinimumState(OPEN_LIST);
             let state = OPEN_LIST[pos];
             OPEN_LIST.splice(pos, 1);
-            if (this.isDestination(state)){ // encounter the last state;
-                last_moment = state.timeStep;
-                break;
-            }
-            if (state.cur == 0){
-                CLOSE_LIST.push(state);
-            }
             if (state.cur == this.map.no_agents){ // when all agent next step has been processed;
-                let new_state = new State(0, state.posState, state.timeStep + 1);
-                new_state.f = state.f;
-                new_state.g = state.g;
-                new_state.h = state.h;
-                OPEN_LIST.push(new_state);
                 for (let i = 0; i < state.agentsOrder.length; i++){
                     let agentID = state.agentsOrder[i];
                     let curCoorID = Utils.coordinatesToId(state.curState[agentID].x, state.curState[agentID].y, this.map.width);
                     let nextCoorID = Utils.coordinatesToId(state.posState[agentID].x, state.posState[agentID].y, this.map.width);
                     this.parentMaps[agentID][[nextCoorID, state.timeStep + 1]] = [curCoorID, state.timeStep];
                 }
+                if (this.isDestination(state)){ // encounter the last state;
+                    last_moment = state.timeStep + 1;
+                    break;
+                }
+                CLOSE_LIST.push(state);
+                let new_state = new State(0, state.posState, state.timeStep + 1);
+                new_state.f = state.f;
+                new_state.g = state.g;
+                new_state.h = state.h;
+                OPEN_LIST.push(new_state);
             }
             else{ // do the plan for the nextAgent;
                 let agentID = state.agentsOrder[state.cur];
@@ -65,8 +64,11 @@ class AStar{
                         continue;
                     }
                     let new_state = state.clone();
+                    let cur_cell = new Cell(cur_x, cur_y);
                     new_state.cur++;
-                    new_state.g++;
+                    if (!cur_cell.is_equal(goalCell)){
+                        new_state.g++;
+                    }
                     new_state.h -= Utils.getManhattanDistance(new Cell(cur_x, cur_y), goalCell);
                     new_state.h += Utils.getManhattanDistance(new Cell(next_x, next_y), goalCell);
                     new_state.f = new_state.g + new_state.h;
@@ -84,13 +86,9 @@ class AStar{
                         }
                     }
                     OPEN_LIST.push(new_state);
-                    //console.log(new_state);
                 }
             }
         }
-        //console.log("Done exploring!");
-        //console.log(this.parentMaps)
-        //console.log(last_moment)
         let solutions = {};
         if (last_moment != -1){ // there is solution found!;
             for (let agentID in this.map.agents){
@@ -106,22 +104,21 @@ class AStar{
                     [cur_x, cur_y] = Utils.idToCoordinates(XY, this.map.width);
                     cur_time = time;
                 }
-                //console.log("cur_time: " + cur_time + " cur_x: " + cur_x + " cur_y: " + cur_y);
                 path.push(new Cell(start_x, start_y));
                 path.reverse();
                 solutions[agentID] = path;
             }
         }
-        //console.log("Done retrieving parent map")
         return solutions;
     }
 
     hasConflict(state, curX, curY, nextX, nextY){
         for (let i = 0; i < state.cur; state++){
-            let curXi = state.curState[state.agentsOrder[i]].x;
-            let curYi = state.curState[state.agentsOrder[i]].y;
-            let nextXi = state.posState[state.agentsOrder[i]].x;
-            let nextYi = state.posState[state.agentsOrder[i]].y;
+            let agentID = state.agentsOrder[i];
+            let curXi = state.curState[agentID].x;
+            let curYi = state.curState[agentID].y;
+            let nextXi = state.posState[agentID].x;
+            let nextYi = state.posState[agentID].y;
             if (nextX == nextXi && nextY == nextYi){ // normal conflict
                 return true;
             }
@@ -146,9 +143,9 @@ class AStar{
 
     // check if all agents are arriving the destination;
     isDestination(state){
-        for (let agentID in state.curState){
+        for (let agentID in state.posState){
             let goal = this.map.agents[agentID]["DEST"];
-            if (!goal.is_equal(state.curState[agentID])){
+            if (!goal.is_equal(state.posState[agentID])){
                 return false;
             }
         }

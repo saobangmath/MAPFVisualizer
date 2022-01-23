@@ -69,7 +69,7 @@ function Agents_Page(props) {
     if (props.algo === "CBS") {
       return new CBS(mp);
     }
-    if (props.algo === "A*+OD"){ // TODO: implement the A*+OD;
+    if (props.algo === "A*+OD"){
       return new AStar(mp);
     }
     return null; // this line never reached!;
@@ -107,21 +107,22 @@ function Agents_Page(props) {
       return;
     }
     let algo = getAlgo(mp);
-    let paths = algo.solve();
-
-    console.log(paths);
-    if (Object.keys(paths).length === 0) { // there is no possible plan;
-      alert("No possible plan found!");
-      props.setAlgoFinished(true);
-      return;
-    }
-    //store the agent path into the agents list
-    for (let agentId in paths) {
-      storeAgentMapPath(paths[agentId], props.agents[agentId]);
-    }
-    props.setStep(0);
-    props.setAgentPaths(paths);
-    runMap(paths);
+    console.log("WAIT");
+    algo.solve().then((paths) => {
+      console.log(paths);
+      if (Object.keys(paths).length === 0) { // there is no possible plan;
+        alert("No possible plan found!");
+        props.setAlgoFinished(true);
+        return;
+      }
+      //store the agent path into the agents list
+      for (let agentId in paths) {
+        storeAgentMapPath(paths[agentId], props.agents[agentId]);
+      }
+      props.setStep(0);
+      props.setAgentPaths(paths);
+      runMap(paths);
+    });
   };
   //store the algo path into each agents
   const storeAgentMapPath = (paths, agent) => {

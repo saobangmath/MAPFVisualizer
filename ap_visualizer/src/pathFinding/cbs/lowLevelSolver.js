@@ -122,7 +122,7 @@ class LowLevelSolver{
             }
         }
         if (!found){
-            console.log("No solution for agent " + agentID);
+            //console.log("No solution for agent " + agentID);
             return [];
         }
         while (!(cur_x == startCell.x && cur_y == startCell.y && cur_time == 0)){
