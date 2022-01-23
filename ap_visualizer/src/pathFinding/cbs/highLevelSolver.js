@@ -79,7 +79,7 @@ class highLevelSolver {
         return pos
     }
 
-    solve() { // return a list of cells
+    async solve() { // return a list of cells
         let root = new CTNode([])
         root.updateSolution(this.map)
         root.updateCost()
