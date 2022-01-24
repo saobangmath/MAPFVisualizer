@@ -113,7 +113,7 @@ class AStar{
     }
 
     hasConflict(state, curX, curY, nextX, nextY){
-        for (let i = 0; i < state.cur; state++){
+        for (let i = 0; i < state.cur; i++){
             let agentID = state.agentsOrder[i];
             let curXi = state.curState[agentID].x;
             let curYi = state.curState[agentID].y;
@@ -157,7 +157,6 @@ class AStar{
         let minCost = 1e9, index = -1;
         for (let i = 0; i < LIST.length; i++){
             let st = LIST[i];
-            //console.log(st);
             let equal = true;
             for (let agentID in this.map.agents){
                 if (!st.curState[agentID].is_equal(state.posState[agentID])){
