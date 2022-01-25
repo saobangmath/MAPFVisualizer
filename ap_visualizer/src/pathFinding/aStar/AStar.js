@@ -26,7 +26,6 @@ class AStar{
         let last_moment = -1;
         OPEN_LIST.push(INITIAL_STATE);
         while (OPEN_LIST.length > 0){
-            //console.log(OPEN_LIST.length);
             let pos = this.getMinimumState(OPEN_LIST);
             let state = OPEN_LIST[pos];
             OPEN_LIST.splice(pos, 1);
@@ -75,13 +74,13 @@ class AStar{
                     new_state.posState[agentID] = new Cell(next_x, next_y);
 
                     if (new_state.cur == this.map.no_agents) {
-                        let openIndex = this.findBestIndex(OPEN_LIST, new_state);
-                        let closeIndex = this.findBestIndex(CLOSE_LIST, new_state);
+                        let openIndex = this.findBestIndex(OPEN_LIST, new_state , this.map.no_agents);
+                        let closeIndex = this.findBestIndex(CLOSE_LIST, new_state, this.map.no_agents);
 
-                        if (openIndex != -1 && OPEN_LIST[openIndex].f < new_state.f) {
+                        if (openIndex != -1 && OPEN_LIST[openIndex].f <= new_state.f) {
                             continue;
                         }
-                        if (closeIndex != -1 && CLOSE_LIST[closeIndex].f < new_state.f) {
+                        if (closeIndex != -1 && CLOSE_LIST[closeIndex].f <= new_state.f) {
                             continue;
                         }
                     }
@@ -90,23 +89,33 @@ class AStar{
             }
         }
         let solutions = {};
-        if (last_moment != -1){ // there is solution found!;
-            for (let agentID in this.map.agents){
-                let path = [];
-                let start_x = this.map.agents[agentID]["START"].x;
-                let start_y = this.map.agents[agentID]["START"].y;
-                let cur_time = last_moment;
-                let cur_x = this.map.agents[agentID]["DEST"].x;
-                let cur_y = this.map.agents[agentID]["DEST"].y;
-                while (cur_time != 0 || cur_x != start_x || cur_y != start_y){
-                    path.push(new Cell(cur_x, cur_y));
-                    let [XY, time] = this.parentMaps[agentID][[Utils.coordinatesToId(cur_x, cur_y, this.map.width), cur_time]];
-                    [cur_x, cur_y] = Utils.idToCoordinates(XY, this.map.width);
-                    cur_time = time;
-                }
-                path.push(new Cell(start_x, start_y));
-                path.reverse();
-                solutions[agentID] = path;
+        if (last_moment == -1){
+            return solutions;
+        }
+        // there is solution found!;
+        for (let agentID in this.map.agents){
+            let path = [];
+            let start_x = this.map.agents[agentID]["START"].x;
+            let start_y = this.map.agents[agentID]["START"].y;
+            let cur_time = last_moment;
+            let cur_x = this.map.agents[agentID]["DEST"].x;
+            let cur_y = this.map.agents[agentID]["DEST"].y;
+            while (cur_time != 0 || cur_x != start_x || cur_y != start_y){
+                path.push(new Cell(cur_x, cur_y));
+                let [XY, time] = this.parentMaps[agentID][[Utils.coordinatesToId(cur_x, cur_y, this.map.width), cur_time]];
+                [cur_x, cur_y] = Utils.idToCoordinates(XY, this.map.width);
+                cur_time = time;
+            }
+            path.push(new Cell(start_x, start_y));
+            path.reverse();
+            solutions[agentID] = path;
+        }
+        // for each agent, remove those cell from end that's equal to the destination cell;
+        for (let agentID in this.map.agents){
+            let last = solutions[agentID].length - 1;
+            while (last > 0 && solutions[agentID][last].is_equal(solutions[agentID][last-1])){
+                solutions[agentID].pop();
+                last--;
             }
         }
         return solutions;
@@ -131,11 +140,11 @@ class AStar{
 
     // get the state with minimum cost;
     getMinimumState(LIST){
-        let index = 0, cost = LIST[0].f;
-        for (let i = 1; i < LIST.length; i++){
-            if (cost > LIST[i].f){
+        let index = -1, cost = 1e9;
+        for (let i = 0; i < LIST.length; i++){
+            if (cost >= LIST[i].f){
                 cost = LIST[i].f;
-                index = i;
+                index = i; // take the latest node with minimum cost; this somehow work well in visualization;
             }
         }
         return index;
@@ -153,20 +162,23 @@ class AStar{
     }
 
     // all nodes in LIST are standard nodes -> return the node with curState == state.posState and minimum cost;
-    findBestIndex(LIST, state){
+    findBestIndex(LIST, state, no_agents){
         let minCost = 1e9, index = -1;
         for (let i = 0; i < LIST.length; i++){
             let st = LIST[i];
             //console.log(st);
             let equal = true;
+            if (st.cur != no_agents){
+                continue;
+            }
             for (let agentID in this.map.agents){
                 if (!st.curState[agentID].is_equal(state.posState[agentID])){
                     equal = false; break;
                 }
             }
             if (equal && minCost > st.f){
-                 minCost = st.f;
-                 index = i;
+                minCost = st.f;
+                index = i;
             }
         }
         return index;
