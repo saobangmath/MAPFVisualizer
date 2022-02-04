@@ -3,7 +3,7 @@ import classes from "./Agent_Page.module.css";
 import AgentTable from "./Agent_Table";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import {clone2DArray, getSpeed, getNextAgentID} from '../../utility/Utility';
+import { clone2DArray, getSpeed, getNextAgentID } from "../../utility/Utility";
 
 const map = require("../../../pathFinding/Map");
 const Cell = require("../../../pathFinding/Cell");
@@ -14,7 +14,7 @@ let interval = null; // the interval created to display the auto-movement of the
 
 function Agents_Page(props) {
   function newAgent() {
-    if (!props.algoFinished){
+    if (!props.algoFinished) {
       alert("Can't add new agent when the algorithm is in-progress!");
       return;
     }
@@ -44,7 +44,7 @@ function Agents_Page(props) {
 
     props.setAlgoFinished(true); // reset the algoFinished to be true;
 
-    const boardCopy = [... props.gridMap];
+    const boardCopy = [...props.gridMap];
     let lastAgent = props.agents[agentId];
     boardCopy[props.agents[agentId].startPoint.row][
       props.agents[agentId].startPoint.col
@@ -52,7 +52,7 @@ function Agents_Page(props) {
 
     props.setStartBoard(boardCopy);
     props.setEndBoard(boardCopy);
-    props.mapping(boardCopy);
+    props.setGridMapFunction(boardCopy);
   }
   function generateStartPosition(map) {
     let rowIndex, colIndex;
@@ -69,7 +69,7 @@ function Agents_Page(props) {
     if (props.algo === "CBS") {
       return new CBS(mp);
     }
-    if (props.algo === "A*+OD"){
+    if (props.algo === "A*+OD") {
       return new AStar(mp);
     }
     return null; // this line never reached!;
@@ -86,7 +86,8 @@ function Agents_Page(props) {
       let start_row = props.agents[id].startPoint.row;
       let start_col = props.agents[id].startPoint.col;
       let status = props.agents[id].status;
-      if (status === "Assigned"){ // only added those assigned agent into the algorithm plan;
+      if (status === "Assigned") {
+        // only added those assigned agent into the algorithm plan;
         let end_row = props.agents[id].endPoint.row;
         let end_col = props.agents[id].endPoint.col;
         let agent = {
@@ -94,10 +95,12 @@ function Agents_Page(props) {
           DEST: new Cell(end_row, end_col),
         };
         mp.agents[id] = agent;
-      }
-      else { // for simplicity in case there is some robot in the map has not been assigned with any place -> the algo could not be executed;
-          alert("Please assigned the task for all agents or remove the agent with no assigned task!");
-          return;
+      } else {
+        // for simplicity in case there is some robot in the map has not been assigned with any place -> the algo could not be executed;
+        alert(
+          "Please assigned the task for all agents or remove the agent with no assigned task!"
+        );
+        return;
       }
     }
     props.setAlgoFinished(false); // the algorithm is in executing progress;
@@ -110,7 +113,8 @@ function Agents_Page(props) {
     console.log("WAIT");
     algo.solve().then((paths) => {
       console.log(paths);
-      if (Object.keys(paths).length === 0) { // there is no possible plan;
+      if (Object.keys(paths).length === 0) {
+        // there is no possible plan;
         alert("No possible plan found!");
         props.setAlgoFinished(true);
         return;
@@ -164,10 +168,10 @@ function Agents_Page(props) {
     for (let index in agents) {
       let curAgent = agents[index];
       curAgent.curStep = curStep;
-      if (curStep === curAgent.maxStep-1) {
+      if (curStep === curAgent.maxStep - 1) {
         curAgent.status = "Completed";
       }
-      let clone_agents = {... props.agents};
+      let clone_agents = { ...props.agents };
       clone_agents[curAgent.agentId] = curAgent;
       props.setAgentsList(clone_agents);
     }
@@ -175,25 +179,24 @@ function Agents_Page(props) {
 
   // reset all of the configuration related to current MAPF problem;
   const resetAgents = () => {
-    if (!props.algoFinished){
-        alert("Can't reset the map when the algorithm is executed!");
-        return;
+    if (!props.algoFinished) {
+      alert("Can't reset the map when the algorithm is executed!");
+      return;
     }
     props.setAgentsList({}); // reset the list of the agent to empty;
     props.setAgentPaths({}); // reset the agent path;
-    let originalGridMap = [... props.gridMap];
-    for (let row = 0; row < originalGridMap.length; row++){
-      for (let col = 0; col < originalGridMap[0].length; col++){
-        if (originalGridMap[row][col] === "@"){
+    let originalGridMap = [...props.gridMap];
+    for (let row = 0; row < originalGridMap.length; row++) {
+      for (let col = 0; col < originalGridMap[0].length; col++) {
+        if (originalGridMap[row][col] === "@") {
           continue;
-        }
-        else{
+        } else {
           originalGridMap[row][col] = ".";
         }
       }
     }
-    props.mapping(originalGridMap); // reset the gridmap to the original version;
-  }
+    props.setGridMapFunction(originalGridMap); // reset the gridmap to the original version;
+  };
 
   return (
     <>
@@ -202,7 +205,7 @@ function Agents_Page(props) {
         setAgentsList={props.setAgentsList}
         setAgentPaths={props.setAgentPaths}
         gridMap={props.gridMap}
-        mapping={props.mapping}
+        setGridMapFunction={props.setGridMapFunction}
         algoFinished={props.algoFinished}
         setAlgoFinished={props.setAlgoFinished}
         startBoard={props.startBoard}

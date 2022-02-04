@@ -9,7 +9,7 @@ import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
 import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./mapconfig/maps";
-import {clone2DArray, getNextAgentID} from './components/utility/Utility'
+import { clone2DArray, getNextAgentID } from "./components/utility/Utility";
 
 function App() {
   let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
@@ -24,18 +24,17 @@ function App() {
 
   // reset all the variables of the gridMap;
   function resetMap(mapID) {
-    if (!algoFinished){
+    if (!algoFinished) {
       alert("Can't reset the map when the algorithm is executed!");
       return;
     }
     console.log(mapID);
     let updatedGridMap = null;
     // reset the gridMap
-    if (mapID === "N/A"){
-        updatedGridMap= clone2DArray(maps["0"]);
-    }
-    else{
-        updatedGridMap = clone2DArray(maps[mapID]);
+    if (mapID === "N/A") {
+      updatedGridMap = clone2DArray(maps["0"]);
+    } else {
+      updatedGridMap = clone2DArray(maps[mapID]);
     }
     setMap(updatedGridMap);
     // reset the old agents;
@@ -55,7 +54,7 @@ function App() {
           <Game
             gridMap={gridMap}
             agents={agents}
-            mapping={setMap}
+            setGridMapFunction={setMap}
             step={step}
             agentPaths={agentPaths}
           ></Game>
@@ -70,7 +69,7 @@ function App() {
             agents={agents}
             setAgentsList={setAgentsList}
             gridMap={gridMap}
-            mapping={setMap}
+            setGridMapFunction={setMap}
             setStep={setStep}
             setAgentPaths={setAgentPaths}
             speed={speed}

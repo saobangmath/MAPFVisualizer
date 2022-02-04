@@ -45,7 +45,7 @@ const Agent_Table = (props) => {
     const board = props.gridMap;
     let boardCopy = [...board];
     boardCopy[agent.startPoint.row][agent.startPoint.col] = "O";
-    props.mapping(boardCopy);
+    props.setGridMapFunction(boardCopy);
   };
   const closePopup = () => {
     setModalIsOpen(!addModal);
@@ -143,7 +143,6 @@ const Agent_Table = (props) => {
     }
   };
   const AddAgent = () => {
-    console.log(props);
     // update the selectedAgent
     let updatedAgent = selectedAgent;
     updatedAgent.status = "Assigned";
@@ -172,19 +171,10 @@ const Agent_Table = (props) => {
       boardCopy[props.agents[updatedAgent.agentId].endPoint.row][
         props.agents[updatedAgent.agentId].endPoint.col
       ] = lastAgent;
-      props.mapping(boardCopy);
+      props.setGridMapFunction(boardCopy);
       closePopup();
     }
   };
-
-  for (let index in props.agents) {
-    console.log(
-      "status is ",
-      props.agents[index].status,
-      props.agents[index].curStep,
-      props.agents[index].maxStep
-    );
-  }
 
   // remove the agent in the map;
   const RemoveAgent = (id) => {
@@ -215,7 +205,6 @@ const Agent_Table = (props) => {
     }
     props.setAgentsList(new_agents);
     props.setAgentPaths({});
-    console.log(new_agents);
   };
 
   return (
@@ -267,58 +256,79 @@ const Agent_Table = (props) => {
         </tbody>
       </table>
       {addModal && (
-        <div className={classes.modalAdd}>
-          <div className={classes.overlay} onClick={showPopup}></div>
-          <div className={classes.spacing}></div>
-          <div className={classes.modal_content}>
-            <img className={classes.image} src={selectedAgent.img} alt="logo" />
-            <p className={classes.heading}>Robot {selectedAgent.agentId}</p>
+        <div className={styles.modalAdd}>
+          <div className={styles.overlay} onClick={closePopup}></div>
+          <div className={styles.spacing}></div>
+          <div className={styles.modal_content}>
+            <img
+              className={styles.modal_image}
+              src={selectedAgent.img}
+              alt="logo"
+            />
+            <button className={styles.closeBtn} onClick={closePopup}>
+              X
+            </button>
+            <p className={styles.heading}>Robot {selectedAgent.agentId}</p>
             <div>
-              <p className={classes.title}>Task Priority:</p>
-              <DropdownButton
-                alignRight
-                title={
-                  priority !== "" ? priority : "Choose the priority level..."
-                }
-                id="dropdown-menu-align-right"
-                onSelect={selectPriority}
+              <p className={styles.title}>Task Priority:</p>
+              <select
+                className={styles.dropDownBtn}
+                onChange={(priority) => selectPriority(priority.target.value)}
               >
-                <Dropdown.Item eventKey="Low">Low</Dropdown.Item>
-                <Dropdown.Item eventKey="Medium">Medium</Dropdown.Item>
-                <Dropdown.Item eventKey="High">High</Dropdown.Item>
-              </DropdownButton>
+                <option className={styles.dropDownCtn} value="">
+                  Choose the priority level...
+                </option>
+                <option className={styles.dropDownCtn} value="Low">
+                  Low
+                </option>
+                <option className={styles.dropDownCtn} value="Medium">
+                  Medium
+                </option>
+                <option className={styles.dropDownCtn} value="High">
+                  High
+                </option>
+              </select>
             </div>
+            <div className={styles.points}>
+              <button className={styles.btnPoint} onClick={startMapModal}>
+                Click to Set Start Point
+              </button>
 
-            <button className={classes.btn} onClick={startMapModal}>
-              Click to Set
-            </button>
-            <button className={classes.btn} onClick={endMapModal}>
-              Click to set
-            </button>
+              <button className={styles.btnPoint} onClick={endMapModal}>
+                Click to Set End Point
+              </button>
+            </div>
             <div></div>
-            <button className={classes.btn} onClick={AddAgent}>
+            <button className={styles.btn} onClick={AddAgent}>
               Assign
             </button>
           </div>
         </div>
       )}
       {startModal && (
-        <div className={classes.modalAdd}>
-          <div className={classes.overlay} onClick={startMapModal}></div>
-          <div className={classes.spacing}></div>
-          <div className={classes.modal_content}>
-            <div className={classes.map}>
+        <div className={styles.modalAdd}>
+          <div className={styles.overlay} onClick={startMapModal}></div>
+          <div className={styles.spacing}></div>
+          <div className={styles.modal_content}>
+            <div className={styles.map}>
+              <button className={styles.closeBtn} onClick={startMapModal}>
+                X
+              </button>
+
               <Map
                 destination="start"
                 board={props.startBoard}
-                gridMap={props.setStartBoard}
+                setBoardFunction={props.setStartBoard}
                 onStart={setStartPoint}
                 isChecked={startCheck}
                 check={validateStart}
                 agents={props.agents}
+                selectedAgent={selectedAgent}
+                pointArray={start}
               ></Map>
+
               <button
-                className={classes.btn}
+                className={styles.btn}
                 onClick={() => closeStartMapModal(end)}
               >
                 Set StartPoint
@@ -328,22 +338,27 @@ const Agent_Table = (props) => {
         </div>
       )}
       {endModal && (
-        <div className={classes.modalAdd}>
-          <div className={classes.overlay} onClick={endMapModal}></div>
-          <div className={classes.spacing}></div>
-          <div className={classes.modal_content}>
-            <div className={classes.map}>
+        <div className={styles.modalAdd}>
+          <div className={styles.overlay} onClick={endMapModal}></div>
+          <div className={styles.spacing}></div>
+          <div className={styles.modal_content}>
+            <div className={styles.map}>
+              <button className={styles.closeBtn} onClick={endMapModal}>
+                X
+              </button>
               <Map
                 destination="end"
                 board={props.endBoard}
-                gridMap={props.setEndBoard}
+                setBoardFunction={props.setEndBoard}
                 onEnd={setEndPoint}
                 isChecked={endCheck}
                 check={validateEnd}
                 agents={props.agents}
+                selectedAgent={selectedAgent}
+                pointArray={end}
               ></Map>
               <button
-                className={classes.btn}
+                className={styles.btn}
                 onClick={() => closeEndMapModal(selectedAgent)}
               >
                 Set Destination
@@ -353,17 +368,22 @@ const Agent_Table = (props) => {
         </div>
       )}
       {detailModal && (
-        <div className={classes.modalAdd}>
-          <div className={classes.overlay} onClick={openDetailModal}></div>
-          <div className={classes.spacing}></div>
-          <div className={classes.modal_content}>
-            <img className={classes.image} src={selectedAgent.img} alt="logo" />
-            <p className={classes.heading}>Robot {selectedAgent.agentId}</p>
+        <div className={styles.modalAdd}>
+          <div className={styles.overlay} onClick={openDetailModal}></div>
+          <div className={styles.spacing}></div>
+          <div className={styles.modal_content}>
+            <img className={styles.image} src={selectedAgent.img} alt="logo" />
+            <button className={styles.closeBtn} onClick={openDetailModal}>
+              X
+            </button>
+            <p className={styles.heading}>Robot {selectedAgent.agentId}</p>
             <table className={styles.detailTable}>
               {/* detail NOt confirm */}
               <tr>
                 <td>Total Time Taken: </td>
-                <td className={styles.detailColumn}>{selectedAgent.maxStep}</td>
+                <td className={styles.detailColumn}>
+                  {selectedAgent.maxStep}'Sec'
+                </td>
               </tr>
               <tr>
                 <td>No. of steps:</td>
@@ -386,6 +406,35 @@ const Agent_Table = (props) => {
     </>
   );
 };
+function showPoint(array, agent, boardType, value) {
+  if (boardType === "start") {
+    if (value === "O") {
+      return <img className={styles.map_image} src={agent.img} alt="logo" />;
+    } else if (array.length) {
+      if (
+        array[array.length - 1].row === agent.startPoint.row &&
+        array[array.length - 1].col === agent.startPoint.col
+      ) {
+        return <img className={styles.map_image} src={agent.img} alt="logo" />;
+      }
+    } else {
+      return null;
+    }
+  } else {
+    if (value === "X") {
+      return "";
+    } else if (array.length) {
+      if (
+        array[array.length - 1].row === agent.endPoint.row &&
+        array[array.length - 1].col === agent.endPoint.col
+      ) {
+        return "";
+      }
+    } else {
+      return null;
+    }
+  }
+}
 
 function Square(props) {
   return (
@@ -393,17 +442,28 @@ function Square(props) {
       className="square"
       onClick={props.onClick}
       style={{
-        backgroundColor: props.value === "@" ? "black" : "white",
+        backgroundColor:
+          props.value === "@"
+            ? "black"
+            : showPoint(
+                props.pointArray,
+                props.selectedAgent,
+                props.boardType,
+                props.value
+              ) === ""
+            ? props.selectedAgent.endColor
+            : "white",
       }}
     >
       {/* Only display the value if it is X or O */}
       {typeof props.value === "object"
         ? null
-        : props.value === "O" && props.boardType === "start"
-        ? props.value
-        : props.value === "X" && props.boardType === "end"
-        ? props.value
-        : null}
+        : showPoint(
+            props.pointArray,
+            props.selectedAgent,
+            props.boardType,
+            props.value
+          )}
     </button>
   );
 }
@@ -418,6 +478,8 @@ function Board(props) {
         colIndex={colIndex}
         boardType={props.boardType}
         isChecked={props.isChecked}
+        selectedAgent={props.selectedAgent}
+        pointArray={props.pointArray}
       />
     );
   }
@@ -441,7 +503,6 @@ function resetMap(map) {
       }
     }
   }
-  console.log(map);
   return map;
 }
 function Map(props) {
@@ -488,7 +549,7 @@ function Map(props) {
             boardCopy = resetMap(boardCopy); //reset to the original layout map
             boardCopy[rowIndex][colIndex] = "O";
             props.onStart(rowIndex, colIndex, check);
-            props.gridMap(boardCopy);
+            props.setBoardFunction(boardCopy);
           } else {
             alert(
               "Please choose another start point that is not the same as other agents"
@@ -501,7 +562,7 @@ function Map(props) {
             boardCopy = resetMap(boardCopy); //reset to the original layout map
             boardCopy[rowIndex][colIndex] = "X";
             props.onEnd(rowIndex, colIndex, check);
-            props.gridMap(boardCopy);
+            props.setBoardFunction(boardCopy);
           } else {
             alert(
               "Please choose another end point that is not the same as other agents"
@@ -519,8 +580,10 @@ function Map(props) {
           onClick={(rowIndex, colIndex) =>
             handleClick(rowIndex, colIndex, props.check)
           }
+          pointArray={props.pointArray}
           boardType={props.destination}
           isChecked={props.check}
+          selectedAgent={props.selectedAgent}
         />
       </div>
     </div>

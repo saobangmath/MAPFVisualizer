@@ -160,10 +160,197 @@ td {
   font-size: 16px;
   border-radius: 4px;
   border-color: #4adede;
-
   margin: 12px;
   padding: 4px 12px 4px 12px;
 }
+.btn:hover {
+  background-color: #56bebe;
+}
 .map {
+  margin-top: 2rem;
+}
+.gridMap {
+  zoom: 0.5;
+}
+
+/* Modal Styling */
+.modal,
+.overlay {
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+}
+
+.overlay {
+  background: rgba(49, 49, 49, 0.8);
+}
+.modal_content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 1.4;
+  background: rgb(243, 241, 241);
+  padding: 14px 28px;
+  border-radius: 3px;
+  max-width: 600px;
+  min-width: 300px;
+}
+.heading {
+  font-family: "Roboto", sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+}
+.title {
+  text-align: left;
+}
+.model_desc {
+  margin-top: -2rem;
+}
+.modal_title {
+  margin-top: -2rem;
+  font-weight: bold;
+  font-size: 18px;
+}
+.modal_image {
+  display: block;
   margin-top: 1rem;
+  /* to centeralise the content in css */
+  left: 50%;
+  position: relative;
+  transform: translateX(-50%);
+  max-height: 3rem;
+  height: 10vmin;
+}
+.map_image {
+  zoom: 0.4;
+  padding-bottom: 4px;
+}
+.points {
+  justify-content: space-evenly;
+  display: flex;
+}
+.btn {
+  background-color: #4adede;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 4px;
+  border-color: #4adede;
+  margin: 12px;
+  padding: 4px 12px 4px 12px;
+}
+.btnPoint {
+  position: relative;
+  color: black;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: #4adede 1px 0 10px;
+  height: 100px;
+  width: 100px;
+  border: solid 1px #4adede;
+  border-radius: 175px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 10px;
+  float: left;
+}
+.btnPoint:before {
+  content: "";
+  position: absolute;
+  background: #4adede;
+  width: 0;
+  height: 0;
+  z-index: -1;
+  border-radius: 175px;
+  box-shadow: 0px 0px 24px 1px rgba(224, 199, 224, 0.2);
+  transition: all 900ms cubic-bezier(1, -0.195, 0, 1.33);
+  transition-timing-function: cubic-bezier(1, -0.195, 0, 1.33);
+}
+
+.btnPoint:hover {
+  position: relative;
+  color: black;
+  background-color: #56bebe;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: #4adede 1px 0 10px;
+  height: 100px;
+  width: 100px;
+  border: solid 1px #4adede;
+  border-radius: 175px;
+  display: block;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 10px;
+  float: left;
+}
+
+/* .btnPoint:active:before,
+.btnPoint:focus:before {
+  width: 50%;
+  height: 50%;
+} */
+
+.container {
+  display: inline-flex;
+  margin-right: 10px;
+}
+
+.dropDownBtn {
+  background-color: white;
+  border-radius: 10px;
+  padding: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid #4adede;
+}
+
+.dropDownBtn:hover {
+  background-color: #56bebe;
+}
+.startPosition {
+  margin-top: 5%;
+  margin-left: 5rem;
+  padding-right: 1rem;
+}
+
+.closeBtn {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  width: 32px;
+  height: 32px;
+  opacity: 0.3;
+  border: transparent;
+}
+.closeBtn:hover {
+  opacity: 1;
+}
+.closeBtn:before,
+.closeBtn:after {
+  position: absolute;
+  left: 15px;
+  height: 33px;
+  width: 2px;
+  background-color: #333;
+}
+.closeBtn:before {
+  transform: rotate(45deg);
+}
+.closeBtn:after {
+  transform: rotate(-45deg);
 }
