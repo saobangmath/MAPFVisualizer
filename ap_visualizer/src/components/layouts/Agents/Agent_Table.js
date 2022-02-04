@@ -406,37 +406,50 @@ const Agent_Table = (props) => {
     </>
   );
 };
-function showPoint(array, agent, boardType, value) {
-  if (boardType === "start") {
-    if (value === "O") {
-      return <img className={styles.map_image} src={agent.img} alt="logo" />;
-    } else if (array.length) {
-      if (
-        array[array.length - 1].row === agent.startPoint.row &&
-        array[array.length - 1].col === agent.startPoint.col
-      ) {
-        return <img className={styles.map_image} src={agent.img} alt="logo" />;
-      }
-    } else {
-      return null;
-    }
-  } else {
-    if (value === "X") {
-      return "";
-    } else if (array.length) {
-      if (
-        array[array.length - 1].row === agent.endPoint.row &&
-        array[array.length - 1].col === agent.endPoint.col
-      ) {
-        return "";
-      }
-    } else {
-      return null;
-    }
-  }
+function showPoint(array, row, col, agent, boardType, value) {
+  if (value === "O" && boardType === "start")
+    return <img className={styles.map_image} src={agent.img} alt="logo" />;
+  else if (value === "X" && boardType === "end") return "";
+  else return null;
+  // if (boardType === "start") {
+  //   if (value === "O") {
+  //     return <img className={styles.map_image} src={agent.img} alt="logo" />;
+  //   } else if (array.length) {
+  //     if (
+  //       array[array.length - 1].row === row &&
+  //       array[array.length - 1].col === col
+  //     ) {
+  //       return <img className={styles.map_image} src={agent.img} alt="logo" />;
+  //     }
+  //   } else if (agent.startPoint !== "") {
+  //     if (row === agent.startPoint.row && col === agent.startPoint.col) {
+  //       return <img className={styles.map_image} src={agent.img} alt="logo" />;
+  //     }
+  //   } else {
+  //     return null;
+  //   }
+  // } else {
+  //   if (value === "X") {
+  //     return "";
+  //   } else if (array.length) {
+  //     if (
+  //       array[array.length - 1].row === row &&
+  //       array[array.length - 1].col === col
+  //     ) {
+  //       return "";
+  //     }
+  //   } else if (agent.endPoint !== "") {
+  //     if (row === agent.endPoint.row && col === agent.endPoint.col) {
+  //       return "";
+  //     }
+  //   } else {
+  //     return null;
+  //   }
+  // }
 }
 
 function Square(props) {
+  console.log("the value is", props.value);
   return (
     <button
       className="square"
@@ -447,6 +460,8 @@ function Square(props) {
             ? "black"
             : showPoint(
                 props.pointArray,
+                props.colIndex,
+                props.rowIndex,
                 props.selectedAgent,
                 props.boardType,
                 props.value
@@ -458,8 +473,12 @@ function Square(props) {
       {/* Only display the value if it is X or O */}
       {typeof props.value === "object"
         ? null
+        : props.value === "@"
+        ? null
         : showPoint(
             props.pointArray,
+            props.colIndex,
+            props.rowIndex,
             props.selectedAgent,
             props.boardType,
             props.value
@@ -506,6 +525,7 @@ function resetMap(map) {
   return map;
 }
 function Map(props) {
+  console.log("the mapp is", props.board);
   const handleClick = (rowIndex, colIndex, check) => {
     const board = props.board;
     let boardCopy = [...board];
