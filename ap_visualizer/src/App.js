@@ -58,6 +58,51 @@ function App() {
             step={step}
             agentPaths={agentPaths}
           ></Game>
+          <div className="legend_container">
+            {agents != null
+              ? Object.keys(agents).map((key, index) => (
+                  <ul key={index}>
+                    <div className="legend_header">
+                      Robot {agents[key].agentId}
+                    </div>
+                    <div className="legend_row">
+                      <li>
+                        <img
+                          className="legend_image"
+                          src={agents[key].img}
+                          alt="logo"
+                        />
+                        <div className="legend_text">
+                          Robot {agents[key].agentId}
+                        </div>
+                      </li>
+                      <li>
+                        <div className="legend_icon">
+                          <Square backgroundColor={agents[key].robotColor} />
+                        </div>
+
+                        <div className="legend_text">StartPoint</div>
+                      </li>
+                      <li>
+                        <div className="legend_icon">
+                          <Square backgroundColor={agents[key].endColor} />
+                        </div>
+
+                        <div className="legend_text">EndPoint</div>
+                      </li>
+
+                      <li>
+                        <div className="legend_icon">
+                          <Square backgroundColor={agents[key].pathColor} />
+                        </div>
+                        <div className="legend_text">Pathway</div>
+                      </li>
+                    </div>
+                  </ul>
+                ))
+              : null}
+          </div>
+          <div></div>
         </div>
         <div className="Agent-Container">
           <AgentsPage
@@ -103,6 +148,16 @@ function App() {
         <option value="A*+OD">A*+OD</option>
       </select>
     </div>
+  );
+}
+function Square(props) {
+  return (
+    <button
+      className="square"
+      style={{
+        backgroundColor: props.backgroundColor ?? "white",
+      }}
+    ></button>
   );
 }
 
