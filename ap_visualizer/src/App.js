@@ -10,7 +10,7 @@ import { useState } from "react";
 import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./mapconfig/maps";
 import { clone2DArray, getNextAgentID } from "./components/utility/Utility";
-
+import CloneGridmap from "./components/layouts/Boards/Clone_Gridmap";
 function App() {
   let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
   let [gridMap, setGridMap] = useState(clone2DArray(maps["0"]));
@@ -21,6 +21,9 @@ function App() {
   let [algoFinished, setAlgoFinished] = useState(true); // the boolean value to indicate whether the algorithm is finished running;
   let [startBoard, setStartBoard] = useState(gridMap); // the start board in each agent entry;
   let [endBoard, setEndBoard] = useState(gridMap); // the end board in each agent entry;
+  let [mapModal, setMapModal] = useState(false);
+  let [mapNum, setMapNum] = useState(0);
+  let [mapName, setMapName] = useState("");
 
   // reset all the variables of the gridMap;
   function resetMap(mapID) {
@@ -28,23 +31,44 @@ function App() {
       alert("Can't reset the map when the algorithm is executed!");
       return;
     }
-    console.log(mapID);
-    let updatedGridMap = null;
-    // reset the gridMap
-    if (mapID === "N/A") {
-      updatedGridMap = clone2DArray(maps["0"]);
-    } else {
-      updatedGridMap = clone2DArray(maps[mapID]);
+    let index = mapNum;
+    index = mapID;
+    if (index < 1) {
+      index = 4;
+    } else if (index > 4) {
+      index = 1;
     }
+    let updatedGridMap = null;
+    updatedGridMap = clone2DArray(maps[index]);
     setMap(updatedGridMap);
     // reset the old agents;
     setAgentsList({});
     setAgentPaths({});
+    showMapModal();
   }
+
   const setMap = (points) => {
     setGridMap(points);
   };
+
+  const showMapModal = () => {
+    setMapModal(!mapModal);
+  };
+  const closeMapModal = (mapID) => {
+    showMapModal();
+  };
+  const changeMapNo = (num) => {
+    let index = mapNum;
+    index = num;
+    if (index < 1) {
+      index = 4;
+    } else if (index > 4) {
+      index = 1;
+    }
+    setMapNum(index);
+  };
   let nextID = getNextAgentID(agents);
+
   return (
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
@@ -101,6 +125,12 @@ function App() {
                   </ul>
                 ))
               : null}
+            <div className="legend_footer">
+              <div className="footer_text">Map:</div>
+              <button className="legend_btn" onClick={showMapModal}>
+                {retreiveMapName(mapNum)}
+              </button>
+            </div>
           </div>
           <div></div>
         </div>
@@ -128,14 +158,40 @@ function App() {
           ></AgentsPage>
         </div>
       </div>
-      <span>Map</span>
-      <select onChange={(e) => resetMap(e.target.value)}>
-        <option value="N/A">N/A</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-      </select>
+      {mapModal && (
+        <div className="modalAdd">
+          <div className="overlay" onClick={showMapModal}></div>
+          <div className="spacing"></div>
+          <div className="modal_content">
+            <div className="modal_header">
+              <button
+                className="arrow left"
+                onClick={() => changeMapNo(mapNum - 1)}
+              ></button>
+              <div className="modal_title">{retreiveMapName(mapNum)}</div>
+              <button
+                className="arrow right"
+                onClick={() => changeMapNo(mapNum + 1)}
+              ></button>
+            </div>
+            <button className="closeBtn" onClick={() => closeMapModal(mapNum)}>
+              X
+            </button>
+            <div className="modal_map">
+              <CloneGridmap mapNo={mapNum}></CloneGridmap>
+            </div>
+            <div className="btn_container">
+              <button className="map_btn" onClick={() => resetMap(mapNum)}>
+                Choose Map
+              </button>
+              <button className="customise_btn">
+                Click here to customise your map
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <span>Speed</span>
       <select onChange={(e) => setSpeed(e.target.value)}>
         <option value="Fast">Fast</option>
@@ -159,6 +215,20 @@ function Square(props) {
       }}
     ></button>
   );
+}
+function retreiveMapName(mapNum) {
+  switch (mapNum) {
+    case "1":
+      return "Map 1";
+    case "2":
+      return "Map 2";
+    case "3":
+      return "Map 3";
+    case "4":
+      return "Map 4";
+    default:
+      return "Default Map";
+  }
 }
 
 export default App;

@@ -78,12 +78,70 @@ li {
   font-weight: 600;
   text-decoration: underline;
 }
-/* @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-} */
+.legend_btn {
+  border: transparent;
+  font-size: 14px;
+  font-family: Roboto;
+  text-decoration: underline;
+  background-color: transparent;
+}
+.legend_btn:hover {
+  color: darkblue;
+}
+.footer_text {
+  float: left;
+  padding-left: 5px;
+  text-align: center;
+  font-size: 14px;
+  margin-top: 2px;
+}
+.legend_footer {
+  margin: auto;
+}
 
+/* Modal Styling */
+.modal,
+.overlay {
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+}
+
+.overlay {
+  background: rgba(49, 49, 49, 0.8);
+}
+.modal_content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 1.4;
+  background: rgb(243, 241, 241);
+  padding: 14px 28px;
+  border-radius: 3px;
+  max-width: 600px;
+  min-width: 300px;
+  display: inline-block;
+}
+.modal_header {
+  display: inline-block;
+  margin-left: 10px;
+}
+.modal_title {
+  font-size: 14px;
+  font-family: roboto;
+  margin-top: 10px;
+  float: left;
+}
+.modal_map {
+  zoom: 0.8;
+  margin-top: 10px;
+  clear: both;
+}
 .App-header {
   background-color: #ebf7f8;
   min-height: 100vh;
@@ -94,7 +152,83 @@ li {
   font-size: calc(10px + 2vmin);
   color: white;
 }
+.arrow {
+  border: 10px double black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
 
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  margin: 15px 5px 0px 15px;
+  float: left;
+}
+
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+  margin: 15px 15px 0px 15px;
+  float: left;
+}
+
+.btn_container {
+  display: inline-grid;
+}
+.map_btn {
+  background-color: #4adede;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 4px;
+  border-color: #4adede;
+  margin: 12px;
+  font-family: Roboto;
+  padding: 4px 12px 4px 12px;
+}
+.map_btn:hover {
+  background-color: #56bebe;
+}
+.customise_btn {
+  border: transparent;
+  background-color: transparent;
+  text-decoration: underline;
+  color: darkblue;
+  font-size: 14px;
+  font-family: Roboto;
+}
+.customise_btn:hover {
+  color: darkblue;
+}
+
+.closeBtn {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  width: 32px;
+  height: 32px;
+  opacity: 0.3;
+  border: transparent;
+}
+.closeBtn:hover {
+  opacity: 1;
+}
+.closeBtn:before,
+.closeBtn:after {
+  position: absolute;
+  left: 15px;
+  height: 33px;
+  width: 2px;
+  background-color: #333;
+}
+.closeBtn:before {
+  transform: rotate(45deg);
+}
+.closeBtn:after {
+  transform: rotate(-45deg);
+}
 .App-link {
   color: #61dafb;
 }
