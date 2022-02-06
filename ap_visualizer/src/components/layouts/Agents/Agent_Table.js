@@ -186,7 +186,6 @@ const Agent_Table = (props) => {
       alert("Can't remove the agent when the algorithm is in progress!");
       return;
     }
-    console.log("Remove agent id: " + id);
     for (let row = 0; row < props.gridMap.length; row++) {
       for (let col = 0; col < props.gridMap[0].length; col++) {
         if (
@@ -382,7 +381,7 @@ const Agent_Table = (props) => {
               <tr>
                 <td>Total Time Taken: </td>
                 <td className={styles.detailColumn}>
-                  {selectedAgent.maxStep}'Sec'
+                  {selectedAgent.maxStep} Sec
                 </td>
               </tr>
               <tr>
@@ -449,7 +448,6 @@ function showPoint(array, row, col, agent, boardType, value) {
 }
 
 function Square(props) {
-  console.log("the value is", props.value);
   return (
     <button
       className="square"
@@ -525,7 +523,6 @@ function resetMap(map) {
   return map;
 }
 function Map(props) {
-  console.log("the mapp is", props.board);
   const handleClick = (rowIndex, colIndex, check) => {
     const board = props.board;
     let boardCopy = [...board];

@@ -25,6 +25,13 @@ function App() {
   let [mapNum, setMapNum] = useState(0);
   let [mapName, setMapName] = useState("");
 
+  // if(Object.keys(agents).length){
+  //   let newAgents=agents;
+  //   for(let index=1;index<=2;index++){
+  //     newAgents[index]=GenerateDefaultAgents(index);
+  //   }
+  //   setAgentsList(agents);
+  // }
   // reset all the variables of the gridMap;
   function resetMap(mapID) {
     if (!algoFinished) {
