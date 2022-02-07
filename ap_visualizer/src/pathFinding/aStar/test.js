@@ -13,7 +13,9 @@ function test(filename) {
                 console.log(map.grid)
                 console.log(map.agents)
                 solver.solve().then((solution) => {
-                    console.log(solution);
+                    console.log("Node expanded: " + solution.expanded_nodes)
+                    console.log("Time taken: " + solution.execution_time + "s");
+                    console.log(solution.paths)
                 });
             } catch (err) {
                 console.log(`Error: ${err}`)
@@ -22,6 +24,8 @@ function test(filename) {
         2000
     )
 }
+
+test('../maps/craft.map')
 
 test('../maps/easy_kiva.map')
 

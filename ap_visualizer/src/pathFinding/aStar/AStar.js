@@ -9,8 +9,12 @@ class AStar{
         for (let agentID in map.agents){
             this.parentMaps[agentID] = {}; // the map to map the parent of one cell -> other;
         }
+        this.expanded_nodes = 0;
+        this.execution_time = 0;
     }
     async solve(){
+        this.expanded_nodes = 0;
+        let startTime = Utils.getTime();
         let OPEN_LIST = []; // the queue to process the expanded node;
         let CLOSE_LIST = []; // those nodes that has been expanded;
         let curState = {} // initial location of the agents;
@@ -29,6 +33,7 @@ class AStar{
             let pos = this.getMinimumState(OPEN_LIST);
             let state = OPEN_LIST[pos];
             OPEN_LIST.splice(pos, 1);
+            this.expanded_nodes++;
             if (state.cur == this.map.no_agents){ // when all agent next step has been processed;
                 for (let i = 0; i < state.agentsOrder.length; i++){
                     let agentID = state.agentsOrder[i];
@@ -90,7 +95,10 @@ class AStar{
         }
         let solutions = {};
         if (last_moment == -1){
-            return solutions;
+            this.execution_time = Utils.getTime() - startTime;
+            return {"paths" : solutions,
+                    "expanded_nodes" : this.expanded_nodes,
+                    "execution_time" : this.execution_time};
         }
         // there is solution found!;
         for (let agentID in this.map.agents){
@@ -118,7 +126,10 @@ class AStar{
                 last--;
             }
         }
-        return solutions;
+        this.execution_time = Utils.getTime() - startTime;
+        return {"paths" : solutions,
+                "expanded_nodes" : this.expanded_nodes,
+                "execution_time" : this.execution_time};
     }
 
     hasConflict(state, curX, curY, nextX, nextY){
