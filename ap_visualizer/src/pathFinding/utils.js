@@ -28,4 +28,8 @@ function getHeuristicDistance(cell1, cell2, f){
     return f(cell1, cell2);
 }
 
-module.exports = {directions, validateCell, coordinatesToId, idToCoordinates, getManhattanDistance, getEuclideanDistance ,getHeuristicDistance}
+function getTime(){ // in second;
+    return new Date().getTime() / 1000;
+}
+
+module.exports = {directions, validateCell, coordinatesToId, idToCoordinates, getManhattanDistance, getEuclideanDistance ,getHeuristicDistance, getTime}

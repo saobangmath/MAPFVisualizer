@@ -1,6 +1,7 @@
 const CTNode = require('./CTNode')
 const Constraint = require('../Constraint')
 const Conflict = require('../Conflict')
+const Utils = require('../utils')
 
 /**
  Search the constraints tree
@@ -10,6 +11,8 @@ const Conflict = require('../Conflict')
 class highLevelSolver {
     constructor(map) {
         this.map = map;
+        this.expanded_nodes = 0;
+        this.execution_time = 0;
     }
 
     _getEdgeConflict(agent1, agent2, route1, route2) { // return any common edges (edge conflicts) between 2 given routes
@@ -80,6 +83,8 @@ class highLevelSolver {
     }
 
     async solve() { // return a list of cells
+        let startTime = Utils.getTime();
+        this.expanded_nodes = 0;
         let root = new CTNode([])
         root.updateSolution(this.map)
         root.updateCost()
@@ -89,13 +94,17 @@ class highLevelSolver {
             return {};
         }
         while (tree.length > 0){
+            this.expanded_nodes++;
             let pos = this.findBestNodePosition(tree) // get the node with minimum cost;
             let P = tree[pos]
             let normalConflict = this.getNormalConflict(P)
             let edgeConflict = this.getEdgeConflict(P)
             tree.splice(pos, 1)
             if (normalConflict == null && edgeConflict == null){ // no conflict occur;
-                return P.getSolution()
+                this.execution_time = Utils.getTime() - startTime;
+                return {"paths" : P.getSolution(),
+                        "expanded_nodes" : this.expanded_nodes,
+                        "execution_time" : this.execution_time}
             }
             if (normalConflict != null){
                 {
@@ -146,7 +155,10 @@ class highLevelSolver {
                 }
             }
         }
-        return {} // can't find any solution
+        this.execution_time = Utils.getTime() - startTime;
+        return {"paths" : {},
+                "expanded_nodes" : this.expanded_nodes,
+                "execution_time" : this.execution_time} // can't find any solution
     }
 }
 
