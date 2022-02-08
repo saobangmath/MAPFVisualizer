@@ -82,6 +82,12 @@ class highLevelSolver {
         return pos
     }
 
+    // push the new node to the tree && increment the number of nodes expanded;
+    updateTree(tree, node){
+        tree.push(node);
+        this.expanded_nodes++;
+    }
+
     async solve() { // return a list of cells
         let startTime = Utils.getTime();
         this.expanded_nodes = 0;
@@ -89,12 +95,14 @@ class highLevelSolver {
         root.updateSolution(this.map)
         root.updateCost()
         let tree = []
-        tree.push(root)
+        this.updateTree(tree, root)
         if (Object.keys(root.solution).length == 0){ // there is some agents can't even simply go from start to destination;
-            return {};
+            this.execution_time = Utils.getTime() - startTime;
+            return {"paths" : {},
+                    "expanded_nodes" : this.expanded_nodes,
+                    "execution_time" : this.execution_time};
         }
         while (tree.length > 0){
-            this.expanded_nodes++;
             let pos = this.findBestNodePosition(tree) // get the node with minimum cost;
             let P = tree[pos]
             let normalConflict = this.getNormalConflict(P)
@@ -114,7 +122,7 @@ class highLevelSolver {
                     A1.updateSolution(this.map)
                     A1.updateCost()
                     if (Object.keys(A1.getSolution()).length > 0){ // the solution is not empty;
-                        tree.push(A1)
+                        this.updateTree(tree, A1);
                     }
                 }
                 {
@@ -124,7 +132,7 @@ class highLevelSolver {
                     A2.updateSolution(this.map)
                     A2.updateCost()
                     if (Object.keys(A2.getSolution()).length > 0){ // the solution is not empty
-                        tree.push(A2)
+                        this.updateTree(tree, A2);
                     }
                 }
             }
@@ -139,6 +147,7 @@ class highLevelSolver {
                     A1.updateCost()
                     if (Object.keys(A1.getSolution()).length > 0){
                         tree.push(A1)
+                        this.expanded_nodes++;
                     }
                 }
                 {
@@ -150,7 +159,7 @@ class highLevelSolver {
                     A2.updateSolution(this.map)
                     A2.updateCost()
                     if (Object.keys(A2.getSolution()).length > 0){
-                        tree.push(A2)
+                        tree.push(A2);
                     }
                 }
             }

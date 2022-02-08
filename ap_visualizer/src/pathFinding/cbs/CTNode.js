@@ -6,6 +6,7 @@ class CTNode{
         this.cost = 0
         this.constraints = constraints // list of constraint so far in this node
         this.solution = [] // list of list of Cell that satisfied the condition
+        this.expanded_nodes = 0; // no of expanded_nodes that the low-level algorithm need to expanded;
     }
 
     getCost(){
@@ -31,7 +32,9 @@ class CTNode{
 
     updateSolution(map){ // update the solution w.r.t the new constraints
         let solver = new LowLevelSolver();
-        this.solution = solver.findOptimalPaths(this.constraints, map)
+        let result = solver.findOptimalPaths(this.constraints, map);
+        this.solution = result["paths"];
+        this.expanded_nodes += result["expanded_nodes"];
     }
 
     updateCost(){ // update cost of the solution

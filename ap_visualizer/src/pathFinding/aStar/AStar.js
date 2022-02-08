@@ -13,7 +13,6 @@ class AStar{
         this.execution_time = 0;
     }
     async solve(){
-        this.expanded_nodes = 0;
         let startTime = Utils.getTime();
         let OPEN_LIST = []; // the queue to process the expanded node;
         let CLOSE_LIST = []; // those nodes that has been expanded;
@@ -23,17 +22,17 @@ class AStar{
             curState[agentID] = this.map.agents[agentID]["START"];
             h += Utils.getManhattanDistance(curState[agentID], this.map.agents[agentID]["DEST"]);
         }
+        this.expanded_nodes = 0;
         let INITIAL_STATE = new State(0, curState, 0); // {cur : 0, curState : curState, timeStep : 0};
         INITIAL_STATE.g = 0;
         INITIAL_STATE.h = h;
         INITIAL_STATE.f = h;
         let last_moment = -1;
-        OPEN_LIST.push(INITIAL_STATE);
+        this.updateList(OPEN_LIST, INITIAL_STATE);
         while (OPEN_LIST.length > 0){
             let pos = this.getMinimumState(OPEN_LIST);
             let state = OPEN_LIST[pos];
             OPEN_LIST.splice(pos, 1);
-            this.expanded_nodes++;
             if (state.cur == this.map.no_agents){ // when all agent next step has been processed;
                 for (let i = 0; i < state.agentsOrder.length; i++){
                     let agentID = state.agentsOrder[i];
@@ -50,7 +49,7 @@ class AStar{
                 new_state.f = state.f;
                 new_state.g = state.g;
                 new_state.h = state.h;
-                OPEN_LIST.push(new_state);
+                this.updateList(OPEN_LIST, new_state);
             }
             else{ // do the plan for the nextAgent;
                 let agentID = state.agentsOrder[state.cur];
@@ -89,7 +88,7 @@ class AStar{
                             continue;
                         }
                     }
-                    OPEN_LIST.push(new_state);
+                    this.updateList(OPEN_LIST, new_state);
                 }
             }
         }
@@ -177,7 +176,6 @@ class AStar{
         let minCost = 1e9, index = -1;
         for (let i = 0; i < LIST.length; i++){
             let st = LIST[i];
-            //console.log(st);
             let equal = true;
             if (st.cur != no_agents){
                 continue;
@@ -193,6 +191,12 @@ class AStar{
             }
         }
         return index;
+    }
+
+    // push the new state to the open_list and increment the expanded nodes by 1;
+    updateList(OPEN_LIST, state){
+        OPEN_LIST.push(state);
+        this.expanded_nodes++;
     }
 };
 
