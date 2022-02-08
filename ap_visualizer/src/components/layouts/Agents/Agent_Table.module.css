@@ -93,7 +93,9 @@ td {
   margin: 12px;
   padding: 4px 12px 4px 12px;
 }
-
+.btnAssign:hover {
+  background-color: #56bebe;
+}
 .btnReady {
   background-color: #0bda51;
   color: black;
@@ -139,8 +141,9 @@ td {
   margin: 12px;
   padding: 4px 12px 4px 12px;
 }
+
 .image {
-  transform: translateX(-50%);
+  /* transform: translateX(-50%); */
   max-height: 2rem;
   height: 15vmin;
   margin-left: 10px;

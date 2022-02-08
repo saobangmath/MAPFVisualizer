@@ -43,29 +43,32 @@ function getNextAgentID(agents) {
   }
   return agentID;
 }
-// function generateDefaultAgent(index, gridMap) {
-//   let agentId = index;
-//   let endColor = props.endColor;
-//   let pathColor = props.pathColor;
-//   let robotColor = props.robotColor;
-//   let robot = props.robotImage;
-//   let startP = generateStartPosition(gridMap);
-//   let agent = {
-//     img: robot,
-//     endColor: endColor,
-//     pathColor: pathColor,
-//     robotColor: robotColor,
-//     agentId: agentId,
-//     startPoint: startP,
-//     endPoint: "",
-//     status: "Available",
-//     priority: null,
-//     curStep: "",
-//     maxStep: "",
-//     path: [],
-//   };
-//   return agent;
-// }
+function generateDefaultAgent(
+  index,
+  gridMap,
+  rImage,
+  endColor,
+  pathColor,
+  robotColor
+) {
+  let robot = rImage;
+  let startP = generateStartPosition(gridMap);
+  let agent = {
+    img: robot,
+    endColor: endColor,
+    pathColor: pathColor,
+    robotColor: robotColor,
+    agentId: index,
+    startPoint: startP,
+    endPoint: "",
+    status: "Available",
+    priority: null,
+    curStep: "",
+    maxStep: "",
+    path: [],
+  };
+  return agent;
+}
 function generateStartPosition(map) {
   let rowIndex, colIndex;
   do {
@@ -81,4 +84,5 @@ module.exports = {
   getSpeed,
   getNextAgentID,
   generateStartPosition,
+  generateDefaultAgent,
 };

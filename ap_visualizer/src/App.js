@@ -9,7 +9,11 @@ import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
 import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./mapconfig/maps";
-import { clone2DArray, getNextAgentID } from "./components/utility/Utility";
+import {
+  clone2DArray,
+  getNextAgentID,
+  generateDefaultAgent,
+} from "./components/utility/Utility";
 import CloneGridmap from "./components/layouts/Boards/Clone_Gridmap";
 function App() {
   let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
@@ -23,16 +27,26 @@ function App() {
   let [endBoard, setEndBoard] = useState(gridMap); // the end board in each agent entry;
   let [mapModal, setMapModal] = useState(false);
   let [mapNum, setMapNum] = useState(0);
-  let [mapName, setMapName] = useState("");
+  let [mapName, setMapName] = useState(""); //for the name of the map after zac finished changing the map layout
+  let [startModal, setStartModal] = useState(false);
 
-  // if(Object.keys(agents).length){
-  //   let newAgents=agents;
-  //   for(let index=1;index<=2;index++){
-  //     newAgents[index]=GenerateDefaultAgents(index);
-  //   }
-  //   setAgentsList(agents);
-  // }
   // reset all the variables of the gridMap;
+
+  if (Object.keys(agents).length < 1) {
+    let defaultAgent = generateDefaultAgent(
+      1,
+      gridMap,
+      robots[1],
+      pColors[1],
+      sColors[1],
+      rColors[1]
+    );
+    agents[1] = defaultAgent;
+    setAgentsList(agents);
+    // let joke = Object.keys(agents).slice(1, 3);
+    // joke.map((key, index) => console.log("data is", agents[key]));
+  }
+
   function resetMap(mapID) {
     if (!algoFinished) {
       alert("Can't reset the map when the algorithm is executed!");
@@ -80,6 +94,17 @@ function App() {
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
       <LandingPage image={logo} image1={PathImage} image2={CelebrateLogo} />
+      {/* <span>Speed</span>
+      <select onChange={(e) => setSpeed(e.target.value)}>
+        <option value="Fast">Fast</option>
+        <option value="Average">Average</option>
+        <option value="Slow">Slow</option>
+      </select>
+      <span>Algorithm</span>
+      <select onChange={(e) => setAlgo(e.target.value)}>
+        <option value="CBS">CBS</option>
+        <option value="A*+OD">A*+OD</option>
+      </select> */}
       <div className="Main-Container">
         <div className="Map-Container">
           <Game
@@ -154,8 +179,6 @@ function App() {
             setGridMapFunction={setMap}
             setStep={setStep}
             setAgentPaths={setAgentPaths}
-            speed={speed}
-            algo={algo}
             algoFinished={algoFinished}
             setAlgoFinished={setAlgoFinished}
             startBoard={startBoard}
@@ -198,18 +221,6 @@ function App() {
           </div>
         </div>
       )}
-
-      <span>Speed</span>
-      <select onChange={(e) => setSpeed(e.target.value)}>
-        <option value="Fast">Fast</option>
-        <option value="Average">Average</option>
-        <option value="Slow">Slow</option>
-      </select>
-      <span>Algorithm</span>
-      <select onChange={(e) => setAlgo(e.target.value)}>
-        <option value="CBS">CBS</option>
-        <option value="A*+OD">A*+OD</option>
-      </select>
     </div>
   );
 }
