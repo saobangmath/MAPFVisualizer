@@ -9,7 +9,11 @@ import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState } from "react";
 import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./mapconfig/maps";
-import { clone2DArray, getNextAgentID } from "./components/utility/Utility";
+import {
+  clone2DArray,
+  getNextAgentID,
+  generateDefaultAgent,
+} from "./components/utility/Utility";
 import CloneGridmap from "./components/layouts/Boards/Clone_Gridmap";
 function App() {
   let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
@@ -25,14 +29,31 @@ function App() {
   let [mapNum, setMapNum] = useState(0);
   let [mapName, setMapName] = useState("");
 
-  // if(Object.keys(agents).length){
-  //   let newAgents=agents;
-  //   for(let index=1;index<=2;index++){
-  //     newAgents[index]=GenerateDefaultAgents(index);
-  //   }
-  //   setAgentsList(agents);
-  // }
   // reset all the variables of the gridMap;
+
+  if (Object.keys(agents).length < 1) {
+    let defaultAgent = generateDefaultAgent(
+      1,
+      gridMap,
+      robots[1],
+      pColors[1],
+      sColors[1],
+      rColors[1]
+    );
+    agents[1] = defaultAgent;
+    setAgentsList(agents);
+    // let joke = Object.keys(agents).slice(1, 3);
+    // joke.map((key, index) => console.log("data is", agents[key]));
+  }
+
+  console.log(
+    "the data is ",
+    Object.keys(agents)
+      .map(function (key) {
+        return agents[key];
+      })
+      .slice(0, 3)
+  );
   function resetMap(mapID) {
     if (!algoFinished) {
       alert("Can't reset the map when the algorithm is executed!");

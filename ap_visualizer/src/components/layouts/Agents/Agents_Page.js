@@ -1,10 +1,12 @@
 import React from "react";
 import classes from "./Agent_Page.module.css";
 import AgentTable from "./Agent_Table";
+import { DataTable } from "../../utility/DataTable";
+import { useState } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import { clone2DArray, getSpeed, getNextAgentID } from "../../utility/Utility";
-
+import DataTableFooter from "../../utility/DataTableFooter";
 const map = require("../../../pathFinding/Map");
 const Cell = require("../../../pathFinding/Cell");
 const CBS = require("../../../pathFinding/cbs/highLevelSolver");
@@ -33,7 +35,6 @@ function Agents_Page(props) {
       startPoint: startP,
       endPoint: "",
       status: "Available",
-      priority: null,
       curStep: "",
       maxStep: "",
       path: [],
@@ -212,7 +213,14 @@ function Agents_Page(props) {
         endBoard={props.endBoard}
         setStartBoard={props.setStartBoard}
         setEndBoard={props.setEndBoard}
+        rowsPerPage={3}
       ></AgentTable>
+      {/* <DataTableFooter
+        range={range}
+        slice={slice}
+        setPage={setPage}
+        page={page}
+      /> */}
       <button className={classes.btn} onClick={newAgent}>
         Add
       </button>

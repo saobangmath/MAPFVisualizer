@@ -1,16 +1,10 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Agent_Table.module.css";
-import Dropdown from "react-bootstrap/Dropdown";
-import DropdownButton from "react-bootstrap/DropdownButton";
-import { maps } from "../../../mapconfig/maps";
 import "bootstrap/dist/css/bootstrap.min.css";
-import classes from "./Agent_Page.module.css";
-
-import Switch from "react-bootstrap/esm/Switch";
-import { clone2DArray } from "../../utility/Utility";
 import AgentPathMap from "./Agent_PathMap";
-
+import { DataTable } from "../../utility/DataTable";
+import DataTableFooter from "../../utility/DataTableFooter";
 const Agent_Table = (props) => {
   let [addModal, setModalIsOpen] = useState(false);
   let [startModal, setStartModalOpen] = useState(false);
@@ -23,6 +17,8 @@ const Agent_Table = (props) => {
 
   let [selectedAgent, setSelectedAgent] = useState(); //get the selected agents
   let [detailModal, setDetailModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  let { slice, range } = DataTable(props.agents, page, props.rowsPerPage);
 
   const showPopup = (agent) => {
     setSelectedAgent(agent);
@@ -149,12 +145,9 @@ const Agent_Table = (props) => {
     if (start.length !== 0) {
       updatedAgent.startPoint = start[start.length - 1];
     }
-    if (priority === "") {
-      alert("Please choose your task priority!");
-    } else if (end.length === 0) {
+    if (end.length === 0) {
       alert("Please select the robot destination!");
     } else {
-      updatedAgent.priority = priority;
       updatedAgent.endPoint = end[end.length - 1];
       props.agents[updatedAgent.agentId] = updatedAgent;
       props.setAgentsList(props.agents);
@@ -205,7 +198,6 @@ const Agent_Table = (props) => {
     props.setAgentsList(new_agents);
     props.setAgentPaths({});
   };
-
   return (
     <>
       <table id="agentTable" className={styles.styledTable}>
@@ -217,31 +209,31 @@ const Agent_Table = (props) => {
           </tr>
         </thead>
         <tbody>
-          {Object.keys(props.agents).map((key, index) => (
+          {Object.keys(slice).map((key, index) => (
             <tr key={key}>
               <td>
                 <p>
-                  Robot {index + 1}
+                  Robot {slice[key].agentId}
                   {
                     <img
                       className={styles.image}
-                      src={props.agents[key].img}
+                      src={slice[key].img}
                       alt="logo"
                     />
                   }
                 </p>
               </td>
               <td>
-                <label className={statusLblColor(props.agents[key].status)}>
-                  {props.agents[key].status}
+                <label className={statusLblColor(slice[key].status)}>
+                  {slice[key].status}
                 </label>
               </td>
               <td>
                 <button
-                  className={actionBtnColor(props.agents[key].status)}
-                  onClick={() => showPopup(props.agents[key])}
+                  className={actionBtnColor(slice[key].status)}
+                  onClick={() => showPopup(slice[key])}
                 >
-                  {actionTxt(props.agents[key].status)}
+                  {actionTxt(slice[key].status)}
                 </button>
                 <button
                   className={styles.removeBtn}
@@ -254,6 +246,13 @@ const Agent_Table = (props) => {
           ))}
         </tbody>
       </table>
+      <DataTableFooter
+        range={range}
+        slice={slice}
+        setPage={setPage}
+        page={page}
+      />
+
       {addModal && (
         <div className={styles.modalAdd}>
           <div className={styles.overlay} onClick={closePopup}></div>
@@ -268,31 +267,10 @@ const Agent_Table = (props) => {
               X
             </button>
             <p className={styles.heading}>Robot {selectedAgent.agentId}</p>
-            <div>
-              <p className={styles.title}>Task Priority:</p>
-              <select
-                className={styles.dropDownBtn}
-                onChange={(priority) => selectPriority(priority.target.value)}
-              >
-                <option className={styles.dropDownCtn} value="">
-                  Choose the priority level...
-                </option>
-                <option className={styles.dropDownCtn} value="Low">
-                  Low
-                </option>
-                <option className={styles.dropDownCtn} value="Medium">
-                  Medium
-                </option>
-                <option className={styles.dropDownCtn} value="High">
-                  High
-                </option>
-              </select>
-            </div>
             <div className={styles.points}>
               <button className={styles.btnPoint} onClick={startMapModal}>
                 Click to Set Start Point
               </button>
-
               <button className={styles.btnPoint} onClick={endMapModal}>
                 Click to Set End Point
               </button>
@@ -410,41 +388,6 @@ function showPoint(array, row, col, agent, boardType, value) {
     return <img className={styles.map_image} src={agent.img} alt="logo" />;
   else if (value === "X" && boardType === "end") return "";
   else return null;
-  // if (boardType === "start") {
-  //   if (value === "O") {
-  //     return <img className={styles.map_image} src={agent.img} alt="logo" />;
-  //   } else if (array.length) {
-  //     if (
-  //       array[array.length - 1].row === row &&
-  //       array[array.length - 1].col === col
-  //     ) {
-  //       return <img className={styles.map_image} src={agent.img} alt="logo" />;
-  //     }
-  //   } else if (agent.startPoint !== "") {
-  //     if (row === agent.startPoint.row && col === agent.startPoint.col) {
-  //       return <img className={styles.map_image} src={agent.img} alt="logo" />;
-  //     }
-  //   } else {
-  //     return null;
-  //   }
-  // } else {
-  //   if (value === "X") {
-  //     return "";
-  //   } else if (array.length) {
-  //     if (
-  //       array[array.length - 1].row === row &&
-  //       array[array.length - 1].col === col
-  //     ) {
-  //       return "";
-  //     }
-  //   } else if (agent.endPoint !== "") {
-  //     if (row === agent.endPoint.row && col === agent.endPoint.col) {
-  //       return "";
-  //     }
-  //   } else {
-  //     return null;
-  //   }
-  // }
 }
 
 function Square(props) {
