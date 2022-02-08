@@ -27,7 +27,8 @@ function App() {
   let [endBoard, setEndBoard] = useState(gridMap); // the end board in each agent entry;
   let [mapModal, setMapModal] = useState(false);
   let [mapNum, setMapNum] = useState(0);
-  let [mapName, setMapName] = useState("");
+  let [mapName, setMapName] = useState(""); //for the name of the map after zac finished changing the map layout
+  let [startModal, setStartModal] = useState(false);
 
   // reset all the variables of the gridMap;
 
@@ -46,14 +47,6 @@ function App() {
     // joke.map((key, index) => console.log("data is", agents[key]));
   }
 
-  console.log(
-    "the data is ",
-    Object.keys(agents)
-      .map(function (key) {
-        return agents[key];
-      })
-      .slice(0, 3)
-  );
   function resetMap(mapID) {
     if (!algoFinished) {
       alert("Can't reset the map when the algorithm is executed!");
@@ -101,6 +94,17 @@ function App() {
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
       <LandingPage image={logo} image1={PathImage} image2={CelebrateLogo} />
+      {/* <span>Speed</span>
+      <select onChange={(e) => setSpeed(e.target.value)}>
+        <option value="Fast">Fast</option>
+        <option value="Average">Average</option>
+        <option value="Slow">Slow</option>
+      </select>
+      <span>Algorithm</span>
+      <select onChange={(e) => setAlgo(e.target.value)}>
+        <option value="CBS">CBS</option>
+        <option value="A*+OD">A*+OD</option>
+      </select> */}
       <div className="Main-Container">
         <div className="Map-Container">
           <Game
@@ -175,8 +179,6 @@ function App() {
             setGridMapFunction={setMap}
             setStep={setStep}
             setAgentPaths={setAgentPaths}
-            speed={speed}
-            algo={algo}
             algoFinished={algoFinished}
             setAlgoFinished={setAlgoFinished}
             startBoard={startBoard}
@@ -219,18 +221,6 @@ function App() {
           </div>
         </div>
       )}
-
-      <span>Speed</span>
-      <select onChange={(e) => setSpeed(e.target.value)}>
-        <option value="Fast">Fast</option>
-        <option value="Average">Average</option>
-        <option value="Slow">Slow</option>
-      </select>
-      <span>Algorithm</span>
-      <select onChange={(e) => setAlgo(e.target.value)}>
-        <option value="CBS">CBS</option>
-        <option value="A*+OD">A*+OD</option>
-      </select>
     </div>
   );
 }

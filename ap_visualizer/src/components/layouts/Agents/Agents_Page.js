@@ -5,6 +5,7 @@ import alertify from "alertifyjs";
 import "alertifyjs/build/css/alertify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { clone2DArray, getSpeed, getNextAgentID } from "../../utility/Utility";
+import { useState } from "react";
 const map = require("../../../pathFinding/Map");
 const Cell = require("../../../pathFinding/Cell");
 const CBS = require("../../../pathFinding/cbs/highLevelSolver");
@@ -13,6 +14,28 @@ const AStar = require("../../../pathFinding/aStar/AStar");
 let interval = null; // the interval created to display the auto-movement of the agents;
 
 function Agents_Page(props) {
+  let [startModal, setStartModal] = useState(false);
+  let [speed, setSpeed] = useState("Fast"); //
+  let [algo, setAlgo] = useState("CBS"); // the algorithm options; default value is CBS algorithm;
+  const showStartModal = () => {
+    setStartModal(!startModal);
+  };
+  const startFunction = () => {
+    let check = true;
+    for (let id in props.agents) {
+      let status = props.agents[id].status;
+      if (status !== "Assigned") {
+        check = false;
+        alertify.alert(
+          "Please assigned the task for all agents or remove the agent with no assigned task!"
+        );
+        break;
+      }
+    }
+    if (check) {
+      showStartModal();
+    }
+  };
   function newAgent() {
     if (!props.algoFinished) {
       alertify.alert("Can't add new agent when the algorithm is in-progress!");
@@ -53,6 +76,13 @@ function Agents_Page(props) {
     props.setEndBoard(boardCopy);
     props.setGridMapFunction(boardCopy);
   }
+  const setRunningSpeed = (value) => {
+    setSpeed(value);
+  };
+  const setRunningAlgo = (value) => {
+    console.log("the", algo);
+    setAlgo(value);
+  };
   function generateStartPosition(map) {
     let rowIndex, colIndex;
     do {
@@ -64,18 +94,18 @@ function Agents_Page(props) {
   }
 
   // get the chosen algo from the Algorithm drop down list;
-  const getAlgo = (mp) => {
-    if (props.algo === "CBS") {
+  const getAlgo = (mp, algo) => {
+    if (algo === "CBS") {
       return new CBS(mp);
     }
-    if (props.algo === "A*+OD") {
+    if (algo === "A*+OD") {
       return new AStar(mp);
     }
     return null; // this line never reached!;
   };
 
   // run the chosen algo with the added agents;
-  const runAlgo = () => {
+  const runAlgo = ({ speed, algo }) => {
     let mp = new map();
     mp.height = props.gridMap.length;
     mp.width = props.gridMap[0].length;
@@ -109,9 +139,9 @@ function Agents_Page(props) {
       alertify.alert("There is no agents to run the CBS!");
       return;
     }
-    let algo = getAlgo(mp);
+    let runningAlgo = getAlgo(mp, algo);
     console.log("WAIT");
-    algo.solve().then((paths) => {
+    runningAlgo.solve().then((paths) => {
       console.log(paths);
       if (Object.keys(paths).length === 0) {
         // there is no possible plan;
@@ -125,8 +155,9 @@ function Agents_Page(props) {
       }
       props.setStep(0);
       props.setAgentPaths(paths);
-      runMap(paths);
+      runMap(paths, speed);
     });
+    showStartModal();
   };
   //store the algo path into each agents
   const storeAgentMapPath = (paths, agent) => {
@@ -143,7 +174,7 @@ function Agents_Page(props) {
     props.setAgentsList(props.agents);
     console.log(props.agents);
   };
-  const runMap = (paths) => {
+  const runMap = (paths, speed) => {
     if (interval != null) {
       clearInterval(interval);
     }
@@ -160,7 +191,7 @@ function Agents_Page(props) {
       updateAgentStep(curStep, props.agents); //update the current steps in the for each agents
       props.setStep(curStep + 1);
       curStep += 1;
-    }, getSpeed(props.speed));
+    }, getSpeed(speed));
     props.setAgentsList(props.agents);
   };
 
@@ -215,16 +246,60 @@ function Agents_Page(props) {
         setEndBoard={props.setEndBoard}
         rowsPerPage={3}
       ></AgentTable>
-      {/* <DataTableFooter
-        range={range}
-        slice={slice}
-        setPage={setPage}
-        page={page}
-      /> */}
+      {startModal && (
+        <div className={classes.modalAdd}>
+          <div className={classes.overlay} onClick={showStartModal}></div>
+          <div className={classes.spacing}></div>
+          <div className={classes.modal_content}>
+            <div className={classes.modal_container}>
+              <button className={classes.closeBtn} onClick={showStartModal}>
+                X
+              </button>
+              <div className={classes.modalTitle}>
+                <h2>Choose Your Speed & Algorithm</h2>
+                <p>
+                  Based on your preference,choose the suitable running speed &
+                  the algorithm to use.
+                </p>
+              </div>
+              <div className={classes.speedContainer}>
+                <p>speed</p>
+
+                <select
+                  className={classes.dropDownBtn}
+                  onChange={(e) => setRunningSpeed(e.target.value)}
+                >
+                  <option value="Fast">Fast</option>
+                  <option value="Average">Average</option>
+                  <option value="Slow">Slow</option>
+                </select>
+              </div>
+              <div className={classes.algorithmContainer}>
+                <p>Algorithm</p>
+                <select
+                  className={classes.dropDownBtn}
+                  onChange={(e) => setRunningAlgo(e.target.value)}
+                >
+                  <option value="CBS">CBS</option>
+                  <option value="A*+OD">A*+OD</option>
+                </select>
+              </div>
+              <div className={classes.btnContainer}>
+                <button
+                  className={classes.btn}
+                  onClick={() => runAlgo({ speed, algo })}
+                >
+                  Start
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <button className={classes.btn} onClick={newAgent}>
         Add
       </button>
-      <button className={classes.btn} onClick={runAlgo}>
+      <button className={classes.btn} onClick={startFunction}>
         Start
       </button>
       <button className={classes.btn} onClick={resetAgents}>
