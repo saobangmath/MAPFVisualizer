@@ -5,6 +5,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AgentPathMap from "./Agent_PathMap";
 import { DataTable } from "../../utility/DataTable";
 import DataTableFooter from "../../utility/DataTableFooter";
+import "alertifyjs/build/css/alertify.css";
+import alertify from "alertifyjs";
+
 const Agent_Table = (props) => {
   let [addModal, setModalIsOpen] = useState(false);
   let [startModal, setStartModalOpen] = useState(false);
@@ -93,7 +96,7 @@ const Agent_Table = (props) => {
   };
   const closeEndMapModal = (end) => {
     if (end.length === 0) {
-      alert("please select one end point");
+      alertify.alert("please select one end point");
     } else {
       setEndModalOpen(!endModal);
     }
@@ -146,7 +149,7 @@ const Agent_Table = (props) => {
       updatedAgent.startPoint = start[start.length - 1];
     }
     if (end.length === 0) {
-      alert("Please select the robot destination!");
+      alertify.alert("Please select the robot destination!");
     } else {
       updatedAgent.endPoint = end[end.length - 1];
       props.agents[updatedAgent.agentId] = updatedAgent;
@@ -172,11 +175,13 @@ const Agent_Table = (props) => {
   // remove the agent in the map;
   const RemoveAgent = (id) => {
     if (Object.keys(props.agents).length == 1) {
-      alert("The number of agent could not be zero!");
+      alertify.alert("The number of agent could not be zero!");
       return;
     }
     if (!props.algoFinished) {
-      alert("Can't remove the agent when the algorithm is in progress!");
+      alertify.alert(
+        "Can't remove the agent when the algorithm is in progress!"
+      );
       return;
     }
     for (let row = 0; row < props.gridMap.length; row++) {
@@ -470,11 +475,11 @@ function Map(props) {
     const board = props.board;
     let boardCopy = [...board];
     if (typeof boardCopy[rowIndex][colIndex] === "object") {
-      alert(
+      alertify.alert(
         "Please choose another start/end point! Please do not choose the same as other agents!"
       );
     } else if (boardCopy[rowIndex][colIndex] === "@") {
-      alert("Please do not choose the obstacles.");
+      alertify.alert("Please do not choose the obstacles.");
     } else {
       //Using an checker for a final check against all the agents start and end point.
       let startChecker = false;
@@ -511,7 +516,7 @@ function Map(props) {
             props.onStart(rowIndex, colIndex, check);
             props.setBoardFunction(boardCopy);
           } else {
-            alert(
+            alertify.alert(
               "Please choose another start point that is not the same as other agents"
             );
           }
@@ -524,7 +529,7 @@ function Map(props) {
             props.onEnd(rowIndex, colIndex, check);
             props.setBoardFunction(boardCopy);
           } else {
-            alert(
+            alertify.alert(
               "Please choose another end point that is not the same as other agents"
             );
           }

@@ -1,12 +1,10 @@
 import React from "react";
 import classes from "./Agent_Page.module.css";
 import AgentTable from "./Agent_Table";
-import { DataTable } from "../../utility/DataTable";
-import { useState } from "react";
-
+import alertify from "alertifyjs";
+import "alertifyjs/build/css/alertify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { clone2DArray, getSpeed, getNextAgentID } from "../../utility/Utility";
-import DataTableFooter from "../../utility/DataTableFooter";
 const map = require("../../../pathFinding/Map");
 const Cell = require("../../../pathFinding/Cell");
 const CBS = require("../../../pathFinding/cbs/highLevelSolver");
@@ -17,7 +15,7 @@ let interval = null; // the interval created to display the auto-movement of the
 function Agents_Page(props) {
   function newAgent() {
     if (!props.algoFinished) {
-      alert("Can't add new agent when the algorithm is in-progress!");
+      alertify.alert("Can't add new agent when the algorithm is in-progress!");
       return;
     }
     let agentId = getNextAgentID(props.agents);
@@ -97,17 +95,18 @@ function Agents_Page(props) {
         };
         mp.agents[id] = agent;
       } else {
-        // for simplicity in case there is some robot in the map has not been assigned with any place -> the algo could not be executed;
-        alert(
+        alertify.alert(
           "Please assigned the task for all agents or remove the agent with no assigned task!"
         );
+        // for simplicity in case there is some robot in the map has not been assigned with any place -> the algo could not be executed;
+
         return;
       }
     }
     props.setAlgoFinished(false); // the algorithm is in executing progress;
     mp.no_agents = Object.keys(mp.agents).length;
     if (mp.no_agents === 0) {
-      alert("There is no agents to run the CBS!");
+      alertify.alert("There is no agents to run the CBS!");
       return;
     }
     let algo = getAlgo(mp);
@@ -174,6 +173,7 @@ function Agents_Page(props) {
       }
       let clone_agents = { ...props.agents };
       clone_agents[curAgent.agentId] = curAgent;
+
       props.setAgentsList(clone_agents);
     }
   };
