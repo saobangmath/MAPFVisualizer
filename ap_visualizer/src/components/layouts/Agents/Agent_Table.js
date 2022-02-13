@@ -12,7 +12,6 @@ const Agent_Table = (props) => {
   let [addModal, setModalIsOpen] = useState(false);
   let [startModal, setStartModalOpen] = useState(false);
   let [endModal, setEndModalOpen] = useState(false);
-  let [priority, setPriority] = useState("");
   let [validateStart, hasStart] = useState(false); //to validate only 1 startpoint in the start array.
   let [validateEnd, hasEnd] = useState(false); //to validate only 1 endpoint in the end array
   let [start, startPoint] = useState([]); //the start point of the robot
@@ -101,10 +100,7 @@ const Agent_Table = (props) => {
       setEndModalOpen(!endModal);
     }
   };
-  // select the priority of the agents;
-  const selectPriority = (e) => {
-    setPriority(e);
-  };
+
   const statusLblColor = (status) => {
     switch (status) {
       case "Available":

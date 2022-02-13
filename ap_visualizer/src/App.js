@@ -62,6 +62,8 @@ function App() {
     let updatedGridMap = null;
     updatedGridMap = clone2DArray(maps[index]);
     setMap(updatedGridMap);
+    setStartBoard(updatedGridMap);
+    setEndBoard(updatedGridMap);
     // reset the old agents;
     setAgentsList({});
     setAgentPaths({});
@@ -86,8 +88,15 @@ function App() {
       const data = JSON.parse(event.target.result);
 
       // Updata state with file data
-      setMap(data);
-      setMapModal(false);
+      let updatedGridMap = null;
+      updatedGridMap = clone2DArray(data);
+      setMap(updatedGridMap);
+      setStartBoard(updatedGridMap);
+      setEndBoard(updatedGridMap);
+      // reset the old agents;
+      setAgentsList({});
+      setAgentPaths({});
+      showMapModal();
     };
   };
   const showMapModal = () => {
@@ -233,9 +242,12 @@ function App() {
                 Choose Map
               </button>
               <label>
-                Customize Map from File
+                {/* Customize Map from File */}
                 <input type="file" name="file" onChange={handleFile} />
               </label>
+              {/* <button className="customise_btn" onChange={handleFile}>
+                Click here to customise your map
+              </button> */}
             </div>
           </div>
         </div>
