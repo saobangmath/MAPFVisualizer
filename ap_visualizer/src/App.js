@@ -71,7 +71,25 @@ function App() {
   const setMap = (points) => {
     setGridMap(points);
   };
+  const handleFile = (event) => {
+    console.log("event.target.files test:", event.target.files);
+    // FileReader is built in to browser JS
+    const fileReader = new FileReader();
 
+    // Convert file to text
+    fileReader.readAsText(event.target.files[0], "UTF-8");
+
+    // When file is convertgged...
+    fileReader.onload = (event) => {
+      console.log("event.target.result", event.target.result);
+      // Convert text to JS data
+      const data = JSON.parse(event.target.result);
+
+      // Updata state with file data
+      setMap(data);
+      setMapModal(false);
+    };
+  };
   const showMapModal = () => {
     setMapModal(!mapModal);
   };
@@ -214,9 +232,10 @@ function App() {
               <button className="map_btn" onClick={() => resetMap(mapNum)}>
                 Choose Map
               </button>
-              <button className="customise_btn">
-                Click here to customise your map
-              </button>
+              <label>
+                Customize Map from File
+                <input type="file" name="file" onChange={handleFile} />
+              </label>
             </div>
           </div>
         </div>
