@@ -1,6 +1,7 @@
 const CTNode = require('./CTNode')
 const Constraint = require('../Constraint')
 const Conflict = require('../Conflict')
+const Utils = require('../utils')
 
 /**
  Search the constraints tree
@@ -10,6 +11,8 @@ const Conflict = require('../Conflict')
 class highLevelSolver {
     constructor(map) {
         this.map = map;
+        this.expanded_nodes = 0;
+        this.execution_time = 0;
     }
 
     _getEdgeConflict(agent1, agent2, route1, route2) { // return any common edges (edge conflicts) between 2 given routes
@@ -79,14 +82,25 @@ class highLevelSolver {
         return pos
     }
 
+    // push the new node to the tree && increment the number of nodes expanded;
+    updateTree(tree, node){
+        tree.push(node);
+        this.expanded_nodes++;
+    }
+
     async solve() { // return a list of cells
+        let startTime = Utils.getTime();
+        this.expanded_nodes = 0;
         let root = new CTNode([])
         root.updateSolution(this.map)
         root.updateCost()
         let tree = []
-        tree.push(root)
+        this.updateTree(tree, root)
         if (Object.keys(root.solution).length == 0){ // there is some agents can't even simply go from start to destination;
-            return {};
+            this.execution_time = Utils.getTime() - startTime;
+            return {"paths" : {},
+                    "expanded_nodes" : this.expanded_nodes,
+                    "execution_time" : this.execution_time};
         }
         while (tree.length > 0){
             let pos = this.findBestNodePosition(tree) // get the node with minimum cost;
@@ -95,7 +109,10 @@ class highLevelSolver {
             let edgeConflict = this.getEdgeConflict(P)
             tree.splice(pos, 1)
             if (normalConflict == null && edgeConflict == null){ // no conflict occur;
-                return P.getSolution()
+                this.execution_time = Utils.getTime() - startTime;
+                return {"paths" : P.getSolution(),
+                        "expanded_nodes" : this.expanded_nodes,
+                        "execution_time" : this.execution_time}
             }
             if (normalConflict != null){
                 {
@@ -105,7 +122,7 @@ class highLevelSolver {
                     A1.updateSolution(this.map)
                     A1.updateCost()
                     if (Object.keys(A1.getSolution()).length > 0){ // the solution is not empty;
-                        tree.push(A1)
+                        this.updateTree(tree, A1);
                     }
                 }
                 {
@@ -115,7 +132,7 @@ class highLevelSolver {
                     A2.updateSolution(this.map)
                     A2.updateCost()
                     if (Object.keys(A2.getSolution()).length > 0){ // the solution is not empty
-                        tree.push(A2)
+                        this.updateTree(tree, A2);
                     }
                 }
             }
@@ -130,6 +147,7 @@ class highLevelSolver {
                     A1.updateCost()
                     if (Object.keys(A1.getSolution()).length > 0){
                         tree.push(A1)
+                        this.expanded_nodes++;
                     }
                 }
                 {
@@ -141,12 +159,15 @@ class highLevelSolver {
                     A2.updateSolution(this.map)
                     A2.updateCost()
                     if (Object.keys(A2.getSolution()).length > 0){
-                        tree.push(A2)
+                        tree.push(A2);
                     }
                 }
             }
         }
-        return {} // can't find any solution
+        this.execution_time = Utils.getTime() - startTime;
+        return {"paths" : {},
+                "expanded_nodes" : this.expanded_nodes,
+                "execution_time" : this.execution_time} // can't find any solution
     }
 }
 

@@ -141,7 +141,8 @@ function Agents_Page(props) {
     }
     let runningAlgo = getAlgo(mp, algo);
     console.log("WAIT");
-    runningAlgo.solve().then((paths) => {
+    runningAlgo.solve().then((solutions) => {
+      let paths = solutions["paths"];
       console.log(paths);
       if (Object.keys(paths).length === 0) {
         // there is no possible plan;

@@ -12,6 +12,7 @@ class LowLevelSolver{
         this.optimalPath = []
         this.OPEN = []
         this.CLOSE = []
+        this.expanded_nodes = 0
     }
 
     // find the position of the cell with minCost w.r.t the paths;
@@ -118,12 +119,12 @@ class LowLevelSolver{
                     parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
                         [Utils.coordinatesToId(current_cell.x, current_cell.y, map.width), current_cell.time]
                     this.OPEN.push(expanded_cell);
+                    this.expanded_nodes++;
                 }
             }
         }
         if (!found){
-            //console.log("No solution for agent " + agentID);
-            return [];
+            return {};
         }
         while (!(cur_x == startCell.x && cur_y == startCell.y && cur_time == 0)){
             this.optimalPath.push(new Cell(cur_x, cur_y));
@@ -141,6 +142,7 @@ class LowLevelSolver{
     }
 
     findOptimalPaths(constraints, map){
+        this.expanded_nodes = 0;
         let optimalPaths = {}
         // solve for each agent individually;
         for (let id in map.agents){
@@ -149,10 +151,10 @@ class LowLevelSolver{
                 optimalPaths[id] = individualPath;
             }
             else{
-                return {};
+                return {"paths" : {}, "expanded_nodes" : this.expanded_nodes};
             }
         }
-        return optimalPaths;
+        return {"paths" : optimalPaths, "expanded_nodes" : this.expanded_nodes};
     }
 }
 
