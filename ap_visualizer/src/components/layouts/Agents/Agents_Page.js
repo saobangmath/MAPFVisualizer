@@ -3,6 +3,7 @@ import classes from "./Agent_Page.module.css";
 import AgentTable from "./Agent_Table";
 import alertify from "alertifyjs";
 import "alertifyjs/build/css/alertify.css";
+import "../../../alertify/css/themes/bootstrap.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { clone2DArray, getSpeed, getNextAgentID } from "../../utility/Utility";
 import { useState } from "react";
@@ -202,6 +203,14 @@ function Agents_Page(props) {
       curAgent.curStep = curStep;
       if (curStep === curAgent.maxStep - 1) {
         curAgent.status = "Completed";
+        alertify.notify(
+          "Robot" + agents[index].agentId + "has finished the allocated task",
+          "success",
+          2,
+          function () {
+            console.log("dismissed");
+          }
+        );
       }
       let clone_agents = { ...props.agents };
       clone_agents[curAgent.agentId] = curAgent;
