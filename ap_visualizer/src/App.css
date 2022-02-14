@@ -229,6 +229,29 @@ li {
 .closeBtn:after {
   transform: rotate(-45deg);
 }
+.firstContainer {
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%);
+  transition: 0.3s;
+  width: 45%;
+  border-radius: 5px;
+  float: left;
+  padding: 10px;
+  margin: top 10px;
+}
+.secondContainer {
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%);
+  transition: 0.3s;
+  width: 45%;
+  border-radius: 5px;
+  float: right;
+  padding: 10px;
+  margin: top 10px;
+}
+.btnContainer {
+  margin-top: 4rem;
+  clear: both;
+}
+
 .App-link {
   color: #61dafb;
 }

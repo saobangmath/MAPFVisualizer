@@ -6,7 +6,7 @@ import * as React from "react";
 import CelebrateLogo from "./images/celebration.png";
 import Game from "./components/layouts/Boards/gridmap";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./mapconfig/maps";
 import {
@@ -27,9 +27,8 @@ function App() {
   let [endBoard, setEndBoard] = useState(gridMap); // the end board in each agent entry;
   let [mapModal, setMapModal] = useState(false);
   let [mapNum, setMapNum] = useState(0);
-  let [mapName, setMapName] = useState(""); //for the name of the map after zac finished changing the map layout
-  let [startModal, setStartModal] = useState(false);
-
+  let [customiseModal, setCustomiseModal] = useState(false);
+  const fileRef = useRef();
   // reset all the variables of the gridMap;
 
   if (Object.keys(agents).length < 1) {
@@ -73,6 +72,7 @@ function App() {
   const setMap = (points) => {
     setGridMap(points);
   };
+
   const handleFile = (event) => {
     console.log("event.target.files test:", event.target.files);
     // FileReader is built in to browser JS
@@ -96,7 +96,7 @@ function App() {
       // reset the old agents;
       setAgentsList({});
       setAgentPaths({});
-      showMapModal();
+      closeCustomiseModal();
     };
   };
   const showMapModal = () => {
@@ -104,6 +104,14 @@ function App() {
   };
   const closeMapModal = (mapID) => {
     showMapModal();
+  };
+
+  const showCustomiseModal = () => {
+    closeMapModal();
+    setCustomiseModal(!customiseModal);
+  };
+  const closeCustomiseModal = () => {
+    setCustomiseModal(!customiseModal);
   };
   const changeMapNo = (num) => {
     let index = mapNum;
@@ -121,17 +129,7 @@ function App() {
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
       <LandingPage image={logo} image1={PathImage} image2={CelebrateLogo} />
-      {/* <span>Speed</span>
-      <select onChange={(e) => setSpeed(e.target.value)}>
-        <option value="Fast">Fast</option>
-        <option value="Average">Average</option>
-        <option value="Slow">Slow</option>
-      </select>
-      <span>Algorithm</span>
-      <select onChange={(e) => setAlgo(e.target.value)}>
-        <option value="CBS">CBS</option>
-        <option value="A*+OD">A*+OD</option>
-      </select> */}
+
       <div className="Main-Container">
         <div className="Map-Container">
           <Game
@@ -241,14 +239,58 @@ function App() {
               <button className="map_btn" onClick={() => resetMap(mapNum)}>
                 Choose Map
               </button>
-              <label>
-                {/* Customize Map from File */}
-                <input type="file" name="file" onChange={handleFile} />
-              </label>
-              {/* <button className="customise_btn" onChange={handleFile}>
+
+              <button
+                className="customise_btn"
+                onClick={() => showCustomiseModal()}
+              >
                 Click here to customise your map
-              </button> */}
+              </button>
             </div>
+          </div>
+        </div>
+      )}
+      {customiseModal && (
+        <div className="modalAdd">
+          <div className="overlay" onClick={showMapModal}></div>
+          <div className="spacing"></div>
+          <div className="modal_content">
+            <button className="closeBtn" onClick={showCustomiseModal}>
+              X
+            </button>
+            <div className="modalTitle">
+              <h2>Choose Your Speed & Algorithm</h2>
+              <p>
+                Based on your preference,choose the suitable running speed & the
+                algorithm to use.
+              </p>
+            </div>
+            <div className="firstContainer">
+              <p>speed</p>
+
+              <select className="dropDownBtn" onChange={(e) => e.target.value}>
+                <option value="Fast">Fast</option>
+                <option value="Average">Average</option>
+                <option value="Slow">Slow</option>
+              </select>
+            </div>
+            <div className="secondContainer">
+              <p>Algorithm</p>
+              <button
+                className="uploadBtn"
+                onClick={() => fileRef.current.click()}
+              >
+                Upload file
+              </button>
+              <input
+                ref={fileRef}
+                onChange={handleFile}
+                multiple={false}
+                type="file"
+                hidden
+              ></input>
+            </div>
+            <div className="btnContainer"></div>
           </div>
         </div>
       )}
