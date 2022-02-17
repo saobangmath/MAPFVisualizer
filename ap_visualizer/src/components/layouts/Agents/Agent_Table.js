@@ -263,7 +263,7 @@ const Agent_Table = (props) => {
                 </button>
                 <button
                   className={styles.removeBtn}
-                  onClick={() => RemoveAgent(key)}
+                  onClick={() => RemoveAgent(slice[key].agentId)}
                 >
                   Remove
                 </button>
