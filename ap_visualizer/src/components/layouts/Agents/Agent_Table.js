@@ -204,25 +204,26 @@ const Agent_Table = (props) => {
         "Can't remove the agent when the algorithm is in progress!"
       );
       return;
-    }
-    for (let row = 0; row < props.gridMap.length; row++) {
-      for (let col = 0; col < props.gridMap[0].length; col++) {
-        if (
-          props.gridMap[row][col] !== null &&
-          props.gridMap[row][col].agentId === id
-        ) {
-          props.gridMap[row][col] = null;
+    } else {
+      for (let row = 0; row < props.gridMap.length; row++) {
+        for (let col = 0; col < props.gridMap[0].length; col++) {
+          if (
+            props.gridMap[row][col] !== null &&
+            props.gridMap[row][col].agentId === id
+          ) {
+            props.gridMap[row][col] = null;
+          }
         }
       }
-    }
-    let new_agents = {};
-    for (let key in props.agents) {
-      if (key != id) {
-        new_agents[key] = props.agents[key];
+      let new_agents = {};
+      for (let key in props.agents) {
+        if (key != id) {
+          new_agents[key] = props.agents[key];
+        }
       }
+      props.setAgentsList(new_agents);
+      props.setAgentPaths({});
     }
-    props.setAgentsList(new_agents);
-    props.setAgentPaths({});
   };
   return (
     <>

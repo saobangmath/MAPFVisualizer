@@ -21,25 +21,46 @@ function Agents_Page(props) {
   const showStartModal = () => {
     setStartModal(!startModal);
   };
+  if (Object.keys(props.agentPaths).length === 0) {
+    console.log("empty");
+  } else {
+    console.log("have");
+  }
   const startFunction = () => {
-    let check = true;
-    for (let id in props.agents) {
-      let status = props.agents[id].status;
-      if (status !== "Assigned") {
-        check = false;
-        alertify.alert(
-          "Please assigned the task for all agents or remove the agent with no assigned task!"
-        );
-        break;
+    //For Start Button
+    if (Object.keys(props.agentPaths).length === 0) {
+      if (props.algoFinished) {
+        let check = true;
+        for (let id in props.agents) {
+          let status = props.agents[id].status;
+          if (status !== "Assigned") {
+            check = false;
+            alertify
+              .alert(
+                "Please assigned the task for all agents or remove the agent with no assigned task!"
+              )
+              .setHeader('<em style="color:black;">Alert</em>');
+
+            break;
+          }
+        }
+        if (check) {
+          showStartModal();
+        }
+      } else {
+        alertify.alert("The algorithm has started, please wait patiently");
       }
     }
-    if (check) {
-      showStartModal();
+    //for reset button
+    else {
+      resetAgents();
     }
   };
   function newAgent() {
     if (!props.algoFinished) {
-      alertify.alert("Can't add new agent when the algorithm is in-progress!");
+      alertify
+        .alert("Can't add new agent when the algorithm is in-progress!")
+        .setHeader('<em style="color:black;">Error</em>');
       return;
     }
     let agentId = getNextAgentID(props.agents);
@@ -81,7 +102,6 @@ function Agents_Page(props) {
     setSpeed(value);
   };
   const setRunningAlgo = (value) => {
-    console.log("the", algo);
     setAlgo(value);
   };
   function generateStartPosition(map) {
@@ -174,7 +194,6 @@ function Agents_Page(props) {
 
     props.agents[agent.agentId] = agent;
     props.setAgentsList(props.agents);
-    console.log(props.agents);
   };
   const runMap = (paths, speed) => {
     if (interval != null) {
@@ -204,7 +223,7 @@ function Agents_Page(props) {
       if (curStep === curAgent.maxStep - 1) {
         curAgent.status = "Completed";
         alertify.notify(
-          "Robot" + agents[index].agentId + "has finished the allocated task",
+          "Robot" + agents[index].agentId + " has finished the allocated task",
           "success",
           2,
           function () {
@@ -222,22 +241,41 @@ function Agents_Page(props) {
   // reset all of the configuration related to current MAPF problem;
   const resetAgents = () => {
     if (!props.algoFinished) {
-      alert("Can't reset the map when the algorithm is executed!");
+      alertify.alert("Can't reset the map when the algorithm is executed!");
       return;
+    } else {
+      alertify
+        .confirm(
+          "Note: Everything will be remove,leaving only one robot on the map if reset is confirm.",
+          function (e) {
+            if (e) {
+              // user clicked "ok"
+              props.setAgentsList({}); // reset the list of the agent to empty;
+              props.setAgentPaths({}); // reset the agent path;
+              let originalGridMap = [...props.gridMap];
+              for (let row = 0; row < originalGridMap.length; row++) {
+                for (let col = 0; col < originalGridMap[0].length; col++) {
+                  if (originalGridMap[row][col] === "@") {
+                    continue;
+                  } else {
+                    originalGridMap[row][col] = ".";
+                  }
+                }
+              }
+              props.setGridMapFunction(originalGridMap); // reset the gridmap to the original version;
+            } else {
+              // user clicked "cancel"
+            }
+          }
+        )
+        .setHeader('<em style="color:black;">Do you want to reset?</em>')
+        .set({
+          labels: {
+            ok: "Accept",
+            cancel: "Deny",
+          },
+        });
     }
-    props.setAgentsList({}); // reset the list of the agent to empty;
-    props.setAgentPaths({}); // reset the agent path;
-    let originalGridMap = [...props.gridMap];
-    for (let row = 0; row < originalGridMap.length; row++) {
-      for (let col = 0; col < originalGridMap[0].length; col++) {
-        if (originalGridMap[row][col] === "@") {
-          continue;
-        } else {
-          originalGridMap[row][col] = ".";
-        }
-      }
-    }
-    props.setGridMapFunction(originalGridMap); // reset the gridmap to the original version;
   };
 
   return (
@@ -310,11 +348,11 @@ function Agents_Page(props) {
         Add
       </button>
       <button className={classes.btn} onClick={startFunction}>
-        Start
+        {Object.keys(props.agentPaths).length === 0 ? "Start" : "Reset"}
       </button>
-      <button className={classes.btn} onClick={resetAgents}>
+      {/* <button className={classes.btn} onClick={resetAgents}>
         Reset
-      </button>
+      </button> */}
     </>
   );
 }

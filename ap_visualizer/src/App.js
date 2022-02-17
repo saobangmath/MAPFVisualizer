@@ -203,6 +203,7 @@ function App() {
             gridMap={gridMap}
             setGridMapFunction={setMap}
             setStep={setStep}
+            agentPaths={agentPaths}
             setAgentPaths={setAgentPaths}
             algoFinished={algoFinished}
             setAlgoFinished={setAlgoFinished}
