@@ -27,7 +27,6 @@ const Agent_Table = (props) => {
     switch (agent.status) {
       case "Available":
       case "Assigned": {
-        setStartMap(agent);
         setModalIsOpen(!addModal);
         break;
       }
@@ -39,13 +38,39 @@ const Agent_Table = (props) => {
         break;
     }
   };
-  const setStartMap = (agent) => {
-    const board = props.gridMap;
-    let boardCopy = [...board];
-    boardCopy[agent.startPoint.row][agent.startPoint.col] = "O";
-    props.setGridMapFunction(boardCopy);
+  const setInitalBoardState = (agent, startArray, endArray) => {
+    console.log("the selected agent is", agent);
+    const startboard = props.gridMap;
+    const endBoard = props.gridMap;
+    let initalStartBoard = [...startboard];
+    let initalEndBoard = [...endBoard];
+    initalStartBoard = resetMap(initalStartBoard);
+    initalEndBoard = resetMap(initalEndBoard);
+
+    if (startArray.length !== 0 && startArray[0].agentId === agent.agentId) {
+      initalStartBoard[startArray[0].row][startArray[0].col] = "O";
+      props.setStartBoard(initalStartBoard);
+    } else if (agent.startPoint && startArray.length === 0) {
+      initalStartBoard[agent.startPoint.row][agent.startPoint.col] = "O";
+      props.setStartBoard(initalStartBoard);
+    } else {
+    }
+    if (endArray.length !== 0 && endArray[0].agentId === agent.agentId) {
+      initalEndBoard[endArray[0].row][endArray[0].col] = "X";
+      props.setEndBoard(initalEndBoard);
+    } else if (agent.endPoint && endArray.length === 0) {
+      initalEndBoard[agent.endPoint.row][agent.endPoint.col] = "X";
+      props.setEndBoard(initalEndBoard);
+    } else {
+    }
   };
   const closePopup = () => {
+    let revertMap = props.gridMap;
+    revertMap = resetMap(revertMap);
+    props.setEndBoard(revertMap);
+    props.setStartBoard(revertMap);
+    start.length = 0;
+    end.length = 0;
     setModalIsOpen(!addModal);
   };
   const startCheck = () => {
@@ -57,9 +82,9 @@ const Agent_Table = (props) => {
   const openDetailModal = () => {
     setDetailModalOpen(!detailModal);
   };
-  // set start location for the new agent;
-  const setStartPoint = (row, col, check) => {
-    let sPosition = { row: row, col: col };
+  // set start location for the new agent, agentId is used to keep track of the points it belongs to which robots;
+  const setStartPoint = (row, col, check, agentId) => {
+    let sPosition = { row: row, col: col, agentId: agentId };
     if (!check) {
       start.push(sPosition);
     } else {
@@ -70,8 +95,8 @@ const Agent_Table = (props) => {
   };
 
   // set end location for the new agent;
-  const setEndPoint = (row, col, check) => {
-    let ePosition = { row: row, col: col };
+  const setEndPoint = (row, col, check, agentId) => {
+    let ePosition = { row: row, col: col, agentId: agentId };
     if (!check) {
       end.push(ePosition);
     } else {
@@ -83,18 +108,20 @@ const Agent_Table = (props) => {
 
   //close/open the start modal using the assign button(future implementation for validation)
   const startMapModal = () => {
+    setInitalBoardState(selectedAgent, start, end);
     setStartModalOpen(!startModal);
   };
 
   // show the end modal to indicate the end location of the new agent;
   const endMapModal = () => {
+    setInitalBoardState(selectedAgent, start, end);
     setEndModalOpen(!endModal);
   };
   const closeStartMapModal = () => {
     setStartModalOpen(!startModal);
   };
   const closeEndMapModal = (end) => {
-    if (end.length === 0) {
+    if (end != null && end.length === 0) {
       alertify.alert("please select one end point");
     } else {
       setEndModalOpen(!endModal);
@@ -285,11 +312,11 @@ const Agent_Table = (props) => {
       )}
       {startModal && (
         <div className={styles.modalAdd}>
-          <div className={styles.overlay} onClick={startMapModal}></div>
+          <div className={styles.overlay} onClick={closeStartMapModal}></div>
           <div className={styles.spacing}></div>
           <div className={styles.modal_content}>
             <div className={styles.map}>
-              <button className={styles.closeBtn} onClick={startMapModal}>
+              <button className={styles.closeBtn} onClick={closeStartMapModal}>
                 X
               </button>
 
@@ -302,12 +329,13 @@ const Agent_Table = (props) => {
                 check={validateStart}
                 agents={props.agents}
                 selectedAgent={selectedAgent}
-                pointArray={start}
+                startPointArray={start}
+                endPointArray={end}
               ></Map>
 
               <button
                 className={styles.btn}
-                onClick={() => closeStartMapModal(end)}
+                onClick={() => closeStartMapModal()}
               >
                 Set StartPoint
               </button>
@@ -317,11 +345,11 @@ const Agent_Table = (props) => {
       )}
       {endModal && (
         <div className={styles.modalAdd}>
-          <div className={styles.overlay} onClick={endMapModal}></div>
+          <div className={styles.overlay} onClick={closeEndMapModal}></div>
           <div className={styles.spacing}></div>
           <div className={styles.modal_content}>
             <div className={styles.map}>
-              <button className={styles.closeBtn} onClick={endMapModal}>
+              <button className={styles.closeBtn} onClick={closeEndMapModal}>
                 X
               </button>
               <Map
@@ -333,11 +361,12 @@ const Agent_Table = (props) => {
                 check={validateEnd}
                 agents={props.agents}
                 selectedAgent={selectedAgent}
-                pointArray={end}
+                startPointArray={start}
+                endPointArray={end}
               ></Map>
               <button
                 className={styles.btn}
-                onClick={() => closeEndMapModal(selectedAgent)}
+                onClick={() => closeEndMapModal(end)}
               >
                 Set Destination
               </button>
@@ -384,7 +413,7 @@ const Agent_Table = (props) => {
     </>
   );
 };
-function showPoint(array, row, col, agent, boardType, value) {
+function showPoint(agent, boardType, value) {
   if (value === "O" && boardType === "start")
     return <img className={styles.map_image} src={agent.img} alt="logo" />;
   else if (value === "X" && boardType === "end") return "";
@@ -400,14 +429,8 @@ function Square(props) {
         backgroundColor:
           props.value === "@"
             ? "black"
-            : showPoint(
-                props.pointArray,
-                props.colIndex,
-                props.rowIndex,
-                props.selectedAgent,
-                props.boardType,
-                props.value
-              ) === ""
+            : showPoint(props.selectedAgent, props.boardType, props.value) ===
+              ""
             ? props.selectedAgent.endColor
             : "white",
       }}
@@ -417,14 +440,7 @@ function Square(props) {
         ? null
         : props.value === "@"
         ? null
-        : showPoint(
-            props.pointArray,
-            props.colIndex,
-            props.rowIndex,
-            props.selectedAgent,
-            props.boardType,
-            props.value
-          )}
+        : showPoint(props.selectedAgent, props.boardType, props.value)}
     </button>
   );
 }
@@ -440,7 +456,6 @@ function Board(props) {
         boardType={props.boardType}
         isChecked={props.isChecked}
         selectedAgent={props.selectedAgent}
-        pointArray={props.pointArray}
       />
     );
   }
@@ -459,7 +474,7 @@ function Board(props) {
 function resetMap(map) {
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map[0].length; j++) {
-      if (map[i][j] === "X" || map[i][j] === "O") {
+      if (map[i][j] === "O" || map[i][j] === "X") {
         map[i][j] = ".";
       }
     }
@@ -472,64 +487,70 @@ function Map(props) {
     let boardCopy = [...board];
     if (typeof boardCopy[rowIndex][colIndex] === "object") {
       alertify.alert(
-        "Please choose another start/end point! Please do not choose the same as other agents!"
+        "A robot has been assigned to this point! Please choose another point as your start/end point."
       );
     } else if (boardCopy[rowIndex][colIndex] === "@") {
-      alertify.alert("Please do not choose the obstacles.");
+      alertify.alert("Unable to set obstacles as destination!");
     } else {
-      //Using an checker for a final check against all the agents start and end point.
       let startChecker = false;
       let endChecker = false;
-      for (let index in props.agents) {
-        //validate the start points between agents
+      //Using an checker for a final check against all the agents start and end point.
+      if (props.startPointArray.length !== 0) {
         if (
-          props.agents[index].startPoint.row === rowIndex &&
-          props.agents[index].startPoint.col === colIndex
+          props.startPointArray[0].row === rowIndex &&
+          props.startPointArray[0].col === colIndex &&
+          props.startPointArray[0].agentId === props.selectedAgent.agentId
         ) {
+          alertify.alert("Please do not set same point as the start point!");
           if (props.destination === "start") {
             startChecker = !startChecker;
-            break;
-          }
-        }
-        //validate the end points between agents
-        if (props.agents[index].endPoint.length !== 0) {
-          if (props.destination === "end") {
-            if (
-              props.agents[index].endPoint.row === rowIndex &&
-              props.agents[index].endPoint.col === colIndex
-            ) {
-              endChecker = !endChecker;
-              break;
-            }
-          }
-        }
-        // 'O' represent the start position 'X' represent the end position
-        if (props.destination === "start") {
-          if (!startChecker) {
-            props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
-            boardCopy = resetMap(boardCopy); //reset to the original layout map
-            boardCopy[rowIndex][colIndex] = "O";
-            props.onStart(rowIndex, colIndex, check);
-            props.setBoardFunction(boardCopy);
           } else {
-            alertify.alert(
-              "Please choose another start point that is not the same as other agents"
-            );
+            endChecker = !endChecker;
           }
         }
-        if (props.destination === "end") {
-          if (!endChecker) {
-            props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
-            boardCopy = resetMap(boardCopy); //reset to the original layout map
-            boardCopy[rowIndex][colIndex] = "X";
-            props.onEnd(rowIndex, colIndex, check);
-            props.setBoardFunction(boardCopy);
+      } else if (props.endPointArray.length !== 0) {
+        if (
+          props.endPointArray[0].row === rowIndex &&
+          props.endPointArray[0].col === colIndex &&
+          props.endPointArray[0].agentId === props.selectedAgent.agentId
+        ) {
+          alertify.alert("Please do not set same point as the end point!");
+          if (props.destination === "start") {
+            startChecker = !startChecker;
           } else {
-            alertify.alert(
-              "Please choose another end point that is not the same as other agents"
-            );
+            endChecker = !endChecker;
           }
         }
+      }
+
+      // 'O' represent the start position 'X' represent the end position
+      if (props.destination === "start") {
+        if (!startChecker) {
+          props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
+          boardCopy = resetMap(boardCopy); //reset to the original layout map
+          boardCopy[rowIndex][colIndex] = "O";
+          props.onStart(rowIndex, colIndex, check, props.selectedAgent.agentId);
+          props.setBoardFunction(boardCopy);
+        }
+        // else {
+        //   alertify.alert(
+        //     "Please choose another start point that is not the same as other robots"
+        //   );
+        // }
+      }
+      if (props.destination === "end") {
+        if (!endChecker) {
+          props.isChecked(); //to push and pull the end array stack.(ensure is only one value)
+          boardCopy = resetMap(boardCopy); //reset to the original layout map
+          boardCopy[rowIndex][colIndex] = "X";
+          props.onEnd(rowIndex, colIndex, check, props.selectedAgent.agentId);
+          props.setBoardFunction(boardCopy);
+        }
+        // else {
+        //   alertify.alert(
+        //     "Please choose another end point that is not the same as other robots"
+        //   );
+        // }
       }
     }
   };
@@ -541,7 +562,6 @@ function Map(props) {
           onClick={(rowIndex, colIndex) =>
             handleClick(rowIndex, colIndex, props.check)
           }
-          pointArray={props.pointArray}
           boardType={props.destination}
           isChecked={props.check}
           selectedAgent={props.selectedAgent}
