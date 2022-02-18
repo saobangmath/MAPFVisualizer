@@ -55,47 +55,67 @@ function Agents_Page(props) {
       resetAgents();
     }
   };
+  function maxRobotChecker() {
+    let copy = props.gridMap;
+    let width = copy[0].length;
+    let height = Object.keys(copy).length;
+    let maxLimit = 10;
+    console.log("the agents list is ", Object.keys(props.agents).length);
+    if (Object.keys(props.agents).length >= maxLimit) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   function newAgent() {
+    let checker = maxRobotChecker();
     if (!props.algoFinished) {
       alertify
         .alert("Can't add new agent when the algorithm is in-progress!")
         .setHeader('<em style="color:black;">Error</em>');
       return;
+    } else if (!checker) {
+      let agentId = getNextAgentID(props.agents);
+      let endColor = props.endColor;
+      let pathColor = props.pathColor;
+      let robotColor = props.robotColor;
+      let robot = props.robotImage;
+      let startP = generateStartPosition(props.gridMap);
+      let agent = {
+        img: robot,
+        endColor: endColor,
+        pathColor: pathColor,
+        robotColor: robotColor,
+        agentId: agentId,
+        startPoint: startP,
+        endPoint: "",
+        status: "Available",
+        curStep: "",
+        maxStep: "",
+        path: [],
+      };
+      props.agents[agentId] = agent;
+      props.setAgentsList(props.agents);
+      props.setAgentPaths({});
+
+      props.setAlgoFinished(true); // reset the algoFinished to be true;
+
+      const boardCopy = [...props.gridMap];
+      let lastAgent = props.agents[agentId];
+      boardCopy[props.agents[agentId].startPoint.row][
+        props.agents[agentId].startPoint.col
+      ] = lastAgent;
+
+      props.setStartBoard(boardCopy);
+      props.setEndBoard(boardCopy);
+      props.setGridMapFunction(boardCopy);
+    } else {
+      alertify
+        .alert(
+          "You have exceed the max number of robot in the map. For more clarification on max limit, please click on our robot helper !"
+        )
+        .setHeader('<em style="color:black;">Error</em>');
     }
-    let agentId = getNextAgentID(props.agents);
-    let endColor = props.endColor;
-    let pathColor = props.pathColor;
-    let robotColor = props.robotColor;
-    let robot = props.robotImage;
-    let startP = generateStartPosition(props.gridMap);
-    let agent = {
-      img: robot,
-      endColor: endColor,
-      pathColor: pathColor,
-      robotColor: robotColor,
-      agentId: agentId,
-      startPoint: startP,
-      endPoint: "",
-      status: "Available",
-      curStep: "",
-      maxStep: "",
-      path: [],
-    };
-    props.agents[agentId] = agent;
-    props.setAgentsList(props.agents);
-    props.setAgentPaths({});
-
-    props.setAlgoFinished(true); // reset the algoFinished to be true;
-
-    const boardCopy = [...props.gridMap];
-    let lastAgent = props.agents[agentId];
-    boardCopy[props.agents[agentId].startPoint.row][
-      props.agents[agentId].startPoint.col
-    ] = lastAgent;
-
-    props.setStartBoard(boardCopy);
-    props.setEndBoard(boardCopy);
-    props.setGridMapFunction(boardCopy);
   }
   const setRunningSpeed = (value) => {
     setSpeed(value);

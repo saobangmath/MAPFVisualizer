@@ -196,7 +196,7 @@ const Agent_Table = (props) => {
   // remove the agent in the map;
   const RemoveAgent = (id) => {
     if (Object.keys(props.agents).length == 1) {
-      alertify.alert("The number of agent could not be zero!");
+      alertify.alert("Sorry,the minimum number of robots cannot be zero!");
       return;
     }
     if (!props.algoFinished) {
