@@ -21,10 +21,9 @@ function Agents_Page(props) {
   const showStartModal = () => {
     setStartModal(!startModal);
   };
-  if (Object.keys(props.agentPaths).length === 0) {
-    console.log("empty");
-  } else {
-    console.log("have");
+  var x = document.getElementById("addBtn");
+  if (Object.keys(props.agentPaths).length !== 0) {
+    x.style.display = "none";
   }
   const startFunction = () => {
     //For Start Button
@@ -244,40 +243,25 @@ function Agents_Page(props) {
       alertify.alert("Can't reset the map when the algorithm is executed!");
       return;
     } else {
-      alertify
-        .confirm(
-          "Note: Everything will be remove,leaving only one robot on the map if reset is confirm.",
-          function (e) {
-            if (e) {
-              // user clicked "ok"
-              props.setAgentsList({}); // reset the list of the agent to empty;
-              props.setAgentPaths({}); // reset the agent path;
-              let originalGridMap = [...props.gridMap];
-              for (let row = 0; row < originalGridMap.length; row++) {
-                for (let col = 0; col < originalGridMap[0].length; col++) {
-                  if (originalGridMap[row][col] === "@") {
-                    continue;
-                  } else {
-                    originalGridMap[row][col] = ".";
-                  }
-                }
-              }
-              props.setGridMapFunction(originalGridMap); // reset the gridmap to the original version;
-            } else {
-              // user clicked "cancel"
-            }
+      props.setAgentsList({}); // reset the list of the agent to empty;
+      props.setAgentPaths({}); // reset the agent path;
+      let originalGridMap = [...props.gridMap];
+      for (let row = 0; row < originalGridMap.length; row++) {
+        for (let col = 0; col < originalGridMap[0].length; col++) {
+          if (originalGridMap[row][col] === "@") {
+            continue;
+          } else {
+            originalGridMap[row][col] = ".";
           }
-        )
-        .setHeader('<em style="color:black;">Do you want to reset?</em>')
-        .set({
-          labels: {
-            ok: "Accept",
-            cancel: "Deny",
-          },
-        });
+        }
+      }
+      props.setGridMapFunction(originalGridMap);
+      alertify.success("Map reset successfully");
+      var x = document.getElementById("addBtn");
+
+      x.style.display = "inline-block";
     }
   };
-
   return (
     <>
       <AgentTable
@@ -344,15 +328,12 @@ function Agents_Page(props) {
           </div>
         </div>
       )}
-      <button className={classes.btn} onClick={newAgent}>
+      <button id="addBtn" className={classes.btn} onClick={newAgent}>
         Add
       </button>
       <button className={classes.btn} onClick={startFunction}>
         {Object.keys(props.agentPaths).length === 0 ? "Start" : "Reset"}
       </button>
-      {/* <button className={classes.btn} onClick={resetAgents}>
-        Reset
-      </button> */}
     </>
   );
 }
