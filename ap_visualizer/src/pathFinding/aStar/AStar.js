@@ -70,7 +70,7 @@ class AStar{
                     let cur_cell = new Cell(cur_x, cur_y);
                     new_state.cur++;
                     if (!cur_cell.is_equal(goalCell)){
-                        new_state.g++;
+                       new_state.g++;
                     }
                     new_state.h -= Utils.getManhattanDistance(new Cell(cur_x, cur_y), goalCell);
                     new_state.h += Utils.getManhattanDistance(new Cell(next_x, next_y), goalCell);
@@ -132,7 +132,7 @@ class AStar{
     }
 
     hasConflict(state, curX, curY, nextX, nextY){
-        for (let i = 0; i < state.cur; state++){
+        for (let i = 0; i < state.cur; i++){
             let agentID = state.agentsOrder[i];
             let curXi = state.curState[agentID].x;
             let curYi = state.curState[agentID].y;

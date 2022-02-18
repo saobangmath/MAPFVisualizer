@@ -25,6 +25,8 @@ function test(filename) {
     )
 }
 
+test('../maps/handmade1.map')
+
 test('../maps/craft.map')
 
 test('../maps/easy_kiva.map')
