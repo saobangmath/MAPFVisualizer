@@ -22,6 +22,7 @@
   border-radius: 6px 6px 0 0;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 18px;
+  text-align: center;
 }
 .alertify .ajs-body {
   font-family: "Roboto", sans-serif;

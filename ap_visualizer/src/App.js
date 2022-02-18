@@ -1,6 +1,9 @@
 import logo from "./images/ap_visualizer-logo.png";
 import PathImage from "./images/path.png";
 import LandingPage from "./components/layouts/Landing_Page/Landing_page";
+import "alertifyjs/build/css/alertify.css";
+import "../src/alertify/css/themes/bootstrap.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import * as React from "react";
 import CelebrateLogo from "./images/celebration.png";
@@ -9,12 +12,14 @@ import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState, useRef } from "react";
 import { robots, pColors, sColors, rColors } from "./Constants";
 import { maps } from "./mapconfig/maps";
+
 import {
   clone2DArray,
   getNextAgentID,
   generateDefaultAgent,
 } from "./components/utility/Utility";
 import CloneGridmap from "./components/layouts/Boards/Clone_Gridmap";
+import alertify from "alertifyjs";
 function App() {
   let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
   let [gridMap, setGridMap] = useState(clone2DArray(maps["0"]));
@@ -50,23 +55,34 @@ function App() {
     if (!algoFinished) {
       alert("Can't reset the map when the algorithm is executed!");
       return;
+    } else {
+      alertify.confirm(
+        "Do you want to change to this map?",
+        "All robots will be removed excluding the default first robot during the process.",
+        function () {
+          let index = mapNum;
+          index = mapID;
+          if (index < 1) {
+            index = 4;
+          } else if (index > 4) {
+            index = 1;
+          }
+          let updatedGridMap = null;
+          updatedGridMap = clone2DArray(maps[index]);
+          setMap(updatedGridMap);
+          setStartBoard(updatedGridMap);
+          setEndBoard(updatedGridMap);
+          // reset the old agents;
+          setAgentsList({});
+          setAgentPaths({});
+          showMapModal();
+          alertify.success("Changed Map Successfully");
+        },
+        function () {
+          showMapModal();
+        }
+      );
     }
-    let index = mapNum;
-    index = mapID;
-    if (index < 1) {
-      index = 4;
-    } else if (index > 4) {
-      index = 1;
-    }
-    let updatedGridMap = null;
-    updatedGridMap = clone2DArray(maps[index]);
-    setMap(updatedGridMap);
-    setStartBoard(updatedGridMap);
-    setEndBoard(updatedGridMap);
-    // reset the old agents;
-    setAgentsList({});
-    setAgentPaths({});
-    showMapModal();
   }
 
   const setMap = (points) => {
@@ -260,11 +276,8 @@ function App() {
               X
             </button>
             <div className="modalTitle">
-              <h2>Choose Your Speed & Algorithm</h2>
-              <p>
-                Based on your preference,choose the suitable running speed & the
-                algorithm to use.
-              </p>
+              <h2>Step 1</h2>
+              <p>Please use our external platform for map creation</p>
             </div>
             <div className="firstContainer">
               <p>speed</p>
