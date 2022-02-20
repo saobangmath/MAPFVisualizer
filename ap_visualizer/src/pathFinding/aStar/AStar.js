@@ -1,6 +1,7 @@
 let Cell = require("../Cell")
 let State = require("./State");
 let Utils = require("../utils");
+let Constants = require("../Constants");
 
 class AStar{
     constructor(map) {
@@ -30,6 +31,10 @@ class AStar{
         let last_moment = -1;
         this.updateList(OPEN_LIST, INITIAL_STATE);
         while (OPEN_LIST.length > 0){
+            let curTime = Utils.getTime();
+            if (curTime - startTime >= Constants.TIME_CUTOFF){
+                break;
+            }
             let pos = this.getMinimumState(OPEN_LIST);
             let state = OPEN_LIST[pos];
             OPEN_LIST.splice(pos, 1);

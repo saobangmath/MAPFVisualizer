@@ -25,11 +25,7 @@ function test(filename) {
     )
 }
 
-test('../maps/handmade3.map')
-
 test('../maps/handmade1.map')
-
-test('../maps/handmade2.map')
 
 test('../maps/craft.map')
 
