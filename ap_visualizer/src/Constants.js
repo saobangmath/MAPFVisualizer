@@ -8,6 +8,9 @@ import agent7 from "./images/agent7.png";
 import agent8 from "./images/agent8.png";
 import agent9 from "./images/agent9.png";
 import agent10 from "./images/agent10.png";
+import browser from "./images/browser.png";
+import uploadFile from "./images/uploadfile.png";
+import laptopImg from "./images/laptop.png";
 
 let pColors = {
   1: "#536575",
@@ -58,4 +61,4 @@ let robots = {
   10: agent10,
 };
 
-export { pColors, robots, sColors, rColors };
+export { pColors, robots, sColors, rColors, browser, uploadFile, laptopImg };

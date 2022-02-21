@@ -10,7 +10,15 @@ import CelebrateLogo from "./images/celebration.png";
 import Game from "./components/layouts/Boards/gridmap";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState, useRef } from "react";
-import { robots, pColors, sColors, rColors } from "./Constants";
+import {
+  robots,
+  pColors,
+  sColors,
+  rColors,
+  browser,
+  uploadFile,
+  laptopImg,
+} from "./Constants";
 import { maps } from "./mapconfig/maps";
 
 import {
@@ -275,7 +283,7 @@ function App() {
                 className="customise_btn"
                 onClick={() => showCustomiseModal()}
               >
-                Click here to customise your map
+                Click Here To Customise Your Own Map
               </button>
             </div>
           </div>
@@ -290,25 +298,41 @@ function App() {
               X
             </button>
             <div className="modalTitle">
-              <h2>Step 1</h2>
-              <p>Please use our external platform for map creation</p>
+              <p>How To Customise Your Map</p>
             </div>
             <div className="firstContainer">
-              <p>speed</p>
-
-              <select className="dropDownBtn" onChange={(e) => e.target.value}>
-                <option value="Fast">Fast</option>
-                <option value="Average">Average</option>
-                <option value="Slow">Slow</option>
-              </select>
+              <p className="containerHeader">Step 1</p>
+              <img
+                className="customiseImage"
+                src={laptopImg}
+                alt="laptop"
+              ></img>
+              <p className="containerDesc">
+                Go to our{" "}
+                <a href="www.google.com" className="containerLink">
+                  Map Crafting Website
+                </a>
+              </p>
             </div>
             <div className="secondContainer">
-              <p>Algorithm</p>
+              <p className="containerHeader">Step 2</p>
+              <img className="customiseImage" src={browser} alt="browser"></img>
+              <p className="containerDesc">
+                Craft your own map & download the map
+              </p>
+            </div>
+            <div className="thirdContainer">
+              <p className="containerHeader">Step 3</p>
+              <img
+                className="containerImage"
+                src={uploadFile}
+                alt="uploadFile"
+              ></img>
               <button
                 className="uploadBtn"
                 onClick={() => fileRef.current.click()}
               >
-                Upload file
+                Click here to upload your map
               </button>
               <input
                 ref={fileRef}
@@ -318,7 +342,6 @@ function App() {
                 hidden
               ></input>
             </div>
-            <div className="btnContainer"></div>
           </div>
         </div>
       )}

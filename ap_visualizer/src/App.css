@@ -195,12 +195,12 @@ li {
   border: transparent;
   background-color: transparent;
   text-decoration: underline;
-  color: darkblue;
+  color: rgb(53, 168, 221);
   font-size: 14px;
   font-family: Roboto;
 }
 .customise_btn:hover {
-  color: darkblue;
+  color: #42a0a0;
 }
 
 .closeBtn {
@@ -236,7 +236,14 @@ li {
   border-radius: 5px;
   float: left;
   padding: 10px;
+  height: 220px;
   margin: top 10px;
+  transition: 0.3s;
+  width: 45%;
+  border-radius: 5px;
+  float: left;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 .secondContainer {
   box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%);
@@ -245,7 +252,18 @@ li {
   border-radius: 5px;
   float: right;
   padding: 10px;
+  height: 220px;
   margin: top 10px;
+}
+.thirdContainer {
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%);
+  transition: 0.3s;
+  width: 45%;
+  border-radius: 5px;
+  padding: 10px;
+  margin: auto;
+  height: 220px;
+  clear: both;
 }
 .btnContainer {
   margin-top: 4rem;
@@ -417,4 +435,46 @@ li {
   left: 50%;
   transform: translateX(-50%);
   border-radius: 25px 25px 30px 30px;
+}
+.modalTitle {
+  margin-top: 1rem;
+  font-size: 24px;
+  font-weight: 500;
+}
+.customiseImage {
+  max-width: 100%;
+  max-height: 100%;
+}
+.containerHeader {
+  margin-bottom: 0.5rem;
+  text-decoration: underline;
+}
+.containerDesc {
+  font-size: 14px;
+  margin-top: 5px;
+}
+.containerImage {
+  width: 300px;
+  height: 140px;
+  max-width: 100%;
+  max-height: 100%;
+}
+.containerLink {
+  color: rgb(53, 168, 221);
+  font-weight: 500;
+}
+.uploadBtn {
+  border: none;
+  background: transparent;
+  text-decoration: underline;
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(53, 168, 221);
+}
+.uploadBtn:hover {
+  color: #42a0a0;
+}
+.containerLink:hover {
+  color: #42a0a0;
 }

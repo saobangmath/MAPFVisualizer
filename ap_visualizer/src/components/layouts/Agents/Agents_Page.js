@@ -364,7 +364,7 @@ function Agents_Page(props) {
                 </p>
               </div>
               <div className={classes.speedContainer}>
-                <p>speed</p>
+                <p>Speed</p>
 
                 <select
                   className={classes.dropDownBtn}
