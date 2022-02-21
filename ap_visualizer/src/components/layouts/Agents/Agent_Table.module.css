@@ -200,7 +200,7 @@ td {
   background: rgb(243, 241, 241);
   padding: 14px 28px;
   border-radius: 3px;
-  max-width: 600px;
+  /* max-width: 600px; */
   min-width: 300px;
 }
 .heading {
@@ -356,4 +356,25 @@ td {
 }
 .closeBtn:after {
   transform: rotate(-45deg);
+}
+
+.chart {
+  /* display: inline-block;
+  border: 1px solid red;
+  padding: 1rem 1rem; */
+  /* box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%); */
+  transition: 0.3s;
+  border-radius: 5px;
+  float: left;
+  display: inline-flex;
+  padding: 2px;
+}
+.linkBtn {
+  border: none;
+  font-size: 12px;
+  font-family: "Roboto";
+  /* float: right; */
+  color: darkblue;
+  text-decoration: underline;
+  font-weight: 500;
 }

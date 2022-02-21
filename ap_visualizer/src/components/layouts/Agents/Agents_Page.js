@@ -93,6 +93,10 @@ function Agents_Page(props) {
         curStep: "",
         maxStep: "",
         path: [],
+        mainAlgoExpandedNode: "",
+        mainAlgoExecutionTime: "",
+        subAlgoExpandedNode: "",
+        subAlgoExecutionTime: "",
       };
       props.agents[agentId] = agent;
       props.setAgentsList(props.agents);
@@ -143,6 +147,15 @@ function Agents_Page(props) {
     }
     return null; // this line never reached!;
   };
+  const getSubAlgo = (mp, algo) => {
+    if (algo === "CBS") {
+      return new AStar(mp);
+    }
+    if (algo === "A*+OD") {
+      return new CBS(mp);
+    }
+    return null; // this line never reached!;
+  };
 
   // run the chosen algo with the added agents;
   const runAlgo = ({ speed, algo }) => {
@@ -180,10 +193,12 @@ function Agents_Page(props) {
       return;
     }
     let runningAlgo = getAlgo(mp, algo);
+    let secondAlgo = getSubAlgo(mp, algo); //the algos that the user never select
     console.log("WAIT");
     runningAlgo.solve().then((solutions) => {
       let paths = solutions["paths"];
-      console.log("the solution is ", solutions["execution_time"]);
+      let expandedNodes = solutions["expanded_nodes"];
+      let executionTime = solutions["execution_time"];
       if (Object.keys(paths).length === 0) {
         // there is no possible plan;
         alert("No possible plan found!");
@@ -192,16 +207,47 @@ function Agents_Page(props) {
       }
       //store the agent path into the agents list
       for (let agentId in paths) {
-        storeAgentMapPath(paths[agentId], props.agents[agentId]);
+        storeAgentMapPath(
+          paths[agentId],
+          props.agents[agentId],
+          expandedNodes,
+          executionTime
+        );
       }
       props.setStep(0);
       props.setAgentPaths(paths);
       runMap(paths, speed);
     });
+    // Storing the algo that the user never select
+    secondAlgo.solve().then((solutions) => {
+      let paths = solutions["paths"];
+      let expandedNodes = solutions["expanded_nodes"];
+      let executionTime = solutions["execution_time"];
+
+      if (Object.keys(paths).length === 0) {
+        // there is no possible plan;
+        for (let id = 1; id <= Object.keys(props.agents).length; id++) {
+          storeSubAlgoData(props.agents[id], 0, 0);
+        }
+      } else {
+        //store the agent path into the agents list
+        for (let agentId in paths) {
+          storeSubAlgoData(props.agents[agentId], expandedNodes, executionTime);
+        }
+      }
+    });
+
     showStartModal();
+    console.log(props.agents);
+  };
+  const storeSubAlgoData = (agent, expandedNodes, executionTime) => {
+    agent.subAlgoExpandedNode = expandedNodes;
+    agent.subAlgoExecutionTime = executionTime;
+    props.agents[agent.agentId] = agent;
+    props.setAgentsList(props.agents);
   };
   //store the algo path into each agents
-  const storeAgentMapPath = (paths, agent) => {
+  const storeAgentMapPath = (paths, agent, expandedNodes, executionTime) => {
     let agentPath = agent.path;
     for (let cellId = 0; cellId < paths.length; cellId++) {
       let path = { row: paths[cellId].x, col: paths[cellId].y };
@@ -209,6 +255,8 @@ function Agents_Page(props) {
     }
     agent.path = agentPath;
     agent.status = "Busy";
+    agent.mainAlgoExpandedNode = expandedNodes;
+    agent.mainAlgoExecutionTime = executionTime;
     agent.maxStep = paths.length; //exclude start point, only count the path and the destination steps.
 
     props.agents[agent.agentId] = agent;
@@ -297,6 +345,7 @@ function Agents_Page(props) {
         setStartBoard={props.setStartBoard}
         setEndBoard={props.setEndBoard}
         rowsPerPage={3}
+        selectedAlgo={algo}
       ></AgentTable>
       {startModal && (
         <div className={classes.modalAdd}>
@@ -315,7 +364,7 @@ function Agents_Page(props) {
                 </p>
               </div>
               <div className={classes.speedContainer}>
-                <p>speed</p>
+                <p>Speed</p>
 
                 <select
                   className={classes.dropDownBtn}

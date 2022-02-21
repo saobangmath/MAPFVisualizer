@@ -66,9 +66,14 @@ function generateDefaultAgent(
     curStep: "",
     maxStep: "",
     path: [],
+    mainAlgoExpandedNode: "",
+    mainAlgoExecutionTime: "",
+    subAlgoExpandedNode: "",
+    subAlgoExecutionTime: "",
   };
   return agent;
 }
+
 function generateStartPosition(map) {
   let rowIndex, colIndex;
   do {
