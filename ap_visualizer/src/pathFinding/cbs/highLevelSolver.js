@@ -89,7 +89,7 @@ class highLevelSolver {
         this.expanded_nodes++;
     }
 
-    async solve() { // return a list of cells
+    solve() { // return a list of cells
         let startTime = Utils.getTime();
         this.expanded_nodes = 0;
         let root = new CTNode([])
