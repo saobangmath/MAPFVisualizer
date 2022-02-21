@@ -8,18 +8,42 @@ import DataTableFooter from "../../utility/DataTableFooter";
 import "alertifyjs/build/css/alertify.css";
 import alertify from "alertifyjs";
 
+import {
+  AxisModel,
+  BarSeries,
+  Category,
+  ChartComponent,
+  Inject,
+  SeriesCollectionDirective,
+  SeriesDirective,
+  DataLabel,
+  Legend,
+  Tooltip,
+  ILoadedEventArgs,
+  ChartTheme,
+} from "@syncfusion/ej2-react-charts";
 const Agent_Table = (props) => {
   let [addModal, setModalIsOpen] = useState(false);
   let [startModal, setStartModalOpen] = useState(false);
   let [endModal, setEndModalOpen] = useState(false);
   let [start, startPoint] = useState([]); //the start point of the robot
   let [end, endPoint] = useState([]); //the end point of the robot
+  let [nodeData, setNodeData] = useState(); //the start point of the robot
+  let [timeData, setTimeData] = useState(); //the start point of the robot
 
   let [selectedAgent, setSelectedAgent] = useState(); //get the selected agents
   let [detailModal, setDetailModalOpen] = useState(false);
+  let [chartModal, setChartModalOpen] = useState(false);
+
   const [page, setPage] = useState(1);
   let { slice, range } = DataTable(props.agents, page, props.rowsPerPage);
 
+  const saveExpansionNodeData = (data) => {
+    setNodeData(data);
+  };
+  const saveExecutionTimeData = (data) => {
+    setTimeData(data);
+  };
   const showPopup = (agent) => {
     setSelectedAgent(agent);
     switch (agent.status) {
@@ -36,6 +60,27 @@ const Agent_Table = (props) => {
         break;
     }
   };
+  const closeChartModal = () => {
+    setChartModalOpen(!chartModal);
+  };
+  const showChartModal = () => {
+    let newNodeData = null;
+    let newTimeData = null;
+    if (selectedAgent != null) {
+      newNodeData = [
+        { x: "CBS Algo", y: selectedAgent.mainAlgoExpandedNode }, //expanded nodes
+        { x: "A* Algo", y: selectedAgent.subAlgoExpandedNode }, // execution time
+      ];
+      newTimeData = [
+        { x: "CBS Algo", y: selectedAgent.mainAlgoExecutionTime },
+        { x: "A* Algo", y: selectedAgent.subAlgoExecutionTime },
+      ];
+    }
+    saveExpansionNodeData(newNodeData);
+    saveExecutionTimeData(newTimeData);
+    setChartModalOpen(!chartModal);
+  };
+
   const setInitalBoardState = (agent, startArray, endArray) => {
     const startboard = props.gridMap;
     const endBoard = props.gridMap;
@@ -380,15 +425,8 @@ const Agent_Table = (props) => {
             </button>
             <p className={styles.heading}>Robot {selectedAgent.agentId}</p>
             <table className={styles.detailTable}>
-              {/* detail NOt confirm */}
               <tr>
-                <td>Total Time Taken: </td>
-                <td className={styles.detailColumn}>
-                  {selectedAgent.maxStep} Sec
-                </td>
-              </tr>
-              <tr>
-                <td>No. of steps:</td>
+                <td>No. of steps taken:</td>
                 <td className={styles.detailColumn}>{selectedAgent.maxStep}</td>
               </tr>
             </table>
@@ -398,16 +436,113 @@ const Agent_Table = (props) => {
                 map={props.startBoard}
               ></AgentPathMap>
             </div>
-
+            <div>
+              <button className={styles.linkBtn} onClick={showChartModal}>
+                Click To See More
+              </button>
+            </div>
             <button className={styles.btn} onClick={openDetailModal}>
               Okay
             </button>
           </div>
         </div>
       )}
+      {chartModal && (
+        <div className={styles.modalChart}>
+          <div className={styles.overlay} onClick={closeChartModal}></div>
+          <div className={styles.spacing}></div>
+          <div className={styles.modal_content}>
+            <button className={styles.closeBtn} onClick={closeChartModal}>
+              X
+            </button>
+            <div className={styles.modalTitle}>
+              <p>Difference between different algo</p>
+            </div>
+            <div className={styles.chart}>
+              <ChartComponent
+                id="nodeChart"
+                primaryXAxis={{
+                  valueType: "Category",
+                  title: "Expanded Nodes Comparison",
+                  size: "10px",
+                  interval: 1,
+                  majorGridLines: { width: 0 },
+                  edgeLabelPlacement: "Shift",
+                  majorTickLines: { width: 0 },
+                }}
+                width="400"
+                height="350"
+                tooltip={{ enable: true }}
+              >
+                <Inject
+                  services={[BarSeries, DataLabel, Category, Legend, Tooltip]}
+                />
+                <SeriesCollectionDirective>
+                  <SeriesDirective
+                    dataSource={nodeData}
+                    xName="x"
+                    yName="y"
+                    type="Bar"
+                    name="No. of Expanded Nodes"
+                    marker={{
+                      dataLabel: {
+                        visible: true,
+                        position: "Top",
+                        font: {
+                          fontWeight: "600",
+                          color: "#ffffff",
+                        },
+                      },
+                    }}
+                  />
+                </SeriesCollectionDirective>
+              </ChartComponent>
+              <ChartComponent
+                id="timeChart"
+                primaryXAxis={{
+                  valueType: "Category",
+                  title: "Execution Time Comparison",
+                  size: "10px",
+                  majorGridLines: { width: 0 },
+                  edgeLabelPlacement: "Shift",
+                  majorTickLines: { width: 0 },
+                }}
+                width="400"
+                height="350"
+                padding="5px"
+                tooltip={{ enable: true }}
+              >
+                <Inject
+                  services={[BarSeries, DataLabel, Category, Legend, Tooltip]}
+                />
+                <SeriesCollectionDirective>
+                  <SeriesDirective
+                    dataSource={timeData}
+                    xName="x"
+                    yName="y"
+                    type="Bar"
+                    name="Execution Time"
+                    marker={{
+                      dataLabel: {
+                        visible: true,
+                        position: "Top",
+                        font: {
+                          fontWeight: "600",
+                          color: "#ffffff",
+                        },
+                      },
+                    }}
+                  />
+                </SeriesCollectionDirective>
+              </ChartComponent>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
+
 function showPoint(agent, boardType, value) {
   if (value === "O" && boardType === "start")
     return <img className={styles.map_image} src={agent.img} alt="logo" />;
