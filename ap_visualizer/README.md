@@ -68,3 +68,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `yarn build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+### Sample Json file for upload 4x4 grid with obstacle on grid(1,1) and grid (4,4)
+
+[["@",".",".","."],[".",".",".","."],[".",".",".","."],[".",".",".","@"]]
