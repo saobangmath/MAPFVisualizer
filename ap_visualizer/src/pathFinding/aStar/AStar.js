@@ -1,6 +1,7 @@
 let Cell = require("../Cell")
 let State = require("./State");
 let Utils = require("../utils");
+let Constants = require("../Constants");
 
 class AStar{
     constructor(map) {
@@ -12,7 +13,7 @@ class AStar{
         this.expanded_nodes = 0;
         this.execution_time = 0;
     }
-    async solve(){
+    solve(){
         let startTime = Utils.getTime();
         let OPEN_LIST = []; // the queue to process the expanded node;
         let CLOSE_LIST = []; // those nodes that has been expanded;
@@ -30,6 +31,10 @@ class AStar{
         let last_moment = -1;
         this.updateList(OPEN_LIST, INITIAL_STATE);
         while (OPEN_LIST.length > 0){
+            let curTime = Utils.getTime();
+            if (curTime - startTime >= Constants.TIME_CUTOFF){
+                break;
+            }
             let pos = this.getMinimumState(OPEN_LIST);
             let state = OPEN_LIST[pos];
             OPEN_LIST.splice(pos, 1);
@@ -173,7 +178,7 @@ class AStar{
 
     // all nodes in LIST are standard nodes -> return the node with curState == state.posState and minimum cost;
     findBestIndex(LIST, state, no_agents){
-        let minCost = 1e9, index = -1;
+        let minCost = 1e9, h = 1e9, index = -1;
         for (let i = 0; i < LIST.length; i++){
             let st = LIST[i];
             let equal = true;
@@ -188,6 +193,11 @@ class AStar{
             if (equal && minCost > st.f){
                 minCost = st.f;
                 index = i;
+                h = st.h;
+            }
+            if (equal && minCost == st.f && h > st.h){
+                index = i;
+                h = st.h;
             }
         }
         return index;

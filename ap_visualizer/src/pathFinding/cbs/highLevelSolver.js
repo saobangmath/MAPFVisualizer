@@ -2,6 +2,7 @@ const CTNode = require('./CTNode')
 const Constraint = require('../Constraint')
 const Conflict = require('../Conflict')
 const Utils = require('../utils')
+const Constants = require('../Constants')
 
 /**
  Search the constraints tree
@@ -28,7 +29,7 @@ class highLevelSolver {
         let solution = node.getSolution()
         for (let agent1 in this.map.agents){
             for (let agent2 in this.map.agents){
-                if (agent1 == agent2) continue;
+                if (agent1 <= agent2) continue;
                 let conflict = this._getEdgeConflict(agent1, agent2, solution[agent1], solution[agent2]);
                 if (conflict != null){
                     return conflict
@@ -54,7 +55,7 @@ class highLevelSolver {
         let solution = node.getSolution()
         for (let agent1 in this.map.agents){
             for (let agent2 in this.map.agents){
-                if (agent1 == agent2){
+                if (agent1 <= agent2){
                     continue;
                 }
                 let conflict = this._getNormalConflict(agent1, agent2, solution[agent1], solution[agent2])
@@ -88,7 +89,7 @@ class highLevelSolver {
         this.expanded_nodes++;
     }
 
-    async solve() { // return a list of cells
+    solve() { // return a list of cells
         let startTime = Utils.getTime();
         this.expanded_nodes = 0;
         let root = new CTNode([])
@@ -103,6 +104,10 @@ class highLevelSolver {
                     "execution_time" : this.execution_time};
         }
         while (tree.length > 0){
+            let curTime = Utils.getTime();
+            if (curTime - startTime >= Constants.TIME_CUTOFF){
+                break;
+            }
             let pos = this.findBestNodePosition(tree) // get the node with minimum cost;
             let P = tree[pos]
             let normalConflict = this.getNormalConflict(P)

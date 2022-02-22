@@ -1,7 +1,7 @@
 const Cell = require('../Cell')
 const Utils = require('../utils')
 const assert = require('assert')
-const constants = require('./Constants')
+const constants = require('../Constants')
 
 /**
  * return the plan of individual agents such that it is consistent to its own constraint.
