@@ -44,6 +44,16 @@ class CTNode{
         }
         this.cost = new_cost
     }
+
+    clone(){
+        let clone_node = new CTNode([]);
+        clone_node.solution = this.solution;
+        clone_node.cost = this.cost;
+        for (let i = 0; i < this.constraints.length; i++){
+            clone_node.addConstraint(this.constraints[i]);
+        }
+        return clone_node;
+    }
 };
 
 module.exports = CTNode;

@@ -1,5 +1,6 @@
 const CBS = require("../cbs/highLevelSolver");
 const aStar = require("../aStar/AStar");
+const Utils = require("../Utils");
 
 /**
  * independent detection (ID) - a framework used to apply on top of any complete MAPF solver (e.g. CBS, A* + OD)
@@ -22,6 +23,8 @@ class ID{
             j++;
         }
         this.group_paths = [];
+        this.expanded_nodes = 0;
+        this.execution_time = 0;
     }
 
     merge(i, j){ // merge group j to i;
@@ -101,7 +104,8 @@ class ID{
 
 
     solve() {
-        let solution = {};
+        let startTime = Utils.getTime();
+        let solution = {"paths" : {}};
         this.group_paths = new Array(this.groups.length);
         for (let id = 0; id < this.group_paths.length; id++){
             this.group_paths[id] = {};
@@ -111,7 +115,15 @@ class ID{
             for (let id = 0; id < this.groups.length; id++){
                 this.solver.map.agents = this.groups[id];
                 if (Object.keys(this.group_paths[id]).length === 0) {
-                    this.group_paths[id] = this.solver.solve()["paths"];
+                    let plan = this.solver.solve();
+                    this.group_paths[id] = plan["paths"];
+                    if (Object.keys(this.group_paths[id]).length == 0){ // can't find path within group agent id;
+                        this.execution_time = Utils.getTime() - startTime;
+                        solution["expanded_nodes"] = this.expanded_nodes;
+                        solution["execution_time"] = this.execution_time;
+                        return solution;
+                    }
+                    this.expanded_nodes += plan["expanded_nodes"];
                 }
                 // console.log("==========");
                 // console.log(this.group_paths[id]);
@@ -128,15 +140,20 @@ class ID{
                 }
             }
             if (!conflict){
+                this.execution_time = Utils.getTime() - startTime; // the moment when the solution is found!
                 for (let id = 0; id < this.group_paths.length; id++){
                     for(let agent in this.group_paths[id]){
-                        solution[agent] = this.group_paths[id][agent];
+                        solution["paths"][agent] = this.group_paths[id][agent];
                     }
                 }
+                solution["expanded_nodes"] = this.expanded_nodes;
+                solution["execution_time"] = this.execution_time;
                 return solution;
             }
         }
-        return {};
+        solution["expanded_nodes"] = this.expanded_nodes;
+        solution["execution_time"] = this.execution_time;
+        return solution;
     }
 };
 

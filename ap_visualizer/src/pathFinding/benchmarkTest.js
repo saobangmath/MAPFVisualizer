@@ -1,8 +1,11 @@
 let CBS = require('./cbs/highLevelSolver');
 let aStar = require('./aStar/AStar');
+let recurCBS = require('./recursive-cbs/recurCBS');
 let ID = require('./id/ID');
 let Map = require('./Map');
 let Cell = require('./Cell');
+let Conflict = require('./Conflict');
+let Constraint = require('./Constraint');
 let Constants = require('./Constants');
 
 function isPlaceWithObstacles(){ // for a square, generate the obstacles there with probability = 0.2
@@ -61,8 +64,21 @@ function genMap() {
     return map;
 }
 
-function benchMark(){
-    let tot = 20, cbsWin = 0, aStarWin = 0;
+function getSolver(solver, map){
+    if (solver === "CBS"){
+        return new CBS(map);
+    }
+    if (solver === "A*+OD"){
+        return new aStar(map);
+    }
+    if (solver === "recurCBS"){
+        return new recurCBS(map, 3);
+    }
+    return null;
+}
+
+function benchMark(solver1, solver2){
+    let tot = 10, solver1Win = 0, solver2Win = 0;
     for (let iter = 1; iter <= tot; iter++){
         let map = genMap();
         while (map === null){
@@ -73,27 +89,31 @@ function benchMark(){
         console.log(map.agents);
         console.log("Maps: ")
         console.log(map.grid);
-        let cbsResult = new CBS(map).solve();
-        console.log("cbs execution time: " + cbsResult["execution_time"]);
-        let aStarResult = new aStar(map).solve();
-        console.log("aStar execution time: " + aStarResult["execution_time"]);
-        if (!(cbsResult["execution_time"] >= Constants.TIME_CUTOFF && aStarResult["execution_time"] >= Constants.TIME_CUTOFF)){
-            if (cbsResult["execution_time"] >= aStarResult["execution_time"]) aStarWin++;
-            else cbsWin++;
+
+        let solver1Result = getSolver(solver2, map).solve()["execution_time"];
+        console.log(`${solver1} execution time: ` + solver1Result);
+
+        let solver2Result = getSolver(solver1, map).solve()["execution_time"];
+        console.log(`${solver2} execution time: ` + solver2Result);
+
+        if (!(solver1Result >= Constants.TIME_CUTOFF && solver2Result >= Constants.TIME_CUTOFF)){
+            if (solver1Result > solver2Result) solver2Win++;
+            else solver1Win++;
         }
-        //let cbswIDResult = new ID("CBS", map).solve();
-        //console.log("cbs execution time: " + cbswIDResult["execution_time"]);
         console.log("=======================");
     }
-    let failed = tot - cbsWin - aStarWin;
+
+    let failed = tot - solver1Win - solver2Win;
 
     console.log(`Total ${tot} tests is simulating ...`);
 
-    console.log(`Out of ${cbsWin} tests, cbs win!`);
+    console.log(`Out of ${solver1Win} tests, ${solver1} win!`);
 
-    console.log(`Out of ${aStarWin} tests, A* + OD win!`);
+    console.log(`Out of ${solver2Win} tests, ${solver2} win!`);
 
     console.log(`${failed} tests to failed to find path within time limit`)
 }
 
-benchMark();
+
+//benchMark("CBS", "A*+OD");
+benchMark("CBS", "recurCBS");
