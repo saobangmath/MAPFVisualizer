@@ -56,11 +56,11 @@ class LowLevelSolver{
         }
     }
 
-    isConstraint(agentID, cell, constraints){
+    isConstraint(cell, constraints){
         for (let i = 0; i < constraints.length; i++){
             let constraint = constraints[i];
             assert(constraint.cell != null)
-            if (constraint.agentID == agentID && constraint.cell.is_equal(cell) && constraint.time == cell.time){
+            if (constraint.cell.is_equal(cell) && constraint.time == cell.time){
                 return true;
             }
         }
@@ -84,7 +84,7 @@ class LowLevelSolver{
             pos = this.findMinCostCellPosition(this.OPEN)
             current_cell = this.OPEN.splice(pos, 1)[0]
             this.CLOSE.push(current_cell)
-            if (current_cell.is_equal(destCell) && !this.isConstraint(agentID, current_cell, constraints)) { // find solution when the current_cell is similar with the dest_cell & the expanded_cell is not the constraint;
+            if (current_cell.is_equal(destCell) && !this.isConstraint(current_cell, this.getConstraints(constraints, agentID))) { // find solution when the current_cell is similar with the dest_cell & the expanded_cell is not the constraint;
                 cur_time = current_cell.time
                 found = true;
                 break;
@@ -103,7 +103,7 @@ class LowLevelSolver{
                     if (expanded_cell.time >= constants.STEPS_CUTOFF){
                         continue;
                     }
-                    if (this.isConstraint(agentID, expanded_cell, constraints)) {
+                    if (this.isConstraint(expanded_cell, this.getConstraints(constraints, agentID))) {
                         continue;
                     }
                     this.go(this.OPEN, expanded_cell)
@@ -141,11 +141,23 @@ class LowLevelSolver{
         return this.optimalPath
     }
 
-    findOptimalPaths(constraints, map){
+    getConstraints(constraints, agentID){
+        if (agentID in constraints){
+            return constraints[agentID];
+        }
+        return {};
+    }
+
+    findOptimalPaths(constraints, solution, map, agentNeedResolved){
         this.expanded_nodes = 0;
         let optimalPaths = {}
         // solve for each agent individually;
         for (let id in map.agents){
+            if (agentNeedResolved != -1 && id != agentNeedResolved){
+                this.expanded_nodes += solution[id].length;
+                optimalPaths[id] = solution[id];
+                continue;
+            }
             let individualPath = this.findOptimalPathForIndividualAgent(constraints, map, id);
             if (individualPath.length > 0) {
                 optimalPaths[id] = individualPath;

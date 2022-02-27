@@ -4,7 +4,7 @@ class MetaCTNode{
     constructor(groups) {
         this.nodes = new Array(groups);
         for (let id = 0; id < groups; id++){
-            this.nodes[id] = new CTNode([]);
+            this.nodes[id] = new CTNode({});
         }
         this.cost = 0;
     }
@@ -14,10 +14,15 @@ class MetaCTNode{
         this.nodes[groupID].addConstraint(constraint);
     }
 
-    updateSolution(map, agents){
+    // if groupID == -1 -> update all solution;
+    // else update the solution of only the groupID;
+    updateSolution(map, agents, groupID){
         for (let id = 0; id < this.nodes.length; id++){
             map.agents = agents[id];
-            this.nodes[id].updateSolution(map);
+            if (groupID != -1 && id != groupID){
+                continue;
+            }
+            this.nodes[id].updateSolution(map, -1);
         }
     }
 

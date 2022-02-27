@@ -78,7 +78,7 @@ function getSolver(solver, map){
 }
 
 function benchMark(solver1, solver2){
-    let tot = 10, solver1Win = 0, solver2Win = 0;
+    let tot = 30, solver1Win = 0, solver2Win = 0;
     for (let iter = 1; iter <= tot; iter++){
         let map = genMap();
         while (map === null){

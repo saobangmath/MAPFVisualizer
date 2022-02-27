@@ -40,10 +40,10 @@ function test(filename) {
 //
 // test('../maps/paper1.map')
 //
-test('../maps/3-agents.map')
-
-// test('../maps/1-agent.map')
+//test('../maps/3-agents.map')
 //
+// test('../maps/1-agent.map')
+
 test('../maps/special-1.map')
 
 test('../maps/special-2.map')

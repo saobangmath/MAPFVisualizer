@@ -11,6 +11,7 @@ const map = require("../../../pathFinding/Map");
 const Cell = require("../../../pathFinding/Cell");
 const CBS = require("../../../pathFinding/cbs/highLevelSolver");
 const AStar = require("../../../pathFinding/aStar/AStar");
+const recurCBS = require("../../../pathFinding/recursive-cbs/recurCBS");
 
 let interval = null; // the interval created to display the auto-movement of the agents;
 

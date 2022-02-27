@@ -125,7 +125,7 @@ class RecurCBS{
         let startTime = Utils.getTime();
         this.expanded_nodes = 0;
         let root = new MetaCTNode(this.groups.length);
-        root.updateSolution(this.map, this.groups);
+        root.updateSolution(this.map, this.groups, -1);
         root.updateCost()
         let tree = []
         this.updateTree(tree, root)
@@ -156,9 +156,11 @@ class RecurCBS{
             if (normalConflict != null){
                 {
                     let A1 = P.clone();
-                    let newConstraint = new Constraint(normalConflict.cell1, normalConflict.agent1, normalConflict.t1)
-                    A1.addConstraint(normalConflict.group_i, newConstraint);
-                    A1.updateSolution(this.map, this.groups);
+                    for (let agentID in this.groups[normalConflict.group_i]) {
+                        let newConstraint = new Constraint(normalConflict.cell1, agentID, normalConflict.t1)
+                        A1.addConstraint(normalConflict.group_i, newConstraint);
+                    }
+                    A1.updateSolution(this.map, this.groups, normalConflict.group_i);
                     A1.updateCost()
                     if (A1.getSolution().length > 0){ // the solution is not empty;
                         this.updateTree(tree, A1);
@@ -166,9 +168,11 @@ class RecurCBS{
                 }
                 {
                     let A2 = P.clone();
-                    let newConstraint = new Constraint(normalConflict.cell2, normalConflict.agent2, normalConflict.t2)
-                    A2.addConstraint(normalConflict.group_j, newConstraint);
-                    A2.updateSolution(this.map, this.groups);
+                    for (let agentID in this.groups[normalConflict.group_j]) {
+                        let newConstraint = new Constraint(normalConflict.cell2, agentID, normalConflict.t2)
+                        A2.addConstraint(normalConflict.group_j, newConstraint);
+                    }
+                    A2.updateSolution(this.map, this.groups, normalConflict.group_j);
                     A2.updateCost()
                     if (A2.getSolution().length > 0){ // the solution is not empty
                         this.updateTree(tree, A2);
@@ -178,11 +182,13 @@ class RecurCBS{
             if (edgeConflict != null){
                 {
                     let A1 = P.clone();
-                    let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1)
-                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1+1)
-                    A1.addConstraint(edgeConflict.group_i, newConstraint1);
-                    A1.addConstraint(edgeConflict.group_i, newConstraint2);
-                    A1.updateSolution(this.map, this.groups);
+                    for (let agentID in this.groups[edgeConflict.group_i]) {
+                        let newConstraint1 = new Constraint(edgeConflict.cell1, agentID, edgeConflict.t1)
+                        let newConstraint2 = new Constraint(edgeConflict.cell2, agentID, edgeConflict.t1+1)
+                        A1.addConstraint(edgeConflict.group_i, newConstraint1);
+                        A1.addConstraint(edgeConflict.group_i, newConstraint2);
+                    }
+                    A1.updateSolution(this.map, this.groups, edgeConflict.group_i);
                     A1.updateCost()
                     if (A1.getSolution().length > 0){
                         tree.push(A1)
@@ -191,11 +197,13 @@ class RecurCBS{
                 }
                 {
                     let A2 = P.clone();
-                    let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2)
-                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2+1)
-                    A2.addConstraint(edgeConflict.group_j, newConstraint1)
-                    A2.addConstraint(edgeConflict.group_j, newConstraint2)
-                    A2.updateSolution(this.map, this.groups);
+                    for (let agentID in this.groups[edgeConflict.group_j]) {
+                        let newConstraint1 = new Constraint(edgeConflict.cell1, agentID, edgeConflict.t2)
+                        let newConstraint2 = new Constraint(edgeConflict.cell2, agentID, edgeConflict.t2+1)
+                        A2.addConstraint(edgeConflict.group_j, newConstraint1);
+                        A2.addConstraint(edgeConflict.group_j, newConstraint2);
+                    }
+                    A2.updateSolution(this.map, this.groups, edgeConflict.group_j);
                     A2.updateCost()
                     if (A2.getSolution().length > 0){
                         tree.push(A2);

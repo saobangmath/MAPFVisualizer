@@ -92,8 +92,8 @@ class highLevelSolver {
     solve() { // return a list of cells
         let startTime = Utils.getTime();
         this.expanded_nodes = 0;
-        let root = new CTNode([])
-        root.updateSolution(this.map)
+        let root = new CTNode({})
+        root.updateSolution(this.map, -1);
         root.updateCost()
         let tree = []
         this.updateTree(tree, root)
@@ -121,34 +121,34 @@ class highLevelSolver {
             }
             if (normalConflict != null){
                 {
-                    let A1 = new CTNode([... P.getConstraints()])
+                    let A1 = P.clone();
                     let newConstraint = new Constraint(normalConflict.cell1, normalConflict.agent1, normalConflict.t1)
                     A1.addConstraint(newConstraint)
-                    A1.updateSolution(this.map)
+                    A1.updateSolution(this.map, normalConflict.agent1);
                     A1.updateCost()
                     if (Object.keys(A1.getSolution()).length > 0){ // the solution is not empty;
                         this.updateTree(tree, A1);
                     }
                 }
                 {
-                    let A2 = new CTNode([... P.getConstraints()])
+                    let A2 = P.clone();
                     let newConstraint = new Constraint(normalConflict.cell2, normalConflict.agent2, normalConflict.t2)
                     A2.addConstraint(newConstraint)
-                    A2.updateSolution(this.map)
+                    A2.updateSolution(this.map, normalConflict.agent2);
                     A2.updateCost()
                     if (Object.keys(A2.getSolution()).length > 0){ // the solution is not empty
                         this.updateTree(tree, A2);
                     }
                 }
             }
-            if (edgeConflict != null){
+            else if (edgeConflict != null){
                 {
-                    let A1 = new CTNode([... P.getConstraints()])
+                    let A1 = P.clone();
                     let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1)
-                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1+1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1 + 1)
                     A1.addConstraint(newConstraint1)
                     A1.addConstraint(newConstraint2)
-                    A1.updateSolution(this.map)
+                    A1.updateSolution(this.map, edgeConflict.agent1);
                     A1.updateCost()
                     if (Object.keys(A1.getSolution()).length > 0){
                         tree.push(A1)
@@ -156,12 +156,12 @@ class highLevelSolver {
                     }
                 }
                 {
-                    let A2 = new CTNode([... P.getConstraints()])
+                    let A2 = P.clone();
                     let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2)
-                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2+1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2 + 1)
                     A2.addConstraint(newConstraint1)
                     A2.addConstraint(newConstraint2)
-                    A2.updateSolution(this.map)
+                    A2.updateSolution(this.map, edgeConflict.agent2);
                     A2.updateCost()
                     if (Object.keys(A2.getSolution()).length > 0){
                         tree.push(A2);
