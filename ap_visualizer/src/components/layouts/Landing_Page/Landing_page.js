@@ -26,6 +26,17 @@ function Landing_page(props) {
   };
   return (
     <>
+      {/* <div className="container demo">
+        <div className="content">
+          <div id="large-header" className="large-header">
+            <canvas id="demo-canvas"></canvas>
+            <h1 className="main-title">
+              <span className="thin">Explore</span> Space
+            </h1>
+            <h1 className="main-title">Examroom.ai</h1>
+          </div>
+        </div>
+      </div> */}
       {/* <button onClick={togglePage()} className={classes.btn}>
         Click
       </button> */}

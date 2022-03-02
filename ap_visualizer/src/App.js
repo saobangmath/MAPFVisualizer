@@ -42,7 +42,25 @@ function App() {
   let [mapNum, setMapNum] = useState(0);
   let [customiseModal, setCustomiseModal] = useState(false);
   const fileRef = useRef();
-  // reset all the variables of the gridMap;
+  const [isHover, setHover] = useState(false);
+
+  const boxRef = React.useRef(null);
+
+  const handleMouseEnter = () => {
+    setHover(!isHover);
+  };
+
+  if (isHover) {
+    document.getElementById("speechBubble").style.animationName =
+      "expand-bounce";
+    document.getElementById("speechBubble").style.animationDuration = "0.5s";
+
+    setTimeout(() => {
+      document.getElementById("speechBubble").style.animationName = "shrink";
+      document.getElementById("speechBubble").style.animationDuration = "0.5s";
+    }, 2000);
+    handleMouseEnter();
+  }
 
   if (Object.keys(agents).length < 1) {
     let defaultAgent = generateDefaultAgent(
@@ -237,7 +255,12 @@ function App() {
             setEndBoard={setEndBoard}
           ></AgentsPage>
         </div>
-        <div className="cute-robot-v1">
+
+        <div
+          className="cute-robot-v1"
+          ref={boxRef}
+          onMouseEnter={handleMouseEnter}
+        >
           <div className="circle-bg">
             <div className="robot-ear left"></div>
             <div className="robot-head">
@@ -250,6 +273,11 @@ function App() {
             <div className="robot-ear right"></div>
             <div className="robot-body"></div>
           </div>
+        </div>
+
+        <div id="speechBubble" className="box3 sb13">
+          Hi,I'm robot helper.<br></br>
+          Feel free to click me for help.
         </div>
       </div>
       {mapModal && (
