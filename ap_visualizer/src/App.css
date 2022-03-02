@@ -509,7 +509,9 @@ li {
   right: -16px;
   top: 20px;
 }
-
+.helperContainer {
+  cursor: pointer;
+}
 /* #SpeechBubble is set as a child of #Rectangle to make positioning
 it easier. #SpeechBubble is given an absolute position so that its 
 position is relative to the #Rectangle (its parent). Its scale is 

@@ -10,6 +10,10 @@ import CelebrateLogo from "./images/celebration.png";
 import Game from "./components/layouts/Boards/gridmap";
 import AgentsPage from "./components/layouts/Agents/Agents_Page";
 import { useState, useRef } from "react";
+import alertify from "alertifyjs";
+import { maps } from "./mapconfig/maps";
+import CloneGridmap from "./components/layouts/Boards/Clone_Gridmap";
+import HelperTab from "./components/layouts/Tabs/HelperTab";
 import {
   robots,
   pColors,
@@ -19,15 +23,13 @@ import {
   uploadFile,
   laptopImg,
 } from "./Constants";
-import { maps } from "./mapconfig/maps";
 
 import {
   clone2DArray,
   getNextAgentID,
   generateDefaultAgent,
 } from "./components/utility/Utility";
-import CloneGridmap from "./components/layouts/Boards/Clone_Gridmap";
-import alertify from "alertifyjs";
+
 function App() {
   let [agents, setAgentsList] = useState({}); // {id : {{startPoint: {row: 1, col: 1}, endPoint: {row: 1, col: 4}}}
   let [gridMap, setGridMap] = useState(clone2DArray(maps["0"]));
@@ -43,11 +45,15 @@ function App() {
   let [customiseModal, setCustomiseModal] = useState(false);
   const fileRef = useRef();
   const [isHover, setHover] = useState(false);
-
+  let [helperModal, setHelperModal] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
   const boxRef = React.useRef(null);
 
   const handleMouseEnter = () => {
     setHover(!isHover);
+  };
+  const showHelperModal = () => {
+    setHelperModal(!helperModal);
   };
 
   if (isHover) {
@@ -167,11 +173,13 @@ function App() {
   };
   let nextID = getNextAgentID(agents);
 
+  const handleMouseClick = () => {
+    console.log("lol");
+  };
   return (
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
       <LandingPage image={logo} image1={PathImage} image2={CelebrateLogo} />
-
       <div className="Main-Container">
         <div className="Map-Container">
           <Game
@@ -256,28 +264,30 @@ function App() {
           ></AgentsPage>
         </div>
 
-        <div
-          className="cute-robot-v1"
-          ref={boxRef}
-          onMouseEnter={handleMouseEnter}
-        >
-          <div className="circle-bg">
-            <div className="robot-ear left"></div>
-            <div className="robot-head">
-              <div className="robot-face">
-                <div className="eyes left"></div>
-                <div className="eyes right"></div>
-                <div className="mouth"></div>
+        <div onClick={showHelperModal} className="helperContainer">
+          <div
+            className="cute-robot-v1"
+            ref={boxRef}
+            onMouseEnter={handleMouseEnter}
+          >
+            <div className="circle-bg">
+              <div className="robot-ear left"></div>
+              <div className="robot-head">
+                <div className="robot-face">
+                  <div className="eyes left"></div>
+                  <div className="eyes right"></div>
+                  <div className="mouth"></div>
+                </div>
               </div>
+              <div className="robot-ear right"></div>
+              <div className="robot-body"></div>
             </div>
-            <div className="robot-ear right"></div>
-            <div className="robot-body"></div>
           </div>
-        </div>
 
-        <div id="speechBubble" className="box3 sb13">
-          Hi,I'm robot helper.<br></br>
-          Feel free to click me for help.
+          <div id="speechBubble" className="box3 sb13">
+            Hi,I'm robot helper.<br></br>
+            Feel free to click me for help.
+          </div>
         </div>
       </div>
       {mapModal && (
@@ -370,6 +380,16 @@ function App() {
                 hidden
               ></input>
             </div>
+          </div>
+        </div>
+      )}
+      {/* robot helper */}
+      {helperModal && (
+        <div className="modalHelper">
+          <div className="overlay" onClick={showHelperModal}></div>
+          <div className="spacing"></div>
+          <div className="modal_content">
+            <HelperTab></HelperTab>
           </div>
         </div>
       )}
