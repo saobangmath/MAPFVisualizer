@@ -65,7 +65,7 @@ class AStar{
                     let direction = Utils.directions[i];
                     let next_x = cur_x + direction[0];
                     let next_y = cur_y + direction[1];
-                    if (next_x < 0 || next_y < 0 || next_x >= this.map.height || next_y >= this.map.width || this.map.grid[next_x][next_y] === "@"){
+                    if (!Utils.validateCell(next_x, next_y, this.map.height, this.map.width) || this.map.grid[next_x][next_y] === "@"){
                         continue;
                     }
                     if (this.hasConflict(state, cur_x, cur_y, next_x, next_y)){

@@ -9,7 +9,7 @@ let Constraint = require('./Constraint');
 let Constants = require('./Constants');
 
 function isPlaceWithObstacles(){ // for a square, generate the obstacles there with probability = 0.2
-    return Math.random() <= 0.2;
+    return Math.random() <= 0.1;
 }
 
 // fisher-yate algorithm;
@@ -74,11 +74,14 @@ function getSolver(solver, map){
     if (solver === "recurCBS"){
         return new recurCBS(map, 3);
     }
+    if (solver === "CBSwID"){
+        return new ID("CBS", map);
+    }
     return null;
 }
 
 function benchMark(solver1, solver2){
-    let tot = 30, solver1Win = 0, solver2Win = 0;
+    let tot = 10, solver1Win = 0, solver2Win = 0;
     for (let iter = 1; iter <= tot; iter++){
         let map = genMap();
         while (map === null){

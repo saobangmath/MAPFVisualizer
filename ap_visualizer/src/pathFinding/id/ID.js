@@ -8,13 +8,8 @@ const Utils = require("../Utils");
 
 class ID{
     constructor(solver, map) {
-        this.solver = null;
-        if (solver === "CBS"){
-            this.solver = new CBS(map);
-        }
-        else if (solver === "A*+OD"){
-            this.solver = new aStar(map);
-        }
+        this.map = map;
+        this.solver = solver;
         this.groups = new Array(map.agents.length);
         let j = 0;
         for (let agentID in map.agents){ // initially each agent is divided in a separate group;
@@ -47,10 +42,6 @@ class ID{
         if (this.hasEdgeConflict(i, j)){
             return true;
         }
-        // console.log("======================");
-        // console.log(this.group_paths[i]);
-        // console.log(this.group_paths[j]);
-        // console.log("======================");
         return false;
     }
 
@@ -102,6 +93,16 @@ class ID{
         return false;
     }
 
+    getSolver(){
+        if (this.solver === "CBS"){
+            return new CBS(this.map);
+        }
+        if (this.solver === "A*+OD"){
+            return new aStar(this.map);
+        }
+        return null;
+    }
+
 
     solve() {
         let startTime = Utils.getTime();
@@ -113,9 +114,10 @@ class ID{
         while (true){
             let conflict = false;
             for (let id = 0; id < this.groups.length; id++){
-                this.solver.map.agents = this.groups[id];
+                this.map.agents = this.groups[id];
+                this.map.no_agents = Object.keys(this.groups[id]).length;
                 if (Object.keys(this.group_paths[id]).length === 0) {
-                    let plan = this.solver.solve();
+                    let plan = this.getSolver().solve();
                     this.group_paths[id] = plan["paths"];
                     if (Object.keys(this.group_paths[id]).length == 0){ // can't find path within group agent id;
                         this.execution_time = Utils.getTime() - startTime;
@@ -125,9 +127,6 @@ class ID{
                     }
                     this.expanded_nodes += plan["expanded_nodes"];
                 }
-                // console.log("==========");
-                // console.log(this.group_paths[id]);
-                // console.log("==========");
                 for (let pid = 0; pid < id; pid++){ // look for the planned group to see if there is any conflicts;
                     if (this.hasConflict(pid, id)){
                         conflict = true;

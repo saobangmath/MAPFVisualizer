@@ -151,8 +151,7 @@ class highLevelSolver {
                     A1.updateSolution(this.map, edgeConflict.agent1);
                     A1.updateCost()
                     if (Object.keys(A1.getSolution()).length > 0){
-                        tree.push(A1)
-                        this.expanded_nodes++;
+                        this.updateTree(tree, A1);
                     }
                 }
                 {
@@ -164,7 +163,7 @@ class highLevelSolver {
                     A2.updateSolution(this.map, edgeConflict.agent2);
                     A2.updateCost()
                     if (Object.keys(A2.getSolution()).length > 0){
-                        tree.push(A2);
+                        this.updateTree(tree, A2);
                     }
                 }
             }
