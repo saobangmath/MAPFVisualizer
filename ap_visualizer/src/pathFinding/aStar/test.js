@@ -32,7 +32,7 @@ test('../maps/input_4x4_3_bahar_0.txt')
 
 test('../maps/paper.map')
 
-test('../maps/no_path.map')
+//test('../maps/no_path.map')
 
 test('../maps/paper1.map')
 
@@ -56,3 +56,4 @@ test('../maps/handmade4.map')
 
 test('../maps/handmade5.map')
 
+test('../maps/handmade6.map')

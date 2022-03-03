@@ -3,6 +3,7 @@ const Constraint = require('../Constraint')
 const Conflict = require('../Conflict')
 const Utils = require('../utils')
 const Constants = require('../Constants')
+const BinaryHeap = require('../BinaryHeap')
 
 /**
  Search the constraints tree
@@ -67,25 +68,9 @@ class highLevelSolver {
         return null;
     }
 
-    findBestNodePosition(tree){
-        if (tree.length == 0){
-            return null;
-        }
-        let pos = -1;
-        let minCost = 1e9
-        for (let i = 0; i < tree.length; i++){
-            let node = tree[i];
-            if (node.cost < minCost){
-                pos = i;
-                minCost = node.cost;
-            }
-        }
-        return pos
-    }
-
     // push the new node to the tree && increment the number of nodes expanded;
     updateTree(tree, node){
-        tree.push(node);
+        tree.insert(node);
         this.expanded_nodes++;
     }
 
@@ -95,7 +80,7 @@ class highLevelSolver {
         let root = new CTNode({})
         root.updateSolution(this.map, -1);
         root.updateCost()
-        let tree = []
+        let tree = new BinaryHeap("cost");
         this.updateTree(tree, root)
         if (Object.keys(root.solution).length == 0){ // there is some agents can't even simply go from start to destination;
             this.execution_time = Utils.getTime() - startTime;
@@ -103,16 +88,15 @@ class highLevelSolver {
                     "expanded_nodes" : this.expanded_nodes,
                     "execution_time" : this.execution_time};
         }
-        while (tree.length > 0){
+        while (!tree.isEmpty()){
             let curTime = Utils.getTime();
             if (curTime - startTime >= Constants.TIME_CUTOFF){
                 break;
             }
-            let pos = this.findBestNodePosition(tree) // get the node with minimum cost;
-            let P = tree[pos]
+            let P = tree.getTop();
             let normalConflict = this.getNormalConflict(P)
             let edgeConflict = this.getEdgeConflict(P)
-            tree.splice(pos, 1)
+            tree.removeTop();
             if (normalConflict == null && edgeConflict == null){ // no conflict occur;
                 this.execution_time = Utils.getTime() - startTime;
                 return {"paths" : P.getSolution(),

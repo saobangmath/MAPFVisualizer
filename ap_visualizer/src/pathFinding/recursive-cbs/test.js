@@ -44,20 +44,21 @@ function test(filename) {
 //
 // test('../maps/1-agent.map')
 
-// test('../maps/special-1.map')
-//
-// test('../maps/special-2.map')
-//
-// test('../maps/special-3.map')
-//
-// test('../maps/handmade1.map')
-//
-// test('../maps/handmade2.map')
-//
-// test('../maps/handmade3.map')
-//
-// test('../maps/handmade4.map')
+test('../maps/special-1.map')
+
+test('../maps/special-2.map')
+
+test('../maps/special-3.map')
+
+test('../maps/handmade1.map')
+
+test('../maps/handmade2.map')
+
+test('../maps/handmade3.map')
+
+test('../maps/handmade4.map')
 
 test('../maps/handmade5.map')
 
+test('../maps/handmade6.map')
 

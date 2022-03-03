@@ -2,6 +2,7 @@ let Cell = require("../Cell")
 let State = require("./State");
 let Utils = require("../utils");
 let Constants = require("../Constants");
+let BinaryHeap = require("../BinaryHeap");
 
 class AStar{
     constructor(map) {
@@ -15,8 +16,8 @@ class AStar{
     }
     solve(){
         let startTime = Utils.getTime();
-        let OPEN_LIST = []; // the queue to process the expanded node;
-        let CLOSE_LIST = []; // those nodes that has been expanded;
+        let OPEN_LIST = new BinaryHeap("f"); // the queue to process the expanded node;
+        let CLOSE_LIST = new BinaryHeap("f"); // those nodes that has been expanded;
         let curState = {} // initial location of the agents;
         let h = 0;
         for (let agentID in this.map.agents){
@@ -30,14 +31,13 @@ class AStar{
         INITIAL_STATE.f = h;
         let last_moment = -1;
         this.updateList(OPEN_LIST, INITIAL_STATE);
-        while (OPEN_LIST.length > 0){
+        while (!OPEN_LIST.isEmpty()){
             let curTime = Utils.getTime();
             if (curTime - startTime >= Constants.TIME_CUTOFF){
                 break;
             }
-            let pos = this.getMinimumState(OPEN_LIST);
-            let state = OPEN_LIST[pos];
-            OPEN_LIST.splice(pos, 1);
+            let state = OPEN_LIST.getTop();
+            OPEN_LIST.removeTop();
             if (state.cur == this.map.no_agents){ // when all agent next step has been processed;
                 for (let i = 0; i < state.agentsOrder.length; i++){
                     let agentID = state.agentsOrder[i];
@@ -49,7 +49,7 @@ class AStar{
                     last_moment = state.timeStep + 1;
                     break;
                 }
-                CLOSE_LIST.push(state);
+                CLOSE_LIST.insert(state);
                 let new_state = new State(0, state.posState, state.timeStep + 1);
                 new_state.f = state.f;
                 new_state.g = state.g;
@@ -83,15 +83,15 @@ class AStar{
                     new_state.posState[agentID] = new Cell(next_x, next_y);
 
                     if (new_state.cur == this.map.no_agents) {
-                        let openIndex = this.findBestIndex(OPEN_LIST, new_state , this.map.no_agents);
-                        let closeIndex = this.findBestIndex(CLOSE_LIST, new_state, this.map.no_agents);
-
-                        if (openIndex != -1 && OPEN_LIST[openIndex].f <= new_state.f) {
-                            continue;
-                        }
-                        if (closeIndex != -1 && CLOSE_LIST[closeIndex].f <= new_state.f) {
-                            continue;
-                        }
+                        // let openIndex = this.findBestIndex(OPEN_LIST, new_state , this.map.no_agents);
+                        // let closeIndex = this.findBestIndex(CLOSE_LIST, new_state, this.map.no_agents);
+                        //
+                        // if (openIndex != -1 && OPEN_LIST[openIndex].f <= new_state.f) {
+                        //     continue;
+                        // }
+                        // if (closeIndex != -1 && CLOSE_LIST[closeIndex].f <= new_state.f) {
+                        //     continue;
+                        // }
                     }
                     this.updateList(OPEN_LIST, new_state);
                 }
@@ -153,18 +153,6 @@ class AStar{
         return false;
     }
 
-    // get the state with minimum cost;
-    getMinimumState(LIST){
-        let index = -1, cost = 1e9;
-        for (let i = 0; i < LIST.length; i++){
-            if (cost >= LIST[i].f){
-                cost = LIST[i].f;
-                index = i; // take the latest node with minimum cost; this somehow work well in visualization;
-            }
-        }
-        return index;
-    }
-
     // check if all agents are arriving the destination;
     isDestination(state){
         for (let agentID in state.posState){
@@ -205,7 +193,7 @@ class AStar{
 
     // push the new state to the open_list and increment the expanded nodes by 1;
     updateList(OPEN_LIST, state){
-        OPEN_LIST.push(state);
+        OPEN_LIST.insert(state);
         this.expanded_nodes++;
     }
 };

@@ -2,6 +2,7 @@ const Cell = require('../Cell')
 const Utils = require('../utils')
 const assert = require('assert')
 const constants = require('../Constants')
+let BinaryHeap = require('../BinaryHeap');
 
 /**
  * return the plan of individual agents such that it is consistent to its own constraint.
@@ -10,32 +11,19 @@ const constants = require('../Constants')
 class LowLevelSolver{
     constructor() {
         this.optimalPath = []
-        this.OPEN = []
-        this.CLOSE = []
+        this.OPEN = new BinaryHeap("f")
+        this.CLOSE = new BinaryHeap("f")
         this.expanded_nodes = 0
-    }
-
-    // find the position of the cell with minCost w.r.t the paths;
-    findMinCostCellPosition(paths){
-        let pos = -1;
-        let curCost = 1e9
-        for (let i = 0; i < paths.length; i++) {
-            if (paths[i].f < curCost) {
-                pos = i
-                curCost = paths[i].f
-            }
-        }
-        return pos;
     }
 
     // the index (w.r.t L) of element == successor with minimum f value as well as time >= successor;
     findBestIndex(L, successor){
         let minCost = 1e9, index = -1
-        for (let i = 0; i < L.length; i++){
-            assert(L[i]!=null)
-            if (L[i].is_equal(successor) && L[i].f < minCost && L[i].time >= successor.time) {
+        for (let i = 0; i < L.heap.length; i++){
+            assert(L.heap[i]!=null)
+            if (L.heap[i].is_equal(successor) && L.heap[i].f < minCost && L.heap[i].time >= successor.time) {
                 index = i
-                minCost = L[i].f
+                minCost = L.heap[i].f
             }
         }
         return index
@@ -44,15 +32,13 @@ class LowLevelSolver{
     // remove bad expanded candidates in list L;
     go(L, successor){
         let candidates = [];
-        let remove = 0;
-        for (let i = 0; i < L.length; i++){
-            if (L[i].is_equal(successor) && L[i].f >= successor.f && L[i].time <= successor.time) {
+        for (let i = 0; i < L.heap.length; i++){
+            if (L.heap[i].is_equal(successor) && L.heap[i].f >= successor.f && L.heap[i].time <= successor.time) {
                 candidates.push(i);
             }
         }
-        for (let i = 0; i < candidates.length; i++){
-            L.splice(candidates[i] - remove, 1);
-            remove++;
+        for (let i = candidates.length - 1; i >= 0; i--){
+            L.removeIndex(candidates[i])
         }
     }
 
@@ -72,18 +58,17 @@ class LowLevelSolver{
         let parentMaps = {} // {[id,time]: [id,time]}
         let startCell = map.agents[agentID]["START"]
         let destCell = map.agents[agentID]["DEST"]
-        this.OPEN.push(startCell)
+        this.OPEN.insert(startCell)
         /// A* algorithm search use for the low-level search
-        let pos = 0
         let current_cell = startCell;
         let cur_x = destCell.x;
         let cur_y = destCell.y;
         let cur_time = -1
         let found = false;
-        while (this.OPEN.length > 0) {
-            pos = this.findMinCostCellPosition(this.OPEN)
-            current_cell = this.OPEN.splice(pos, 1)[0]
-            this.CLOSE.push(current_cell)
+        while (!this.OPEN.isEmpty()) {
+            current_cell = this.OPEN.getTop();
+            this.OPEN.removeTop();
+            this.CLOSE.insert(current_cell);
             if (current_cell.is_equal(destCell) && !this.isConstraint(current_cell, this.getConstraints(constraints, agentID))) { // find solution when the current_cell is similar with the dest_cell & the expanded_cell is not the constraint;
                 cur_time = current_cell.time
                 found = true;
@@ -110,15 +95,15 @@ class LowLevelSolver{
                     this.go(this.CLOSE, expanded_cell)
                     let openIndex = this.findBestIndex(this.OPEN, expanded_cell)
                     let closeIndex = this.findBestIndex(this.CLOSE, expanded_cell)
-                    if (openIndex != -1 && expanded_cell.f > this.OPEN[openIndex].f){ // same cell in open list with better f value;
+                    if (openIndex != -1 && expanded_cell.f > this.OPEN.heap[openIndex].f){ // same cell in open list with better f value;
                         continue;
                     }
-                    if (closeIndex != -1 && expanded_cell.f > this.CLOSE[closeIndex].f){ // same cell in close list with better f value;
+                    if (closeIndex != -1 && expanded_cell.f > this.CLOSE.heap[closeIndex].f){ // same cell in close list with better f value;
                         continue;
                     }
                     parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
                         [Utils.coordinatesToId(current_cell.x, current_cell.y, map.width), current_cell.time]
-                    this.OPEN.push(expanded_cell);
+                    this.OPEN.insert(expanded_cell);
                     this.expanded_nodes++;
                 }
             }
@@ -136,8 +121,8 @@ class LowLevelSolver{
         }
         this.optimalPath.push(startCell)
         this.optimalPath.reverse()
-        this.OPEN = []
-        this.CLOSE = []
+        this.OPEN.heap = [];
+        this.CLOSE.heap = [];
         return this.optimalPath
     }
 
