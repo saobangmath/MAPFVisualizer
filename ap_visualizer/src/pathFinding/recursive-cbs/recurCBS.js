@@ -3,14 +3,15 @@ let MetaCTNode = require("./MetaCTNode");
 let Constraint = require("../Constraint");
 let Utils = require('../utils');
 let Constants = require('../Constants');
+let BinaryHeap = require('../BinaryHeap');
 
 /**
  * a small variant of the cbs algorithm
- * nodes: the conflict attributes here <group_i, group_j, cell1, cell2, t1, t2>: means the conflict here are defining between group instead of between agents;
  */
 
 class RecurCBS{
-  constructor(map, no_groups) {
+  constructor(map) {
+      let no_groups = Math.floor(Math.sqrt(map.no_agents));
       this.map = map;
       this.groups = new Array(no_groups);
       this.group_paths = new Array(no_groups);
@@ -37,7 +38,6 @@ class RecurCBS{
       this.execution_time = 0;
   }
 
-    // TODO: update the code to return the edge conflict in the right form; i.e. agent1 -> group_i, agent2 -> group_j;
     _getEdgeConflict(group_i, group_j, group_i_paths, group_j_paths) { // return any common edges (edge conflicts) between 2 given routes
         for (let agent1 in group_i_paths){
             for (let agent2 in group_j_paths){
@@ -65,16 +65,10 @@ class RecurCBS{
         return null;
     }
 
-    // TODO: update the code to return the normal conflict in the right form; i.e. agent1 -> group_i, agent2 -> group_j;
     _getNormalConflict(group_i, group_j, group_i_paths, group_j_paths) { // return any conflicts between 2 given groups;
       for (let agent1 in group_i_paths){
           for (let agent2 in group_j_paths){
               let conflict = new CBS([])._getNormalConflict(agent1, agent2, group_i_paths[agent1], group_j_paths[agent2]);
-              // console.log("====================");
-              // console.log(group_i + " " + group_j + " " + agent1 + " " + agent2);
-              // console.log(group_i_paths[agent1]);
-              // console.log(group_j_paths[agent2]);
-              // console.log("====================");
               if (conflict != null){
                   conflict.group_i = group_i;
                   conflict.group_j = group_j;
@@ -98,25 +92,9 @@ class RecurCBS{
         return null;
     }
 
-    findBestNodePosition(tree){
-        if (tree.length == 0){
-            return null;
-        }
-        let pos = -1;
-        let minCost = 1e9
-        for (let i = 0; i < tree.length; i++){
-            let metaNode = tree[i];
-            if (metaNode.cost < minCost){
-                pos = i;
-                minCost = metaNode.cost;
-            }
-        }
-        return pos
-    }
-
     // push the new node to the tree && increment the number of nodes expanded;
     updateTree(tree, metaNode){
-        tree.push(metaNode);
+        tree.insert(metaNode);
         this.expanded_nodes++;
     }
 
@@ -127,7 +105,7 @@ class RecurCBS{
         let root = new MetaCTNode(this.groups.length);
         root.updateSolution(this.map, this.groups, -1);
         root.updateCost()
-        let tree = []
+        let tree = new BinaryHeap("cost");
         this.updateTree(tree, root)
         if (root.getSolution().length == 0){ // there is some agents can't even simply go from start to destination;
             this.execution_time = Utils.getTime() - startTime;
@@ -135,18 +113,15 @@ class RecurCBS{
                     "expanded_nodes" : this.expanded_nodes,
                     "execution_time" : this.execution_time};
         }
-        while (tree.length > 0){
+        while (!tree.isEmpty()){
             let curTime = Utils.getTime();
             if (curTime - startTime >= Constants.TIME_CUTOFF){
                 break;
             }
-            let pos = this.findBestNodePosition(tree) // get the node with minimum cost;
-            let P = tree[pos]
+            let P = tree.getTop();
             let normalConflict = this.getNormalConflict(P)
             let edgeConflict = this.getEdgeConflict(P)
-            // console.log(normalConflict);
-            // console.log(edgeConflict);
-            tree.splice(pos, 1)
+            tree.removeTop();
             if (normalConflict == null && edgeConflict == null){ // no conflict occur;
                 this.execution_time = Utils.getTime() - startTime;
                 return {"paths" : P.standardizeSolution(),
@@ -191,23 +166,21 @@ class RecurCBS{
                     A1.updateSolution(this.map, this.groups, edgeConflict.group_i);
                     A1.updateCost()
                     if (A1.getSolution().length > 0){
-                        tree.push(A1)
-                        this.expanded_nodes++;
+                        this.updateTree(tree, A1);
                     }
                 }
                 {
                     let A2 = P.clone();
                     for (let agentID in this.groups[edgeConflict.group_j]) {
-                        let newConstraint1 = new Constraint(edgeConflict.cell1, agentID, edgeConflict.t2)
-                        let newConstraint2 = new Constraint(edgeConflict.cell2, agentID, edgeConflict.t2+1)
+                        let newConstraint1 = new Constraint(edgeConflict.cell1, agentID, edgeConflict.t2+1)
+                        let newConstraint2 = new Constraint(edgeConflict.cell2, agentID, edgeConflict.t2)
                         A2.addConstraint(edgeConflict.group_j, newConstraint1);
                         A2.addConstraint(edgeConflict.group_j, newConstraint2);
                     }
                     A2.updateSolution(this.map, this.groups, edgeConflict.group_j);
                     A2.updateCost()
                     if (A2.getSolution().length > 0){
-                        tree.push(A2);
-                        this.expanded_nodes++;
+                        this.updateTree(tree, A2);
                     }
                 }
             }

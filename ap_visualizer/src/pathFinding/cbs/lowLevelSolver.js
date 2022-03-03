@@ -18,12 +18,19 @@ class LowLevelSolver{
 
     // the index (w.r.t L) of element == successor with minimum f value as well as time >= successor;
     findBestIndex(L, successor){
-        let minCost = 1e9, index = -1
+        let minCost = 1e9, index = -1, h = 1e9;
         for (let i = 0; i < L.heap.length; i++){
             assert(L.heap[i]!=null)
-            if (L.heap[i].is_equal(successor) && L.heap[i].f < minCost && L.heap[i].time >= successor.time) {
-                index = i
-                minCost = L.heap[i].f
+            if (L.heap[i].is_equal(successor)) {
+                if (L.heap[i].f < minCost && L.heap[i].time >= successor.time) {
+                    index = i
+                    minCost = L.heap[i].f
+                    h = L.heap[i].h
+                }
+                if (L.heap[i].f == minCost && L.heap[i].time >= successor.time && L.heap[i].h < h){
+                    index = i;
+                    h = L.heap[i].h;
+                }
             }
         }
         return index
@@ -95,10 +102,12 @@ class LowLevelSolver{
                     this.go(this.CLOSE, expanded_cell)
                     let openIndex = this.findBestIndex(this.OPEN, expanded_cell)
                     let closeIndex = this.findBestIndex(this.CLOSE, expanded_cell)
-                    if (openIndex != -1 && expanded_cell.f > this.OPEN.heap[openIndex].f){ // same cell in open list with better f value;
+                    if (openIndex != -1 && (expanded_cell.f > this.OPEN.heap[openIndex].f ||
+                                            (expanded_cell.f == this.OPEN.heap[openIndex].f && expanded_cell.h >= this.OPEN.heap[openIndex].h)) ){ // same cell in open list with better f value;
                         continue;
                     }
-                    if (closeIndex != -1 && expanded_cell.f > this.CLOSE.heap[closeIndex].f){ // same cell in close list with better f value;
+                    if (closeIndex != -1 && (expanded_cell.f > this.CLOSE.heap[closeIndex].f ||
+                                            (expanded_cell.f == this.CLOSE.heap[closeIndex].f && expanded_cell.h >= this.CLOSE.heap[closeIndex].h))){ // same cell in close list with better f value;
                         continue;
                     }
                     parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
@@ -127,6 +136,9 @@ class LowLevelSolver{
     }
 
     getConstraints(constraints, agentID){
+        if (constraints === undefined){
+            constraints = {};
+        }
         if (agentID in constraints){
             return constraints[agentID];
         }

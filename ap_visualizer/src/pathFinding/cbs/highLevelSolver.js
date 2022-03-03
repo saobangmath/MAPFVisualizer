@@ -74,10 +74,10 @@ class highLevelSolver {
         this.expanded_nodes++;
     }
 
-    solve() { // return a list of cells
+    solve(constraints) { // return a list of cells
         let startTime = Utils.getTime();
         this.expanded_nodes = 0;
-        let root = new CTNode({})
+        let root = new CTNode(constraints)
         root.updateSolution(this.map, -1);
         root.updateCost()
         let tree = new BinaryHeap("cost");

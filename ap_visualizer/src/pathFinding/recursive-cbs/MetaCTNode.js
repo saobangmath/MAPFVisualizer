@@ -1,4 +1,5 @@
 let CTNode = require("../cbs/CTNode");
+let CBS = require("../cbs/highLevelSolver");
 
 class MetaCTNode{
     constructor(groups) {
@@ -19,10 +20,11 @@ class MetaCTNode{
     updateSolution(map, agents, groupID){
         for (let id = 0; id < this.nodes.length; id++){
             map.agents = agents[id];
+            map.no_agents = Object.keys(map.agents).length;
             if (groupID != -1 && id != groupID){
                 continue;
             }
-            this.nodes[id].updateSolution(map, -1);
+            this.nodes[id].solution = new CBS(map).solve(this.nodes[id].getConstraints())["paths"];
         }
     }
 
@@ -56,9 +58,6 @@ class MetaCTNode{
                 return []; // there is no solution found!
             }
         }
-        // for (let id = 0; id < this.nodes.length; id++) {
-        //     console.log(solution[id]);
-        // }
         return solution;
     }
 

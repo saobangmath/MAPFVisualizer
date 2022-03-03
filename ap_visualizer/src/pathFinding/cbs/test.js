@@ -11,7 +11,7 @@ function test(filename) {
         console.log(map.width)
         console.log(map.grid)
         console.log(map.agents)
-        let solution = solver.solve();
+        let solution = solver.solve({});
         console.log("Node expanded: " + solution.expanded_nodes);
         console.log("Time taken: " + solution.execution_time + "s");
         console.log(solution.paths);
@@ -34,25 +34,26 @@ test('../maps/paper.map')
 
 //test('../maps/no_path.map')
 
-// test('../maps/paper1.map')
-//
-// test('../maps/3-agents.map')
-//
-// test('../maps/1-agent.map')
-//
-// test('../maps/special-1.map')
-//
-// test('../maps/special-2.map')
-//
-// test('../maps/special-3.map')
-//
-// test('../maps/handmade1.map')
-//
-// test('../maps/handmade2.map')
-//
-// test('../maps/handmade3.map')
+test('../maps/paper1.map')
+
+test('../maps/3-agents.map')
+
+test('../maps/1-agent.map')
+
+test('../maps/special-1.map')
+
+test('../maps/special-2.map')
+
+test('../maps/special-3.map')
+
+test('../maps/handmade1.map')
+
+test('../maps/handmade2.map')
+
+test('../maps/handmade3.map')
 
 test('../maps/handmade4.map')
 
-//test('../maps/handmade5.map')
+test('../maps/handmade5.map')
+
 test('../maps/handmade6.map')

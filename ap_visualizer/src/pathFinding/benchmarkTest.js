@@ -72,7 +72,7 @@ function getSolver(solver, map){
         return new aStar(map);
     }
     if (solver === "recurCBS"){
-        return new recurCBS(map, 3);
+        return new recurCBS(map);
     }
     if (solver === "CBSwID"){
         return new ID("CBS", map);
@@ -120,3 +120,4 @@ function benchMark(solver1, solver2){
 
 //benchMark("CBS", "A*+OD");
 benchMark("CBS", "recurCBS");
+//benchMark("CBS", "CBSwID");
