@@ -3,6 +3,7 @@ const Constraint = require('../Constraint')
 const Conflict = require('../Conflict')
 const Utils = require('../utils')
 const Constants = require('../Constants')
+const BinaryHeap = require('../BinaryHeap')
 
 /**
  Search the constraints tree
@@ -67,35 +68,19 @@ class highLevelSolver {
         return null;
     }
 
-    findBestNodePosition(tree){
-        if (tree.length == 0){
-            return null;
-        }
-        let pos = -1;
-        let minCost = 1e9
-        for (let i = 0; i < tree.length; i++){
-            let node = tree[i];
-            if (node.cost < minCost){
-                pos = i;
-                minCost = node.cost;
-            }
-        }
-        return pos
-    }
-
     // push the new node to the tree && increment the number of nodes expanded;
     updateTree(tree, node){
-        tree.push(node);
+        tree.insert(node);
         this.expanded_nodes++;
     }
 
-    solve() { // return a list of cells
+    solve(constraints) { // return a list of cells
         let startTime = Utils.getTime();
         this.expanded_nodes = 0;
-        let root = new CTNode([])
-        root.updateSolution(this.map)
+        let root = new CTNode(constraints)
+        root.updateSolution(this.map, -1);
         root.updateCost()
-        let tree = []
+        let tree = new BinaryHeap("cost");
         this.updateTree(tree, root)
         if (Object.keys(root.solution).length == 0){ // there is some agents can't even simply go from start to destination;
             this.execution_time = Utils.getTime() - startTime;
@@ -103,16 +88,15 @@ class highLevelSolver {
                     "expanded_nodes" : this.expanded_nodes,
                     "execution_time" : this.execution_time};
         }
-        while (tree.length > 0){
+        while (!tree.isEmpty()){
             let curTime = Utils.getTime();
             if (curTime - startTime >= Constants.TIME_CUTOFF){
                 break;
             }
-            let pos = this.findBestNodePosition(tree) // get the node with minimum cost;
-            let P = tree[pos]
+            let P = tree.getTop();
             let normalConflict = this.getNormalConflict(P)
             let edgeConflict = this.getEdgeConflict(P)
-            tree.splice(pos, 1)
+            tree.removeTop();
             if (normalConflict == null && edgeConflict == null){ // no conflict occur;
                 this.execution_time = Utils.getTime() - startTime;
                 return {"paths" : P.getSolution(),
@@ -121,50 +105,49 @@ class highLevelSolver {
             }
             if (normalConflict != null){
                 {
-                    let A1 = new CTNode([... P.getConstraints()])
+                    let A1 = P.clone();
                     let newConstraint = new Constraint(normalConflict.cell1, normalConflict.agent1, normalConflict.t1)
                     A1.addConstraint(newConstraint)
-                    A1.updateSolution(this.map)
+                    A1.updateSolution(this.map, normalConflict.agent1);
                     A1.updateCost()
                     if (Object.keys(A1.getSolution()).length > 0){ // the solution is not empty;
                         this.updateTree(tree, A1);
                     }
                 }
                 {
-                    let A2 = new CTNode([... P.getConstraints()])
+                    let A2 = P.clone();
                     let newConstraint = new Constraint(normalConflict.cell2, normalConflict.agent2, normalConflict.t2)
                     A2.addConstraint(newConstraint)
-                    A2.updateSolution(this.map)
+                    A2.updateSolution(this.map, normalConflict.agent2);
                     A2.updateCost()
                     if (Object.keys(A2.getSolution()).length > 0){ // the solution is not empty
                         this.updateTree(tree, A2);
                     }
                 }
             }
-            if (edgeConflict != null){
+            else if (edgeConflict != null){
                 {
-                    let A1 = new CTNode([... P.getConstraints()])
+                    let A1 = P.clone();
                     let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1)
-                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1+1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1 + 1)
                     A1.addConstraint(newConstraint1)
                     A1.addConstraint(newConstraint2)
-                    A1.updateSolution(this.map)
+                    A1.updateSolution(this.map, edgeConflict.agent1);
                     A1.updateCost()
                     if (Object.keys(A1.getSolution()).length > 0){
-                        tree.push(A1)
-                        this.expanded_nodes++;
+                        this.updateTree(tree, A1);
                     }
                 }
                 {
-                    let A2 = new CTNode([... P.getConstraints()])
+                    let A2 = P.clone();
                     let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2)
-                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2+1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2 + 1)
                     A2.addConstraint(newConstraint1)
                     A2.addConstraint(newConstraint2)
-                    A2.updateSolution(this.map)
+                    A2.updateSolution(this.map, edgeConflict.agent2);
                     A2.updateCost()
                     if (Object.keys(A2.getSolution()).length > 0){
-                        tree.push(A2);
+                        this.updateTree(tree, A2);
                     }
                 }
             }

@@ -1,4 +1,4 @@
-const aStar = require('./aStar')
+const recurCBS = require('./recurCBS')
 const Map = require('../Map')
 
 function test(filename) {
@@ -6,17 +6,16 @@ function test(filename) {
             try {
                 let map = new Map(0, 0)
                 map.readMap(filename)
-                let solver = new aStar(map)
+                let solver = new recurCBS(map)
                 console.log(`========= Test for ${filename} =========`)
                 console.log(map.height)
                 console.log(map.width)
                 console.log(map.grid)
                 console.log(map.agents)
-                solver.solve().then((solution) => {
-                    console.log("Node expanded: " + solution.expanded_nodes)
-                    console.log("Time taken: " + solution.execution_time + "s");
-                    console.log(solution.paths)
-                });
+                let solution = solver.solve();
+                console.log("Node expanded: " + solution.expanded_nodes)
+                console.log("Time taken: " + solution.execution_time + "s");
+                console.log(solution["paths"]);
             } catch (err) {
                 console.log(`Error: ${err}`)
             }
@@ -24,8 +23,6 @@ function test(filename) {
         2000
     )
 }
-
-test('../maps/handmade1.map')
 
 test('../maps/craft.map')
 
@@ -52,4 +49,16 @@ test('../maps/special-1.map')
 test('../maps/special-2.map')
 
 test('../maps/special-3.map')
+
+test('../maps/handmade1.map')
+
+test('../maps/handmade2.map')
+
+test('../maps/handmade3.map')
+
+test('../maps/handmade4.map')
+
+test('../maps/handmade5.map')
+
+test('../maps/handmade6.map')
 
