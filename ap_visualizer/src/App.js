@@ -42,6 +42,8 @@ function App() {
   let [endBoard, setEndBoard] = useState(gridMap); // the end board in each agent entry;
   let [mapModal, setMapModal] = useState(false);
   let [mapNum, setMapNum] = useState(0);
+  let [mapName, setMapName] = useState(retreiveMapName(mapNum));
+  let [mapIndex, setMapIndex] = useState(0);
   let [customiseModal, setCustomiseModal] = useState(false);
   const fileRef = useRef();
   const [isHover, setHover] = useState(false);
@@ -94,10 +96,10 @@ function App() {
         function () {
           let index = mapNum;
           index = mapID;
-          if (index < 1) {
+          if (index < 0) {
             index = 4;
           } else if (index > 4) {
-            index = 1;
+            index = 0;
           }
           let updatedGridMap = null;
           updatedGridMap = clone2DArray(maps[index]);
@@ -108,6 +110,7 @@ function App() {
           setAgentsList({});
           setAgentPaths({});
           showMapModal();
+          setMapName(retreiveMapName(index));
           alertify.success("Changed Map Successfully");
         },
         function () {
@@ -141,6 +144,7 @@ function App() {
       setMap(updatedGridMap);
       setStartBoard(updatedGridMap);
       setEndBoard(updatedGridMap);
+      setMapName(retreiveMapName(5));
       // reset the old agents;
       setAgentsList({});
       setAgentPaths({});
@@ -164,18 +168,16 @@ function App() {
   const changeMapNo = (num) => {
     let index = mapNum;
     index = num;
-    if (index < 1) {
+    if (index < 0) {
       index = 4;
     } else if (index > 4) {
-      index = 1;
+      index = 0;
     }
     setMapNum(index);
+    setMapIndex(index);
   };
   let nextID = getNextAgentID(agents);
 
-  const handleMouseClick = () => {
-    console.log("lol");
-  };
   return (
     <div className="App">
       <img src={logo} className="App-logo" alt="logo" />
@@ -235,7 +237,7 @@ function App() {
             <div className="legend_footer">
               <div className="footer_text">Map:</div>
               <button className="legend_btn" onClick={showMapModal}>
-                {retreiveMapName(mapNum)}
+                {mapName}
               </button>
             </div>
           </div>
@@ -300,7 +302,7 @@ function App() {
                 className="arrow left"
                 onClick={() => changeMapNo(mapNum - 1)}
               ></button>
-              <div className="modal_title">{retreiveMapName(mapNum)}</div>
+              <div className="modal_title">{retreiveMapName(mapIndex)}</div>
               <button
                 className="arrow right"
                 onClick={() => changeMapNo(mapNum + 1)}
@@ -412,17 +414,20 @@ function Square(props) {
   );
 }
 function retreiveMapName(mapNum) {
+  console.log("map", mapNum);
   switch (mapNum) {
-    case "1":
-      return "Map 1";
-    case "2":
-      return "Map 2";
-    case "3":
-      return "Map 3";
-    case "4":
-      return "Map 4";
+    case 0:
+      return "Kiva Map";
+    case 1:
+      return "Narrow Map";
+    case 2:
+      return "Open Space Map";
+    case 3:
+      return "Isolated room Map";
+    case 4:
+      return "Randomise Map";
     default:
-      return "Default Map";
+      return "Customise Map";
   }
 }
 
