@@ -347,7 +347,12 @@ function App() {
               ></img>
               <p className="containerDesc">
                 Go to our{" "}
-                <a href="www.google.com" className="containerLink">
+                <a
+                  href="https://theturtle27.github.io/map_editor/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="containerLink"
+                >
                   Map Crafting Website
                 </a>
               </p>

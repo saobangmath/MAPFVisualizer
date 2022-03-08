@@ -460,44 +460,6 @@ const Agent_Table = (props) => {
             </div>
             <div className={styles.chart}>
               <ChartComponent
-                id="nodeChart"
-                primaryXAxis={{
-                  valueType: "Category",
-                  title: "Expanded Nodes Comparison",
-                  size: "10px",
-                  interval: 1,
-                  majorGridLines: { width: 0 },
-                  edgeLabelPlacement: "Shift",
-                  majorTickLines: { width: 0 },
-                }}
-                width="400"
-                height="350"
-                tooltip={{ enable: true }}
-              >
-                <Inject
-                  services={[BarSeries, DataLabel, Category, Legend, Tooltip]}
-                />
-                <SeriesCollectionDirective>
-                  <SeriesDirective
-                    dataSource={nodeData}
-                    xName="x"
-                    yName="y"
-                    type="Bar"
-                    name="No. of Expanded Nodes"
-                    marker={{
-                      dataLabel: {
-                        visible: true,
-                        position: "Top",
-                        font: {
-                          fontWeight: "600",
-                          color: "#ffffff",
-                        },
-                      },
-                    }}
-                  />
-                </SeriesCollectionDirective>
-              </ChartComponent>
-              <ChartComponent
                 id="timeChart"
                 primaryXAxis={{
                   valueType: "Category",

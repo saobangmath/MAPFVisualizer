@@ -133,7 +133,9 @@ function Landing_page(props) {
               className={classes.landing_image}
               alt="logo"
             />
-            <p className={classes.model_desc}>Congratulations and BRAVO!</p>
+            <p className={classes.model_desc}>
+              <strong>Congratulations and BRAVO!</strong>
+            </p>
             <p>
               You have a basic knowledge of the different algorithms.You can
               proceed on to assigning task to the robots.If you have any
