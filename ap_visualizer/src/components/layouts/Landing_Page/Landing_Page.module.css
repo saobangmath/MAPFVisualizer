@@ -68,7 +68,7 @@ body.active_modal {
 }
 .modal_title {
   margin-top: -2rem;
-  font-weight: bold;
+  font-weight: 500;
   font-size: 18px;
 }
 
@@ -124,6 +124,10 @@ body.active_modal {
   .demo .main-title {
     font-size: 3em;
   }
+}
+.desc {
+  text-align: left;
+  padding-left: 2rem;
 }
 /* .modal {
   position: relative;
