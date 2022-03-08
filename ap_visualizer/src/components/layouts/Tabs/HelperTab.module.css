@@ -1,0 +1,27 @@
+.list_style {
+  text-align: left;
+  padding-left: 4rem;
+  list-style: cambodian;
+  padding-top: 0pxl;
+  font-size: 14px;
+}
+.section_style {
+  text-align: left;
+  font-size: 16px;
+  font-family: "roboto";
+  padding-left: 2rem;
+  font-weight: bold;
+}
+.answer_style {
+  text-align: left;
+  font-size: 16px;
+  font-family: "roboto";
+  padding-left: 2rem;
+}
+.answer_style1 {
+  text-align: left;
+  font-size: 16px;
+  font-family: "roboto";
+  padding-left: 2rem;
+  margin-bottom: 0;
+}

@@ -478,3 +478,102 @@ li {
 .containerLink:hover {
   color: #42a0a0;
 }
+
+.box3 {
+  /* width: 300px; */
+  /* margin: 50px auto; */
+  border-radius: 15px;
+  background: #00bfb6;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  font-family: "Roboto";
+  position: fixed;
+  right: 11.5%;
+  bottom: 6%;
+  transform: scale(0);
+  animation-fill-mode: forwards;
+}
+
+/* speech bubble 13 */
+
+.sb13:before {
+  content: "";
+  width: 0px;
+  height: 0px;
+  position: absolute;
+  border-left: 15px solid #00bfb6;
+  border-right: 15px solid transparent;
+  border-top: 15px solid #00bfb6;
+  border-bottom: 15px solid transparent;
+  right: -16px;
+  top: 20px;
+}
+.helperContainer {
+  cursor: pointer;
+}
+/* #SpeechBubble is set as a child of #Rectangle to make positioning
+it easier. #SpeechBubble is given an absolute position so that its 
+position is relative to the #Rectangle (its parent). Its scale is 
+set to zero since it should only appear when the mouse hovers over
+#Rectangle. The 'animation-fill-mode' property is set to 'forwards' 
+so that  the scale value stays at 1 after the animation finishes, 
+otherwise  #SpeechBubble will disappear once the animation finishes. 
+The 'animation-name' property is omitted since it's going to be 
+set by jQuery instead */
+/* #SpeechBubble {
+
+} */
+/* We need to add a tail to the speech bubble. This is done using
+the ::before pseudo-element. The tail's size is controlled by 
+its borders. The right and bottom borders are given a transparent
+color so that the tail still retains its shape while giving the
+desired look */
+#SpeechBubble::before {
+  content: "";
+  width: 0px;
+  height: 0px;
+  position: absolute;
+  border-left: 15px solid #00bfb6;
+  border-right: 15px solid transparent;
+  border-top: 15px solid #00bfb6;
+  border-bottom: 15px solid transparent;
+  right: -16px;
+  top: 0px;
+
+  /* content: "";
+  display: block;
+  width: 0;
+  position: absolute;
+  bottom: -25px;
+  left: 5px;
+  border-style: solid;
+  border-width: 15px;
+  border-color: #5a5a5a transparent transparent #5a5a5a;
+  transform: rotate(30deg); */
+}
+
+/* Here the scale changes from 0 to 1. To add the bounciness 
+effect, the scale is set to 1.25 midway through the animation
+to give the animation a nicer effect. */
+@keyframes expand-bounce {
+  /* 0% {
+    transform: scale(0);
+  } */
+  /* 50% {
+    transform: scale(0.8);
+  } */
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Here the scale simply goes from 1 back to 0 */
+@keyframes shrink {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}

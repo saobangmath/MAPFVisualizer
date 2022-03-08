@@ -7,7 +7,8 @@ function Landing_page(props) {
 
   var [firstModal, setModalIsOpen] = useState(true);
   const [secondModal, setPage] = useState(false);
-  const [thirdModal, setFinalPage] = useState(false);
+  const [thirdModal, setThirdPage] = useState(false);
+  const [finalModal, setFinalPage] = useState(false);
   const togglePage = () => {
     if (firstModal) {
       setModalIsOpen(!firstModal);
@@ -15,20 +16,25 @@ function Landing_page(props) {
     } else if (secondModal) {
       // setModalIsOpen(!firstModal);
       setPage(!secondModal);
-      setFinalPage(!thirdModal);
+      setThirdPage(!thirdModal);
+    } else if (thirdModal) {
+      setThirdPage(!thirdModal);
+      setFinalPage(!finalModal);
     } else {
-      setFinalPage(!thirdModal);
+      setFinalPage(!finalModal);
     }
   };
   const backPage = () => {
-    setPage(!secondModal);
-    setModalIsOpen(!firstModal);
+    if (secondModal) {
+      setPage(!secondModal);
+      setModalIsOpen(!firstModal);
+    } else {
+      setPage(!secondModal);
+      setThirdPage(!thirdModal);
+    }
   };
   return (
     <>
-      {/* <button onClick={togglePage()} className={classes.btn}>
-        Click
-      </button> */}
       {firstModal && (
         <div className={classes.modal}>
           <div className={classes.overlay} onClick={togglePage}></div>
@@ -66,6 +72,10 @@ function Landing_page(props) {
               optimised algorithm to find the fastest path to the specific
               destination
             </p>
+            <p>
+              Users can select between A* algorithm or Conflict Based Search
+              algorithm to find the best optimised path for the robots.
+            </p>
             <img src={props.image1} className={classes.image} alt="logo" />
             <button className={classes.btn} onClick={backPage}>
               Back
@@ -85,8 +95,53 @@ function Landing_page(props) {
               className={classes.landing_image}
               alt="logo"
             />
-            <p className={classes.model_desc}>Congratulations and BRAVO!</p>
-            <p>You have completed the tutorial, feel free to contact us</p>
+            <div className={classes.model_desc}>
+              <strong>A* search</strong>
+              <p className={classes.desc}>
+                A* search is an informed search algorithm, or a best-first
+                search, meaning that it is formulated in terms of weighted
+                graphs.
+              </p>
+            </div>
+            <div>
+              <strong>Conflict Based Search(CBS)</strong>
+              <p className={classes.desc}>
+                CBS is a two-level algorithm that does not convert the problem
+                into the single ‘joint agent’ model. At the high level, a search
+                is performed on a Conflict Tree (CT) which is a tree based on
+                conflicts between individual agents. Each node in the CT
+                represents a set of constraints on the motion of the agents. At
+                the low level, fast single-agent searches are performed to
+                satisfy the constraints imposed by the high level CT node.{" "}
+              </p>
+            </div>
+            <button className={classes.btn} onClick={backPage}>
+              Back
+            </button>{" "}
+            <button className={classes.btn} onClick={togglePage}>
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+      {finalModal && (
+        <div className={classes.modal}>
+          <div className={classes.overlay} onClick={togglePage}></div>
+          <div className={classes.modal_content}>
+            <img
+              src={props.image}
+              className={classes.landing_image}
+              alt="logo"
+            />
+            <p className={classes.model_desc}>
+              <strong>Congratulations and BRAVO!</strong>
+            </p>
+            <p>
+              You have a basic knowledge of the different algorithms.You can
+              proceed on to assigning task to the robots.If you have any
+              questions, feel free to approach our robot helper at the bottom
+              right of the page.
+            </p>
             <img src={props.image2} className={classes.image} alt="logo" />
             <button className={classes.btn} onClick={togglePage}>
               Start Exploring

@@ -60,12 +60,24 @@ function Agents_Page(props) {
     let copy = props.gridMap;
     let width = copy[0].length;
     let height = Object.keys(copy).length;
-    let maxLimit = 10;
-    console.log("the agents list is ", Object.keys(props.agents).length);
+    console.log("the width is", width);
+    console.log("the height is", height);
+
+    let maxLimit = robotLimit(width, height);
     if (Object.keys(props.agents).length >= maxLimit) {
       return true;
     } else {
       return false;
+    }
+  }
+  function robotLimit(width, height) {
+    let totalSquare = width * height;
+    if (totalSquare <= 30) {
+      return 2;
+    } else if (totalSquare > 30 && totalSquare <= 100) {
+      return 5;
+    } else {
+      return 8;
     }
   }
   function newAgent() {
