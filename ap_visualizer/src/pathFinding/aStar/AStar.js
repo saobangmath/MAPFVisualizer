@@ -11,7 +11,7 @@ class AStar{
         for (let agentID in map.agents){
             this.parentMaps[agentID] = {}; // the map to map the parent of one cell -> other;
         }
-        this.expanded_nodes = 0;
+        //this.expanded_nodes = 0;
         this.execution_time = 0;
     }
     solve(){
@@ -24,7 +24,7 @@ class AStar{
             curState[agentID] = this.map.agents[agentID]["START"];
             h += Utils.getManhattanDistance(curState[agentID], this.map.agents[agentID]["DEST"]);
         }
-        this.expanded_nodes = 0;
+        //this.expanded_nodes = 0;
         let INITIAL_STATE = new State(0, curState, 0); // {cur : 0, curState : curState, timeStep : 0};
         INITIAL_STATE.g = 0;
         INITIAL_STATE.h = h;
@@ -83,15 +83,15 @@ class AStar{
                     new_state.posState[agentID] = new Cell(next_x, next_y);
 
                     if (new_state.cur == this.map.no_agents) {
-                        // let openIndex = this.findBestIndex(OPEN_LIST, new_state , this.map.no_agents);
-                        // let closeIndex = this.findBestIndex(CLOSE_LIST, new_state, this.map.no_agents);
-                        //
-                        // if (openIndex != -1 && OPEN_LIST[openIndex].f <= new_state.f) {
-                        //     continue;
-                        // }
-                        // if (closeIndex != -1 && CLOSE_LIST[closeIndex].f <= new_state.f) {
-                        //     continue;
-                        // }
+                        let openIndex = this.findBestIndex(OPEN_LIST, new_state , this.map.no_agents);
+                        let closeIndex = this.findBestIndex(CLOSE_LIST, new_state, this.map.no_agents);
+
+                        if (openIndex != -1 && OPEN_LIST.heap[openIndex].f <= new_state.f) {
+                            continue;
+                        }
+                        if (closeIndex != -1 && CLOSE_LIST.heap[closeIndex].f <= new_state.f) {
+                            continue;
+                        }
                     }
                     this.updateList(OPEN_LIST, new_state);
                 }
@@ -101,7 +101,7 @@ class AStar{
         if (last_moment == -1){
             this.execution_time = Utils.getTime() - startTime;
             return {"paths" : solutions,
-                    "expanded_nodes" : this.expanded_nodes,
+                    //"expanded_nodes" : this.expanded_nodes,
                     "execution_time" : this.execution_time};
         }
         // there is solution found!;
@@ -132,7 +132,7 @@ class AStar{
         }
         this.execution_time = Utils.getTime() - startTime;
         return {"paths" : solutions,
-                "expanded_nodes" : this.expanded_nodes,
+                //"expanded_nodes" : this.expanded_nodes,
                 "execution_time" : this.execution_time};
     }
 
@@ -167,8 +167,8 @@ class AStar{
     // all nodes in LIST are standard nodes -> return the node with curState == state.posState and minimum cost;
     findBestIndex(LIST, state, no_agents){
         let minCost = 1e9, h = 1e9, index = -1;
-        for (let i = 0; i < LIST.length; i++){
-            let st = LIST[i];
+        for (let i = 0; i < LIST.heap.length; i++){
+            let st = LIST.heap[i];
             let equal = true;
             if (st.cur != no_agents){
                 continue;
@@ -194,7 +194,7 @@ class AStar{
     // push the new state to the open_list and increment the expanded nodes by 1;
     updateList(OPEN_LIST, state){
         OPEN_LIST.insert(state);
-        this.expanded_nodes++;
+        //this.expanded_nodes++;
     }
 };
 

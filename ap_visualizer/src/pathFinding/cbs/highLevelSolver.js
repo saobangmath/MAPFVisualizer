@@ -13,7 +13,7 @@ const BinaryHeap = require('../BinaryHeap')
 class highLevelSolver {
     constructor(map) {
         this.map = map;
-        this.expanded_nodes = 0;
+        //this.expanded_nodes = 0;
         this.execution_time = 0;
     }
 
@@ -71,12 +71,12 @@ class highLevelSolver {
     // push the new node to the tree && increment the number of nodes expanded;
     updateTree(tree, node){
         tree.insert(node);
-        this.expanded_nodes++;
+        //this.expanded_nodes++;
     }
 
     solve(constraints) { // return a list of cells
         let startTime = Utils.getTime();
-        this.expanded_nodes = 0;
+        //this.expanded_nodes = 0;
         let root = new CTNode(constraints)
         root.updateSolution(this.map, -1);
         root.updateCost()
@@ -85,7 +85,7 @@ class highLevelSolver {
         if (Object.keys(root.solution).length == 0){ // there is some agents can't even simply go from start to destination;
             this.execution_time = Utils.getTime() - startTime;
             return {"paths" : {},
-                    "expanded_nodes" : this.expanded_nodes,
+                    //"expanded_nodes" : this.expanded_nodes,
                     "execution_time" : this.execution_time};
         }
         while (!tree.isEmpty()){
@@ -100,7 +100,6 @@ class highLevelSolver {
             if (normalConflict == null && edgeConflict == null){ // no conflict occur;
                 this.execution_time = Utils.getTime() - startTime;
                 return {"paths" : P.getSolution(),
-                        "expanded_nodes" : this.expanded_nodes,
                         "execution_time" : this.execution_time}
             }
             if (normalConflict != null){
@@ -154,7 +153,7 @@ class highLevelSolver {
         }
         this.execution_time = Utils.getTime() - startTime;
         return {"paths" : {},
-                "expanded_nodes" : this.expanded_nodes,
+                //"expanded_nodes" : this.expanded_nodes,
                 "execution_time" : this.execution_time} // can't find any solution
     }
 }

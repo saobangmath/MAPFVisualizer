@@ -9,7 +9,7 @@ let BinaryHeap = require('../BinaryHeap');
  * a small variant of the cbs algorithm
  */
 
-class RecurCBS{
+class GroupingCBS {
   constructor(map) {
       let no_groups = Math.floor(Math.sqrt(map.no_agents));
       this.map = map;
@@ -21,7 +21,13 @@ class RecurCBS{
       }
       let oneGroup = Math.floor(map.no_agents / no_groups);
       let rem = map.no_agents - oneGroup * no_groups, groupId = 0, cur = 0;
+      let order = [];
       for (let agent in map.agents){
+        order.push(agent);
+      }
+      order = Utils.shuffle(order);
+      for (let i = 0; i < map.no_agents; i++){
+          let agent = order[i];
           this.groups[groupId][agent] = map.agents[agent];
           cur++;
           if (cur >= oneGroup+1){
@@ -34,7 +40,7 @@ class RecurCBS{
               continue;
           }
       }
-      this.expanded_nodes = 0;
+      //this.expanded_nodes = 0;
       this.execution_time = 0;
   }
 
@@ -95,13 +101,13 @@ class RecurCBS{
     // push the new node to the tree && increment the number of nodes expanded;
     updateTree(tree, metaNode){
         tree.insert(metaNode);
-        this.expanded_nodes++;
+        //this.expanded_nodes++;
     }
 
     // TODO: update the process nodes section to be more optimized;
     solve() { // return a list of cells
         let startTime = Utils.getTime();
-        this.expanded_nodes = 0;
+        //this.expanded_nodes = 0;
         let root = new MetaCTNode(this.groups.length);
         root.updateSolution(this.map, this.groups, -1);
         root.updateCost()
@@ -110,7 +116,7 @@ class RecurCBS{
         if (root.getSolution().length == 0){ // there is some agents can't even simply go from start to destination;
             this.execution_time = Utils.getTime() - startTime;
             return {"paths" : {},
-                    "expanded_nodes" : this.expanded_nodes,
+                    //"expanded_nodes" : this.expanded_nodes,
                     "execution_time" : this.execution_time};
         }
         while (!tree.isEmpty()){
@@ -125,14 +131,19 @@ class RecurCBS{
             if (normalConflict == null && edgeConflict == null){ // no conflict occur;
                 this.execution_time = Utils.getTime() - startTime;
                 return {"paths" : P.standardizeSolution(),
-                        "expanded_nodes" : this.expanded_nodes,
                         "execution_time" : this.execution_time}
             }
             if (normalConflict != null){
                 {
                     let A1 = P.clone();
-                    for (let agentID in this.groups[normalConflict.group_i]) {
-                        let newConstraint = new Constraint(normalConflict.cell1, agentID, normalConflict.t1)
+                    if (normalConflict.t1 == normalConflict.t2) {
+                        for (let agentID in this.groups[normalConflict.group_i]) {
+                            let newConstraint = new Constraint(normalConflict.cell1, agentID, normalConflict.t1)
+                            A1.addConstraint(normalConflict.group_i, newConstraint);
+                        }
+                    }
+                    else{
+                        let newConstraint = new Constraint(normalConflict.cell2, normalConflict.agent1, normalConflict.t1)
                         A1.addConstraint(normalConflict.group_i, newConstraint);
                     }
                     A1.updateSolution(this.map, this.groups, normalConflict.group_i);
@@ -143,8 +154,14 @@ class RecurCBS{
                 }
                 {
                     let A2 = P.clone();
-                    for (let agentID in this.groups[normalConflict.group_j]) {
-                        let newConstraint = new Constraint(normalConflict.cell2, agentID, normalConflict.t2)
+                    if (normalConflict.t1 == normalConflict.t2) {
+                        for (let agentID in this.groups[normalConflict.group_j]) {
+                            let newConstraint = new Constraint(normalConflict.cell2, agentID, normalConflict.t2)
+                            A2.addConstraint(normalConflict.group_j, newConstraint);
+                        }
+                    }
+                    else{
+                        let newConstraint = new Constraint(normalConflict.cell2, normalConflict.agent2, normalConflict.t2)
                         A2.addConstraint(normalConflict.group_j, newConstraint);
                     }
                     A2.updateSolution(this.map, this.groups, normalConflict.group_j);
@@ -157,12 +174,16 @@ class RecurCBS{
             if (edgeConflict != null){
                 {
                     let A1 = P.clone();
-                    for (let agentID in this.groups[edgeConflict.group_i]) {
-                        let newConstraint1 = new Constraint(edgeConflict.cell1, agentID, edgeConflict.t1)
-                        let newConstraint2 = new Constraint(edgeConflict.cell2, agentID, edgeConflict.t1+1)
-                        A1.addConstraint(edgeConflict.group_i, newConstraint1);
-                        A1.addConstraint(edgeConflict.group_i, newConstraint2);
-                    }
+                    // for (let agentID in this.groups[edgeConflict.group_i]) {
+                    //     let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1)
+                    //     let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1+1)
+                    //     A1.addConstraint(edgeConflict.group_i, newConstraint1);
+                    //     A1.addConstraint(edgeConflict.group_i, newConstraint2);
+                    // }
+                    let newConstraint1 = new Constraint(edgeConflict.cell2, edgeConflict.agent1, edgeConflict.t1+1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell1, edgeConflict.agent1, edgeConflict.t1)
+                    A1.addConstraint(edgeConflict.group_i, newConstraint1);
+                    A1.addConstraint(edgeConflict.group_i, newConstraint2);
                     A1.updateSolution(this.map, this.groups, edgeConflict.group_i);
                     A1.updateCost()
                     if (A1.getSolution().length > 0){
@@ -171,12 +192,16 @@ class RecurCBS{
                 }
                 {
                     let A2 = P.clone();
-                    for (let agentID in this.groups[edgeConflict.group_j]) {
-                        let newConstraint1 = new Constraint(edgeConflict.cell1, agentID, edgeConflict.t2+1)
-                        let newConstraint2 = new Constraint(edgeConflict.cell2, agentID, edgeConflict.t2)
-                        A2.addConstraint(edgeConflict.group_j, newConstraint1);
-                        A2.addConstraint(edgeConflict.group_j, newConstraint2);
-                    }
+                    // for (let agentID in this.groups[edgeConflict.group_j]) {
+                    //     let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2+1)
+                    //     let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2)
+                    //     A2.addConstraint(edgeConflict.group_j, newConstraint1);
+                    //     A2.addConstraint(edgeConflict.group_j, newConstraint2);
+                    // }
+                    let newConstraint1 = new Constraint(edgeConflict.cell1, edgeConflict.agent2, edgeConflict.t2+1)
+                    let newConstraint2 = new Constraint(edgeConflict.cell2, edgeConflict.agent2, edgeConflict.t2)
+                    A2.addConstraint(edgeConflict.group_j, newConstraint1);
+                    A2.addConstraint(edgeConflict.group_j, newConstraint2);
                     A2.updateSolution(this.map, this.groups, edgeConflict.group_j);
                     A2.updateCost()
                     if (A2.getSolution().length > 0){
@@ -187,7 +212,6 @@ class RecurCBS{
         }
         this.execution_time = Utils.getTime() - startTime;
         return {"paths" : {},
-                "expanded_nodes" : this.expanded_nodes,
                 "execution_time" : this.execution_time} // can't find any solution
     }
 
@@ -197,4 +221,4 @@ class RecurCBS{
     }
 };
 
-module.exports = RecurCBS;
+module.exports = GroupingCBS;

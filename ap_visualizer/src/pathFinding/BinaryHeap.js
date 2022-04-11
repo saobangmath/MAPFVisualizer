@@ -5,7 +5,7 @@
 class BinaryHeap{
     constructor(attribute) {
         this.heap = []
-        this.attribute = attribute;
+        this.attribute = attribute; // attributed use to sort the element
     }
 
     insert(element){
@@ -13,6 +13,7 @@ class BinaryHeap{
        this.bubbleUp(this.heap.length - 1);
     }
 
+    // heapify the heap in up direction
     bubbleUp(idx){
         const element = this.heap[idx];
         while (idx > 0){
@@ -44,9 +45,10 @@ class BinaryHeap{
         this.sinkDown(idx);
     }
 
+    // heapify the heap in down direction
     sinkDown(idx){
         let length = this.heap.length;
-        let element = this.heap[0];
+        let element = this.heap[idx];
         while (true){
             let leftIdx = 2 * idx + 1;
             let rightIdx = 2 * idx + 2;
@@ -113,6 +115,7 @@ class BinaryHeap{
         return false;
     }
 };
+
 
 
 // function test(){

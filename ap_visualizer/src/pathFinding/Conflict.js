@@ -13,7 +13,7 @@ class Conflict{
         this.agent2 = agent2
         this.cell1 = cell1
         this.cell2 = cell2
-        this.group_i = 0; // used only for recurCBS algo;
+        this.group_i = 0; // used only for recurCBS algo
         this.group_j = 0; // used only for recurCBS algo;
         this.t1 = t1
         this.t2 = t2

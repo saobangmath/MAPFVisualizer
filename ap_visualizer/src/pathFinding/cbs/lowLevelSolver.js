@@ -13,7 +13,7 @@ class LowLevelSolver{
         this.optimalPath = []
         this.OPEN = new BinaryHeap("f")
         this.CLOSE = new BinaryHeap("f")
-        this.expanded_nodes = 0
+        //this.expanded_nodes = 0
     }
 
     // the index (w.r.t L) of element == successor with minimum f value as well as time >= successor;
@@ -113,7 +113,7 @@ class LowLevelSolver{
                     parentMaps[[Utils.coordinatesToId(expanded_cell.x, expanded_cell.y, map.width), expanded_cell.time]] =
                         [Utils.coordinatesToId(current_cell.x, current_cell.y, map.width), current_cell.time]
                     this.OPEN.insert(expanded_cell);
-                    this.expanded_nodes++;
+                    //this.expanded_nodes++;
                 }
             }
         }
@@ -146,12 +146,12 @@ class LowLevelSolver{
     }
 
     findOptimalPaths(constraints, solution, map, agentNeedResolved){
-        this.expanded_nodes = 0;
+        //this.expanded_nodes = 0;
         let optimalPaths = {}
         // solve for each agent individually;
         for (let id in map.agents){
             if (agentNeedResolved != -1 && id != agentNeedResolved){
-                this.expanded_nodes += solution[id].length;
+                //this.expanded_nodes += solution[id].length;
                 optimalPaths[id] = solution[id];
                 continue;
             }
@@ -160,10 +160,10 @@ class LowLevelSolver{
                 optimalPaths[id] = individualPath;
             }
             else{
-                return {"paths" : {}, "expanded_nodes" : this.expanded_nodes};
+                return {"paths" : {}} //"expanded_nodes" : this.expanded_nodes};
             }
         }
-        return {"paths" : optimalPaths, "expanded_nodes" : this.expanded_nodes};
+        return {"paths" : optimalPaths}// "expanded_nodes" : this.expanded_nodes};
     }
 }
 

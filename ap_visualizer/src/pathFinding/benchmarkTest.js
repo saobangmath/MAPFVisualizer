@@ -1,34 +1,20 @@
 let CBS = require('./cbs/highLevelSolver');
 let aStar = require('./aStar/AStar');
-let recurCBS = require('./recursive-cbs/recurCBS');
+let groupingCBS = require('./grouping-cbs/groupingCBS');
 let ID = require('./id/ID');
 let Map = require('./Map');
 let Cell = require('./Cell');
+let Utils = require('./utils');
 let Conflict = require('./Conflict');
 let Constraint = require('./Constraint');
 let Constants = require('./Constants');
 
-function isPlaceWithObstacles(){ // for a square, generate the obstacles there with probability = 0.2
+function isPlaceWithObstacles(){ // for a square, generate the obstacles there with probability = 0.1
     return Math.random() <= 0.1;
 }
 
-// fisher-yate algorithm;
-function shuffle(array) {
-    let currentIndex = array.length,  randomIndex;
-
-    // While there remain elements to shuffle...
-    while (currentIndex != 0) {
-
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-
-    return array;
+function genAgents(){ // generate the number of agents randomly from 1->10
+    return Math.floor(Math.random() * 10) + 1;
 }
 
 function genMap() {
@@ -36,7 +22,7 @@ function genMap() {
     map.height = 10;
     map.width = 15;
     map.grid = [];
-    map.no_agents = 10;
+    map.no_agents = genAgents();
     let nonObstaclesPos = [];
     for (let r = 0; r < map.height; r++){
         let rows = [];
@@ -53,7 +39,7 @@ function genMap() {
         map = null;
     }
     else{
-        nonObstaclesPos = shuffle(nonObstaclesPos);
+        nonObstaclesPos = Utils.shuffle(nonObstaclesPos);
         let j = 0;
         for (let agent = 1; agent <= map.no_agents; agent++){
             map.agents[agent] = {"START" : new Cell(nonObstaclesPos[j][0], nonObstaclesPos[j][1]),
@@ -64,6 +50,7 @@ function genMap() {
     return map;
 }
 
+// depend on the solver, return relevant algorithm
 function getSolver(solver, map){
     if (solver === "CBS"){
         return new CBS(map);
@@ -71,17 +58,20 @@ function getSolver(solver, map){
     if (solver === "A*+OD"){
         return new aStar(map);
     }
-    if (solver === "recurCBS"){
-        return new recurCBS(map);
+    if (solver === "groupingCBS"){
+        return new groupingCBS(map);
     }
     if (solver === "CBSwID"){
         return new ID("CBS", map);
     }
+    if (solver === "AStarwID"){
+        return new ID("A*+OD", map);
+    }
     return null;
 }
 
-function benchMark(solver1, solver2){
-    let tot = 10, solver1Win = 0, solver2Win = 0;
+function benchMark(solver1, solver2, tot){
+    let solver1Win = 0, solver2Win = 0, eq = 0;
     for (let iter = 1; iter <= tot; iter++){
         let map = genMap();
         while (map === null){
@@ -93,20 +83,22 @@ function benchMark(solver1, solver2){
         console.log("Maps: ")
         console.log(map.grid);
 
-        let solver1Result = getSolver(solver2, map).solve()["execution_time"];
+        let solver1Result = getSolver(solver1, map).solve()["execution_time"];
         console.log(`${solver1} execution time: ` + solver1Result);
 
-        let solver2Result = getSolver(solver1, map).solve()["execution_time"];
+        let solver2Result = getSolver(solver2, map).solve()["execution_time"];
         console.log(`${solver2} execution time: ` + solver2Result);
 
         if (!(solver1Result >= Constants.TIME_CUTOFF && solver2Result >= Constants.TIME_CUTOFF)){
             if (solver1Result > solver2Result) solver2Win++;
-            else solver1Win++;
+            else if (solver1Result) solver1Win++;
+            else if (solver1Result == solver2Result) eq++;
+            else solver2Win++;
         }
         console.log("=======================");
     }
 
-    let failed = tot - solver1Win - solver2Win;
+    let failed = tot - solver1Win - solver2Win - eq;
 
     console.log(`Total ${tot} tests is simulating ...`);
 
@@ -114,10 +106,13 @@ function benchMark(solver1, solver2){
 
     console.log(`Out of ${solver2Win} tests, ${solver2} win!`);
 
+    console.log(`Out of ${eq} tests, both are taken the same time!`);
+
     console.log(`${failed} tests to failed to find path within time limit`)
 }
 
 
-//benchMark("CBS", "A*+OD");
-benchMark("CBS", "recurCBS");
-//benchMark("CBS", "CBSwID");
+benchMark("CBS", "A*+OD", 100);
+//benchMark("CBS", "groupingCBS", 100);
+//benchMark("A*+OD", "AStarwID");
+//benchMark("CBS", "CBSwID",10);

@@ -1,6 +1,6 @@
 const CBS = require("../cbs/highLevelSolver");
 const aStar = require("../aStar/AStar");
-const Utils = require("../Utils");
+const Utils = require("../utils");
 
 /**
  * independent detection (ID) - a framework used to apply on top of any complete MAPF solver (e.g. CBS, A* + OD)

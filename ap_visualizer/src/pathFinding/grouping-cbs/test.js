@@ -1,4 +1,4 @@
-const recurCBS = require('./recurCBS')
+const recurCBS = require('./groupingCBS')
 const Map = require('../Map')
 
 function test(filename) {
@@ -13,7 +13,6 @@ function test(filename) {
                 console.log(map.grid)
                 console.log(map.agents)
                 let solution = solver.solve();
-                console.log("Node expanded: " + solution.expanded_nodes)
                 console.log("Time taken: " + solution.execution_time + "s");
                 console.log(solution["paths"]);
             } catch (err) {
@@ -23,6 +22,8 @@ function test(filename) {
         2000
     )
 }
+
+test('../maps/handmade7.map')
 
 test('../maps/craft.map')
 
