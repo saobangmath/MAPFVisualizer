@@ -81,8 +81,6 @@ function App() {
     );
     agents[1] = defaultAgent;
     setAgentsList(agents);
-    // let joke = Object.keys(agents).slice(1, 3);
-    // joke.map((key, index) => console.log("data is", agents[key]));
   }
 
   function resetMap(mapID) {
@@ -414,7 +412,6 @@ function Square(props) {
   );
 }
 function retreiveMapName(mapNum) {
-  console.log("map", mapNum);
   switch (mapNum) {
     case 0:
       return "Kiva Map";

@@ -430,12 +430,29 @@ const Agent_Table = (props) => {
                 <td className={styles.detailColumn}>{selectedAgent.maxStep}</td>
               </tr>
             </table>
-            <div className={styles.map}>
-              <AgentPathMap
-                agent={selectedAgent}
-                map={props.startBoard}
-              ></AgentPathMap>
+            <div>
+              <div className={styles.agentMap}>
+                <AgentPathMap
+                  agent={selectedAgent}
+                  map={props.startBoard}
+                ></AgentPathMap>
+              </div>
+              <div className={styles.legendContatainer}>
+                <div className={styles.startLegend}>
+                  <LegendSquare backgroundColor={selectedAgent.robotColor} />
+                  <p className={styles.legendText}>Start Point</p>
+                </div>
+                <div className={styles.pathLegend}>
+                  <LegendSquare backgroundColor={selectedAgent.pathColor} />
+                  <p className={styles.legendText}>Agent Paths</p>
+                </div>
+                <div className={styles.endLegend}>
+                  <LegendSquare backgroundColor={selectedAgent.endColor} />
+                  <p className={styles.legendText}>End Point</p>
+                </div>
+              </div>
             </div>
+
             <div>
               <button className={styles.linkBtn} onClick={showChartModal}>
                 Click To See More
@@ -561,6 +578,16 @@ function Board(props) {
         );
       })}
     </div>
+  );
+}
+function LegendSquare(props) {
+  return (
+    <button
+      className="square"
+      style={{
+        backgroundColor: props.backgroundColor ?? "white",
+      }}
+    ></button>
   );
 }
 function resetMap(map) {

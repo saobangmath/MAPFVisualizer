@@ -36,10 +36,10 @@ function Agents_Page(props) {
           if (status !== "Assigned") {
             check = false;
             alertify
-                .alert(
-                    "Please assigned the task for all agents or remove the agent with no assigned task!"
-                )
-                .setHeader('<em style="color:black;">Alert</em>');
+              .alert(
+                "Please assigned the task for all agents or remove the agent with no assigned task!"
+              )
+              .setHeader('<em style="color:black;">Alert</em>');
 
             break;
           }
@@ -60,8 +60,6 @@ function Agents_Page(props) {
     let copy = props.gridMap;
     let width = copy[0].length;
     let height = Object.keys(copy).length;
-    console.log("the width is", width);
-    console.log("the height is", height);
 
     let maxLimit = robotLimit(width, height);
     if (Object.keys(props.agents).length >= maxLimit) {
@@ -84,8 +82,8 @@ function Agents_Page(props) {
     let checker = maxRobotChecker();
     if (!props.algoFinished) {
       alertify
-          .alert("Can't add new agent when the algorithm is in-progress!")
-          .setHeader('<em style="color:black;">Error</em>');
+        .alert("Can't add new agent when the algorithm is in-progress!")
+        .setHeader('<em style="color:black;">Error</em>');
       return;
     } else if (!checker) {
       let agentId = getNextAgentID(props.agents);
@@ -120,18 +118,18 @@ function Agents_Page(props) {
       const boardCopy = [...props.gridMap];
       let lastAgent = props.agents[agentId];
       boardCopy[props.agents[agentId].startPoint.row][
-          props.agents[agentId].startPoint.col
-          ] = lastAgent;
+        props.agents[agentId].startPoint.col
+      ] = lastAgent;
 
       props.setStartBoard(boardCopy);
       props.setEndBoard(boardCopy);
       props.setGridMapFunction(boardCopy);
     } else {
       alertify
-          .alert(
-              "You have exceed the max number of robot in the map. For more clarification on max limit, please click on our robot helper !"
-          )
-          .setHeader('<em style="color:black;">Error</em>');
+        .alert(
+          "You have exceed the max number of robot in the map. For more clarification on max limit, please click on our robot helper !"
+        )
+        .setHeader('<em style="color:black;">Error</em>');
     }
   }
   const setRunningSpeed = (value) => {
@@ -192,7 +190,7 @@ function Agents_Page(props) {
         mp.agents[id] = agent;
       } else {
         alertify.alert(
-            "Please assigned the task for all agents or remove the agent with no assigned task!"
+          "Please assigned the task for all agents or remove the agent with no assigned task!"
         );
         // for simplicity in case there is some robot in the map has not been assigned with any place -> the algo could not be executed;
 
@@ -222,10 +220,10 @@ function Agents_Page(props) {
       //store the agent path into the agents list
       for (let agentId in paths) {
         storeAgentMapPath(
-            paths[agentId],
-            props.agents[agentId],
-            expandedNodes,
-            executionTime
+          paths[agentId],
+          props.agents[agentId],
+          expandedNodes,
+          executionTime
         );
       }
       props.setStep(0);
@@ -252,7 +250,6 @@ function Agents_Page(props) {
       }
     }
     showStartModal();
-    console.log(props.agents);
   };
   const storeSubAlgoData = (agent, expandedNodes, executionTime) => {
     agent.subAlgoExpandedNode = expandedNodes;
@@ -304,12 +301,12 @@ function Agents_Page(props) {
       if (curStep === curAgent.maxStep - 1) {
         curAgent.status = "Completed";
         alertify.notify(
-            "Robot" + agents[index].agentId + " has finished the allocated task",
-            "success",
-            2,
-            function () {
-              console.log("dismissed");
-            }
+          "Robot" + agents[index].agentId + " has finished the allocated task",
+          "success",
+          2,
+          function () {
+            console.log("dismissed");
+          }
         );
       }
       let clone_agents = { ...props.agents };
@@ -345,79 +342,79 @@ function Agents_Page(props) {
     }
   };
   return (
-      <>
-        <AgentTable
-            agents={props.agents}
-            setAgentsList={props.setAgentsList}
-            setAgentPaths={props.setAgentPaths}
-            gridMap={props.gridMap}
-            setGridMapFunction={props.setGridMapFunction}
-            algoFinished={props.algoFinished}
-            setAlgoFinished={props.setAlgoFinished}
-            startBoard={props.startBoard}
-            endBoard={props.endBoard}
-            setStartBoard={props.setStartBoard}
-            setEndBoard={props.setEndBoard}
-            rowsPerPage={3}
-            selectedAlgo={algo}
-        ></AgentTable>
-        {startModal && (
-            <div className={classes.modalAdd}>
-              <div className={classes.overlay} onClick={showStartModal}></div>
-              <div className={classes.spacing}></div>
-              <div className={classes.modal_content}>
-                <div className={classes.modal_container}>
-                  <button className={classes.closeBtn} onClick={showStartModal}>
-                    X
-                  </button>
-                  <div className={classes.modalTitle}>
-                    <h2>Choose Your Speed & Algorithm</h2>
-                    <p>
-                      Based on your preference,choose the suitable running speed &
-                      the algorithm to use.
-                    </p>
-                  </div>
-                  <div className={classes.speedContainer}>
-                    <p>Speed</p>
+    <>
+      <AgentTable
+        agents={props.agents}
+        setAgentsList={props.setAgentsList}
+        setAgentPaths={props.setAgentPaths}
+        gridMap={props.gridMap}
+        setGridMapFunction={props.setGridMapFunction}
+        algoFinished={props.algoFinished}
+        setAlgoFinished={props.setAlgoFinished}
+        startBoard={props.startBoard}
+        endBoard={props.endBoard}
+        setStartBoard={props.setStartBoard}
+        setEndBoard={props.setEndBoard}
+        rowsPerPage={3}
+        selectedAlgo={algo}
+      ></AgentTable>
+      {startModal && (
+        <div className={classes.modalAdd}>
+          <div className={classes.overlay} onClick={showStartModal}></div>
+          <div className={classes.spacing}></div>
+          <div className={classes.modal_content}>
+            <div className={classes.modal_container}>
+              <button className={classes.closeBtn} onClick={showStartModal}>
+                X
+              </button>
+              <div className={classes.modalTitle}>
+                <h2>Choose Your Speed & Algorithm</h2>
+                <p>
+                  Based on your preference,choose the suitable running speed &
+                  the algorithm to use.
+                </p>
+              </div>
+              <div className={classes.speedContainer}>
+                <p>Speed</p>
 
-                    <select
-                        className={classes.dropDownBtn}
-                        onChange={(e) => setRunningSpeed(e.target.value)}
-                    >
-                      <option value="Fast">Fast</option>
-                      <option value="Average">Average</option>
-                      <option value="Slow">Slow</option>
-                    </select>
-                  </div>
-                  <div className={classes.algorithmContainer}>
-                    <p>Algorithm</p>
-                    <select
-                        className={classes.dropDownBtn}
-                        onChange={(e) => setRunningAlgo(e.target.value)}
-                    >
-                      <option value="CBS">CBS</option>
-                      <option value="A*+OD">A*+OD</option>
-                    </select>
-                  </div>
-                  <div className={classes.btnContainer}>
-                    <button
-                        className={classes.btn}
-                        onClick={() => runAlgo({ speed, algo })}
-                    >
-                      Start
-                    </button>
-                  </div>
-                </div>
+                <select
+                  className={classes.dropDownBtn}
+                  onChange={(e) => setRunningSpeed(e.target.value)}
+                >
+                  <option value="Fast">Fast</option>
+                  <option value="Average">Average</option>
+                  <option value="Slow">Slow</option>
+                </select>
+              </div>
+              <div className={classes.algorithmContainer}>
+                <p>Algorithm</p>
+                <select
+                  className={classes.dropDownBtn}
+                  onChange={(e) => setRunningAlgo(e.target.value)}
+                >
+                  <option value="CBS">CBS</option>
+                  <option value="A*+OD">A*+OD</option>
+                </select>
+              </div>
+              <div className={classes.btnContainer}>
+                <button
+                  className={classes.btn}
+                  onClick={() => runAlgo({ speed, algo })}
+                >
+                  Start
+                </button>
               </div>
             </div>
-        )}
-        <button id="addBtn" className={classes.btn} onClick={newAgent}>
-          Add
-        </button>
-        <button className={classes.btn} onClick={startFunction}>
-          {Object.keys(props.agentPaths).length === 0 ? "Start" : "Reset"}
-        </button>
-      </>
+          </div>
+        </div>
+      )}
+      <button id="addBtn" className={classes.btn} onClick={newAgent}>
+        Add
+      </button>
+      <button className={classes.btn} onClick={startFunction}>
+        {Object.keys(props.agentPaths).length === 0 ? "Start" : "Reset"}
+      </button>
+    </>
   );
 }
 

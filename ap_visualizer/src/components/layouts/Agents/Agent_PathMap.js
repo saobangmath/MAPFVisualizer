@@ -3,21 +3,11 @@ import classes from "./Agent_PathMap.module.css";
 
 function Agent_PathMap(props) {
   return (
-    <div className={classes.map}>
-      <Board map={props.map} agent={props.agent} />
-      <div className={classes.startLegend}>
-        <Square backgroundColor={props.agent.robotColor} />
-        <p className={classes.legendText}>Start Point</p>
+    <>
+      <div className={classes.map}>
+        <Board map={props.map} agent={props.agent} />
       </div>
-      <div className={classes.pathLegend}>
-        <Square backgroundColor={props.agent.pathColor} />
-        <p className={classes.legendText}>Agent Paths</p>
-      </div>
-      <div className={classes.endLegend}>
-        <Square backgroundColor={props.agent.endColor} />
-        <p className={classes.legendText}>End Point</p>
-      </div>
-    </div>
+    </>
   );
 }
 function Board(props) {
@@ -56,7 +46,7 @@ function Board(props) {
     return <Square backgroundColor={backgroundColor} />;
   }
   return (
-    <div>
+    <div className={classes.map}>
       {props.map.map((row, rowIndex) => {
         return (
           <div>

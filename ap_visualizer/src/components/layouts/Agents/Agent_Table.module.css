@@ -175,6 +175,9 @@ td {
 .gridMap {
   zoom: 0.5;
 }
+.agentMap {
+  margin-top: 2rem;
+}
 
 /* Modal Styling */
 .modal,
@@ -377,4 +380,29 @@ td {
   color: darkblue;
   text-decoration: underline;
   font-weight: 500;
+}
+.startLegend {
+  float: left;
+  margin-top: 5%;
+  padding-right: 1rem;
+}
+.pathLegend {
+  float: left;
+  margin-top: 5%;
+  padding-right: 1rem;
+}
+
+.endLegend {
+  float: left;
+  margin-top: 5%;
+}
+.legendText {
+  text-align: center;
+  padding-left: 2rem;
+  font-weight: bold;
+}
+.legendContatainer {
+  display: inline-block;
+  margin-top: 1rem;
+  zoom: 0.6;
 }
