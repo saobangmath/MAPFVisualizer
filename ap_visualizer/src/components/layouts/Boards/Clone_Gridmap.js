@@ -6,10 +6,10 @@ import { clone2DArray } from "../../utility/Utility";
 function CloneGridmap(props) {
   let index = props.mapNo;
 
-  if (index < 1) {
+  if (index < 0) {
     index = 4;
   } else if (index > 4) {
-    index = 1;
+    index = 0;
   }
   let updatedGridMap = null;
   updatedGridMap = clone2DArray(maps[index]);
